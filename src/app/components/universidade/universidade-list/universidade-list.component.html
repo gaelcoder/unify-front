@@ -1,1 +1,63 @@
-<p>universidade-list works!</p>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Universidades Cadastradas</h2>
+        <a routerLink="/universidades/novo" class="btn btn-primary">Nova Universidade</a>
+    </div>
+
+    <div *ngIf="loading" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p class="mt-2">Carregando universidades...</p>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+    </div>
+
+    <div *ngIf="!loading && !error">
+        <div *ngIf="universidades.length === 0" class="alert alert-info">
+            Nenhuma universidade cadastrada. Clique em "Nova Universidade" para adicionar.
+        </div>
+
+        <div *ngIf="universidades.length > 0" class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CNPJ</th>
+                        <th>Sigla</th>
+                        <th>Fundação</th>
+                        <th>Campus</th>
+                        <th>Representante</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let universidade of universidades">
+                        <td>{{ universidade.nome }}</td>
+                        <td>{{ universidade.cnpj }}</td>
+                        <td>{{ universidade.sigla }}</td>
+                        <td>{{ universidade.fundacao | date:'dd/MM/yyyy' }}</td>
+                        <td>{{ universidade.campus.join(', ') }}</td>
+                        <td>
+                            <span *ngIf="universidade.representante">
+                                {{ universidade.representante.nome }} {{ universidade.representante.sobrenome }}
+                                <small class="text-muted">({{ universidade.representante.cargo }})</small>
+                            </span>
+                            <span *ngIf="!universidade.representante" class="text-muted">
+                                Não associado
+                            </span>
+                        </td>
+                        <td>
+                            <a [routerLink]="['/universidades/editar', universidade.id]"
+                                class="btn btn-sm btn-primary me-1">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

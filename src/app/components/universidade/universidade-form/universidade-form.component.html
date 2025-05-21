@@ -1,1 +1,123 @@
-<p>universidade-form works!</p>
+<div class="container mt-4">
+  <div *ngIf="loading" class="d-flex justify-content-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Carregando...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading">
+    <h2>{{ editMode ? 'Editar' : 'Cadastrar' }} Universidade</h2>
+
+    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+    <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+
+    <form [formGroup]="universidadeForm" (ngSubmit)="onSubmit()" class="mt-4">
+      <div class="mb-3">
+        <label for="nome" class="form-label">Nome</label>
+        <input type="text" class="form-control" id="nome" formControlName="nome">
+        <div *ngIf="universidadeForm.get('nome')?.invalid && universidadeForm.get('nome')?.touched" class="text-danger">
+          <small *ngIf="universidadeForm.get('nome')?.errors?.['required']">Nome é obrigatório</small>
+          <small *ngIf="universidadeForm.get('nome')?.errors?.['minlength']">Nome deve ter pelo menos 3 caracteres</small>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="cnpj" class="form-label">CNPJ</label>
+        <input type="text" class="form-control" id="cnpj" formControlName="cnpj">
+        <div *ngIf="universidadeForm.get('cnpj')?.invalid && universidadeForm.get('cnpj')?.touched" class="text-danger">
+          <small *ngIf="universidadeForm.get('cnpj')?.errors?.['required']">CNPJ é obrigatório</small>
+          <small *ngIf="universidadeForm.get('cnpj')?.errors?.['pattern']">CNPJ inválido</small>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="fundacao" class="form-label">Data de Fundação</label>
+        <input type="date" class="form-control" id="fundacao" formControlName="fundacao">
+        <div *ngIf="universidadeForm.get('fundacao')?.invalid && universidadeForm.get('fundacao')?.touched" class="text-danger">
+          <small *ngIf="universidadeForm.get('fundacao')?.errors?.['required']">Data de fundação é obrigatória</small>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="sigla" class="form-label">Sigla</label>
+        <input type="text" class="form-control" id="sigla" formControlName="sigla">
+        <div *ngIf="universidadeForm.get('sigla')?.invalid && universidadeForm.get('sigla')?.touched" class="text-danger">
+          <small *ngIf="universidadeForm.get('sigla')?.errors?.['required']">Sigla é obrigatória</small>
+          <small *ngIf="universidadeForm.get('sigla')?.errors?.['maxlength']">Sigla deve ter no máximo 10 caracteres</small>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Campus</label>
+        <div formArrayName="campus">
+          <div *ngFor="let campus of campusArray.controls; let i = index" class="input-group mb-2">
+            <input type="text" class="form-control" [formControlName]="i">
+            <button type="button" class="btn btn-danger" (click)="removeCampus(i)">Remover</button>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" (click)="addCampus()">
+          <i class="bi bi-plus-circle"></i> Adicionar Campus
+        </button>
+      </div>
+
+      <!-- Seção de Representante -->
+      <div class="card mb-3">
+        <div class="card-header">Representante</div>
+        <div class="card-body">
+          
+          <!-- Exibe informações do representante atual se existir -->
+          <div *ngIf="representanteAtual" class="mb-3">
+            <h5>Representante Atual</h5>
+            <p><strong>Nome:</strong> {{ representanteAtual.nome }} {{ representanteAtual.sobrenome }}</p>
+            <p><strong>Email:</strong> {{ representanteAtual.email }}</p>
+            <p><strong>Cargo:</strong> {{ representanteAtual.cargo }}</p>
+            
+            <button type="button" class="btn btn-warning mt-2" (click)="desassociarRepresentante()">
+              <i class="bi bi-x-circle"></i> Desassociar Representante
+            </button>
+          </div>
+          
+          <!-- Seleção de representante -->
+          <div *ngIf="!representanteAtual" class="mb-3">
+            <label for="representanteId" class="form-label">Selecione um Representante</label>
+            <select class="form-select" id="representanteId" formControlName="representanteId">
+              <option [ngValue]="null">Selecione...</option>
+              <option *ngFor="let rep of representantesDisponiveis" [ngValue]="rep.id">
+                {{ rep.nome }} {{ rep.sobrenome }} - {{ rep.cargo }}
+              </option>
+            </select>
+            
+            <button *ngIf="editMode" type="button" class="btn btn-primary mt-2" 
+                  [disabled]="!universidadeForm.get('representanteId')?.value" 
+                  (click)="associarRepresentante()">
+              <i class="bi bi-link"></i> Associar Representante
+            </button>
+          </div>
+          
+          <div *ngIf="carregandoRepresentantes" class="text-center">
+            <div class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Carregando representantes...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <!-- Botão de salvar/atualizar -->
+        <button type="submit" class="btn btn-primary" [disabled]="universidadeForm.invalid || submitting">
+          <i class="bi bi-save"></i> {{ editMode ? 'Atualizar' : 'Cadastrar' }}
+        </button>
+        
+        <!-- Botão de cancelar -->
+        <button type="button" class="btn btn-secondary" routerLink="/universidades">
+          <i class="bi bi-x-circle"></i> Cancelar
+        </button>
+        
+        <!-- Botão de excluir (apenas em modo de edição) -->
+        <button *ngIf="editMode" type="button" class="btn btn-danger ms-auto" (click)="excluirUniversidade()">
+          <i class="bi bi-trash"></i> Excluir Universidade
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
