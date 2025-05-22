@@ -35,4 +35,58 @@ export class RepresentanteListComponent implements OnInit {
       }
     });
   }
+  excluirRepresentante(representante: any): void {
+    // Verifica se o representante está associado a uma universidade
+    if (representante.universidade) {
+      this.error = 'Não é possível excluir um representante associado a uma universidade';
+      return;
+    }
+
+    if (!confirm(`Tem certeza que deseja excluir o representante ${representante.nome} ${representante.sobrenome}?`)) {
+      return;
+    }
+
+    this.loading = true;
+    this.error = '';
+
+    this.representanteService.delete(representante.id).subscribe({
+      next: () => {
+        // Remove o representante da lista local
+        this.representantes = this.representantes.filter(r => r.id !== representante.id);
+        
+        // Adiciona mensagem de sucesso temporária
+        const successElement = document.createElement('div');
+        successElement.className = 'alert alert-success alert-dismissible fade show';
+        successElement.innerHTML = `
+          Representante ${representante.nome} ${representante.sobrenome} excluído com sucesso!
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.querySelector('.container')?.insertBefore(successElement, document.querySelector('.d-flex'));
+        
+        // Remove a mensagem após 3 segundos
+        setTimeout(() => {
+          successElement.remove();
+        }, 3000);
+        
+        this.loading = false;
+      },
+      error: (erro) => {
+        this.error = 'Erro ao excluir representante: ' + this.getErrorMessage(erro);
+        this.loading = false;
+      }
+    });
+  }
+
+  private getErrorMessage(error: any): string {
+    if (error.error && typeof error.error === 'string') {
+      return error.error;
+    } else if (error.message) {
+      return error.message;
+    } else if (error.status === 0) {
+      return 'Servidor não está respondendo. Verifique sua conexão.';
+    } else {
+      return 'Erro desconhecido';
+    }
+  }
+
 }

@@ -1,26 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { RepresentanteService } from '../../../services/representante.service';
 
 @Component({
   selector: 'app-representante-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './representante-form.component.html',
   styleUrl: './representante-form.component.css'
 })
-export class RepresentanteFormComponent {
+export class RepresentanteFormComponent implements OnInit {
   representanteForm: FormGroup;
   submitting = false;
+  loading = false;
   error = '';
   success = '';
+  editMode = false;
+  id: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private representanteService: RepresentanteService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.representanteForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(2)]],
@@ -33,6 +37,47 @@ export class RepresentanteFormComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      const id = params['id'];
+      if (id) {
+        this.id = id;
+        this.editMode = true;
+        this.carregarRepresentante(Number(id));
+        this.representanteForm.get('cpf')?.disable();
+      }
+    });
+}
+
+
+  carregarRepresentante(id: number): void {
+    this.loading = true;
+    this.representanteService.getById(id).subscribe({
+      next: (representante) => {
+        this.representanteForm.patchValue({
+          nome: representante.nome,
+          sobrenome: representante.sobrenome,
+          cpf: representante.cpf,
+          dataNascimento: this.formatDate(representante.dataNascimento),
+          email: representante.email,
+          telefone: representante.telefone,
+          cargo: representante.cargo
+        });
+        this.loading = false;
+      },
+      error: (erro) => {
+        this.error = 'Erro ao carregar representante: ' + this.getErrorMessage(erro);
+        this.loading = false;
+      }
+    });
+  }
+
+  formatDate(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  }
+
   onSubmit() {
     if (this.representanteForm.invalid) {
       this.markFormGroupTouched(this.representanteForm);
@@ -43,19 +88,38 @@ export class RepresentanteFormComponent {
     this.error = '';
     this.success = '';
 
-    this.representanteService.create(this.representanteForm.value).subscribe({
-      next: () => {
-        this.success = 'Representante cadastrado com sucesso!';
-        this.submitting = false;
-        setTimeout(() => {
-          this.router.navigate(['/representantes']);
-        }, 2000);
-      },
-      error: (err) => {
-        this.error = 'Erro ao cadastrar representante: ' + (err.error?.message || err.message || 'Erro desconhecido');
-        this.submitting = false;
-      }
-    });
+    // Obter os valores do formulário, incluindo campos desabilitados
+    const formData = { ...this.representanteForm.getRawValue() };
+
+    if (this.editMode && this.id) {
+      this.representanteService.update(+this.id, formData).subscribe({
+        next: () => {
+          this.success = 'Representante atualizado com sucesso!';
+          this.submitting = false;
+          setTimeout(() => {
+            this.router.navigate(['/representantes']);
+          }, 1500);
+        },
+        error: (erro) => {
+          this.error = 'Erro ao atualizar representante: ' + this.getErrorMessage(erro);
+          this.submitting = false;
+        }
+      });
+    } else {
+      this.representanteService.create(formData).subscribe({
+        next: () => {
+          this.success = 'Representante cadastrado com sucesso!';
+          this.submitting = false;
+          setTimeout(() => {
+            this.router.navigate(['/representantes']);
+          }, 1500);
+        },
+        error: (err) => {
+          this.error = 'Erro ao cadastrar representante: ' + this.getErrorMessage(err);
+          this.submitting = false;
+        }
+      });
+    }
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {
@@ -65,5 +129,17 @@ export class RepresentanteFormComponent {
         this.markFormGroupTouched(control);
       }
     });
+  }
+
+  private getErrorMessage(error: any): string {
+    if (error.error && typeof error.error === 'string') {
+      return error.error;
+    } else if (error.message) {
+      return error.message;
+    } else if (error.status === 0) {
+      return 'Servidor não está respondendo. Verifique sua conexão.';
+    } else {
+      return 'Erro desconhecido';
+    }
   }
 }

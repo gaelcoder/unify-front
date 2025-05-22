@@ -35,4 +35,55 @@ export class UniversidadeListComponent implements OnInit {
       }
     });
   }
+
+  excluirUniversidade(universidade: any): void {
+  if (!confirm(`Tem certeza que deseja excluir a universidade ${universidade.nome}?`)) {
+    return;
+  }
+
+  this.loading = true;
+  this.error = '';
+
+  this.universidadeService.delete(universidade.id).subscribe({
+    next: () => {
+      // Remove a universidade da lista local
+      this.universidades = this.universidades.filter(u => u.id !== universidade.id);
+      
+      // Opcional: Adicionar mensagem de sucesso temporária
+      const successElement = document.createElement('div');
+      successElement.className = 'alert alert-success alert-dismissible fade show';
+      successElement.innerHTML = `
+        Universidade ${universidade.nome} excluída com sucesso!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+      document.querySelector('.container')?.insertBefore(successElement, document.querySelector('.d-flex'));
+      
+      // Remove a mensagem após 3 segundos
+      setTimeout(() => {
+        successElement.remove();
+      }, 3000);
+      
+      this.loading = false;
+    },
+    error: (erro) => {
+      this.error = 'Erro ao excluir universidade: ' + this.getErrorMessage(erro);
+      this.loading = false;
+    }
+  });
+}
+
+private getErrorMessage(error: any): string {
+  if (error.error && typeof error.error === 'string') {
+    return error.error;
+  } else if (error.message) {
+    return error.message;
+  } else if (error.status === 0) {
+    return 'Servidor não está respondendo. Verifique sua conexão.';
+  } else {
+    return 'Erro desconhecido';
+  }
+}
+
+
+
 }

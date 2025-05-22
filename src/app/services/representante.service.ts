@@ -35,4 +35,10 @@ export class RepresentanteService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/representantes/${id}`);
   }
+
+  update(id: number, representante: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/representantes/${id}`, representante);
+  }
+
+
 }

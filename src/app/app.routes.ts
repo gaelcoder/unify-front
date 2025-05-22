@@ -9,8 +9,10 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'universidades', component: UniversidadeListComponent },
   { path: 'universidades/novo', component: UniversidadeFormComponent },
+  { path: 'universidades/editar/:id', component: UniversidadeFormComponent },
   { path: 'representantes', component: RepresentanteListComponent },
   { path: 'representantes/novo', component: RepresentanteFormComponent },
-  { path: 'universidades/editar/:id', component: UniversidadeFormComponent },
-
+  { path: 'representantes/editar/:id', component: RepresentanteFormComponent },
+  // Rota curinga para página não encontrada
+  { path: '**', redirectTo: '' }
 ];

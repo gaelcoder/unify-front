@@ -1,46 +1,57 @@
-<div class="container mt-4">
+<div class="container">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Representantes Cadastrados</h2>
-    <a routerLink="/representantes/novo" class="btn btn-success">Novo Representante</a>
+    <h2>Lista de Representantes</h2>
+    <a routerLink="/representantes/novo" class="btn btn-primary">Novo Representante</a>
   </div>
-  
-  <div *ngIf="loading" class="text-center my-5">
-    <div class="spinner-border text-success" role="status">
-      <span class="visually-hidden">Carregando...</span>
-    </div>
-    <p class="mt-2">Carregando representantes...</p>
-  </div>
-  
+
+  <!-- Mensagem de erro -->
   <div *ngIf="error" class="alert alert-danger">
     {{ error }}
   </div>
-  
-  <div *ngIf="!loading && !error">
-    <div *ngIf="representantes.length === 0" class="alert alert-info">
-      Nenhum representante cadastrado. Clique em "Novo Representante" para adicionar.
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Carregando...</span>
     </div>
-    
-    <div *ngIf="representantes.length > 0" class="table-responsive">
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>CPF</th>
-            <th>Email</th>
-            <th>Telefone</th>
-            <th>Cargo</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let representante of representantes">
-            <td>{{ representante.nome }} {{ representante.sobrenome }}</td>
-            <td>{{ representante.cpf }}</td>
-            <td>{{ representante.email }}</td>
-            <td>{{ representante.telefone }}</td>
-            <td>{{ representante.cargo }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  </div>
+
+  <!-- Tabela de representantes -->
+  <div *ngIf="!loading" class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Email</th>
+          <th>Telefone</th>
+          <th>Cargo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let representante of representantes">
+          <td>{{ representante.nome }} {{ representante.sobrenome }}</td>
+          <td>{{ representante.cpf }}</td>
+          <td>{{ representante.email }}</td>
+          <td>{{ representante.telefone }}</td>
+          <td>{{ representante.cargo }}</td>
+          <td>
+            <a [routerLink]="['/representantes/editar', representante.id]" 
+               class="btn btn-sm btn-primary me-2">
+              Editar
+            </a>
+            <button (click)="excluirRepresentante(representante)"
+                    class="btn btn-sm btn-danger"
+                    [disabled]="representante.universidade">
+              Excluir
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="representantes.length === 0">
+          <td colspan="6" class="text-center">Nenhum representante encontrado</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
