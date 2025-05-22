@@ -1,0 +1,55 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-body p-5">
+          <h2 class="text-center mb-4">Login - UniFy</h2>
+          
+          <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+          
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                formControlName="email"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"
+                placeholder="Digite seu email"
+              />
+              <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+                <div *ngIf="f['email'].errors['required']">Email é obrigatório</div>
+                <div *ngIf="f['email'].errors['email']">Email deve ser um endereço válido</div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="senha" class="form-label">Senha</label>
+              <input
+                type="password"
+                formControlName="senha"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['senha'].errors }"
+                placeholder="Digite sua senha"
+              />
+              <div *ngIf="submitted && f['senha'].errors" class="invalid-feedback">
+                <div *ngIf="f['senha'].errors['required']">Senha é obrigatória</div>
+              </div>
+            </div>
+            
+            <div class="d-grid gap-2 mt-4">
+              <button 
+                [disabled]="loading" 
+                class="btn btn-primary"
+                type="submit"
+              >
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+                Entrar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

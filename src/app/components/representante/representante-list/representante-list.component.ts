@@ -51,9 +51,9 @@ export class RepresentanteListComponent implements OnInit {
 
     this.representanteService.delete(representante.id).subscribe({
       next: () => {
-        // Remove o representante da lista local
-        this.representantes = this.representantes.filter(r => r.id !== representante.id);
-        
+
+        this.loadRepresentantes();
+
         // Adiciona mensagem de sucesso temporária
         const successElement = document.createElement('div');
         successElement.className = 'alert alert-success alert-dismissible fade show';

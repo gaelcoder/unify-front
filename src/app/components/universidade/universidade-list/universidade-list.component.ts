@@ -46,8 +46,8 @@ export class UniversidadeListComponent implements OnInit {
 
   this.universidadeService.delete(universidade.id).subscribe({
     next: () => {
-      // Remove a universidade da lista local
-      this.universidades = this.universidades.filter(u => u.id !== universidade.id);
+      
+      this.loadUniversidades();
       
       // Opcional: Adicionar mensagem de sucesso temporária
       const successElement = document.createElement('div');

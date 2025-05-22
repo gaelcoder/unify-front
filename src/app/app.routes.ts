@@ -4,6 +4,9 @@ import { UniversidadeListComponent } from './components/universidade/universidad
 import { UniversidadeFormComponent } from './components/universidade/universidade-form/universidade-form.component';
 import { RepresentanteListComponent } from './components/representante/representante-list/representante-list.component';
 import { RepresentanteFormComponent } from './components/representante/representante-form/representante-form.component';
+import { LoginComponent } from './components/login/login.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -15,4 +18,11 @@ export const routes: Routes = [
   { path: 'representantes/editar/:id', component: RepresentanteFormComponent },
   // Rota curinga para página não encontrada
   { path: '**', redirectTo: '' }
+  { path: 'login', component: LoginComponent },
+  { 
+    path: 'dashboard', 
+    component: DashboardComponent,
+    canActivate: [authGuard]
+  },
+
 ];

@@ -1,0 +1,84 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-body p-5">
+          <h2 class="text-center mb-4">{{ primeiroAcesso ? 'Primeiro Acesso - Troque sua Senha' : 'Trocar Senha' }}</h2>
+          
+          <div *ngIf="primeiroAcesso" class="alert alert-info mb-4">
+            Por questões de segurança, você precisa trocar sua senha temporária antes de continuar.
+          </div>
+          
+          <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+          <div *ngIf="success" class="alert alert-success">{{success}}</div>
+          
+          <form [formGroup]="trocaSenhaForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="senhaAtual" class="form-label">Senha Atual</label>
+              <input
+                type="password"
+                formControlName="senhaAtual"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['senhaAtual'].errors }"
+                placeholder="Digite sua senha atual"
+              />
+              <div *ngIf="submitted && f['senhaAtual'].errors" class="invalid-feedback">
+                <div *ngIf="f['senhaAtual'].errors['required']">Senha atual é obrigatória</div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="novaSenha" class="form-label">Nova Senha</label>
+              <input
+                type="password"
+                formControlName="novaSenha"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['novaSenha'].errors }"
+                placeholder="Digite sua nova senha"
+              />
+              <div *ngIf="submitted && f['novaSenha'].errors" class="invalid-feedback">
+                <div *ngIf="f['novaSenha'].errors['required']">Nova senha é obrigatória</div>
+                <div *ngIf="f['novaSenha'].errors['minlength']">Nova senha deve ter pelo menos 6 caracteres</div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="confirmacaoSenha" class="form-label">Confirme a Nova Senha</label>
+              <input
+                type="password"
+                formControlName="confirmacaoSenha"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['confirmacaoSenha'].errors }"
+                placeholder="Confirme sua nova senha"
+              />
+              <div *ngIf="submitted && f['confirmacaoSenha'].errors" class="invalid-feedback">
+                <div *ngIf="f['confirmacaoSenha'].errors['required']">Confirmação de senha é obrigatória</div>
+                <div *ngIf="f['confirmacaoSenha'].errors['mustMatch']">As senhas não conferem</div>
+              </div>
+            </div>
+            
+            <div class="d-grid gap-2 mt-4">
+              <button 
+                [disabled]="loading" 
+                class="btn btn-primary"
+                type="submit"
+              >
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+                Alterar Senha
+              </button>
+              
+              <button 
+                *ngIf="!primeiroAcesso"
+                type="button"
+                class="btn btn-outline-secondary" 
+                [routerLink]="['/dashboard']"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
