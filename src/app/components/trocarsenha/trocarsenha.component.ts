@@ -1,102 +1,153 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common';
+
+interface SenhaForm {
+  novaSenha: FormControl<string | null>;
+  confirmarSenha: FormControl<string | null>;
+}
+
+// Validador para comparar senhas com a assinatura correta
+export const conferirSenhasValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const novaSenha = control.get('novaSenha');
+  const confirmarSenha = control.get('confirmarSenha');
+
+  // Retorna null se os controles não existirem ou se um deles não tiver valor
+  if (!novaSenha || !confirmarSenha || !novaSenha.value || !confirmarSenha.value) {
+    return null;
+  }
+
+  // Retorna erro apenas se ambos tiverem valores e forem diferentes
+  return novaSenha.value === confirmarSenha.value 
+    ? null 
+    : { senhasDiferentes: true };
+};
 
 @Component({
   selector: 'app-trocar-senha',
   standalone: true,
-  imports: [/* Importe os módulos necessários */],
-  templateUrl: './trocar-senha.component.html',
-  styleUrls: ['./trocar-senha.component.css']
+  imports: [CommonModule, ReactiveFormsModule],
+  template: `
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h4>Alterar Senha - Primeiro Acesso</h4>
+            </div>
+            <div class="card-body">
+              <form [formGroup]="senhaForm" (ngSubmit)="onSubmit()">
+                <div class="mb-3">
+                  <label for="novaSenha" class="form-label">Nova Senha</label>
+                  <input type="password" id="novaSenha" formControlName="novaSenha" 
+                         class="form-control" [ngClass]="{'is-invalid': submitted && f.novaSenha.errors}">
+                  <div *ngIf="submitted && f.novaSenha.errors" class="invalid-feedback">
+                    <div *ngIf="f.novaSenha.errors['required']">Senha é obrigatória</div>
+                    <div *ngIf="f.novaSenha.errors['minlength']">Senha deve ter pelo menos 6 caracteres</div>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="confirmarSenha" class="form-label">Confirmar Senha</label>
+                  <input type="password" id="confirmarSenha" formControlName="confirmarSenha" 
+                         class="form-control" [ngClass]="{'is-invalid': submitted && (f.confirmarSenha.errors || senhaForm.hasError('senhasDiferentes'))}">
+                  <div *ngIf="submitted && f.confirmarSenha.errors" class="invalid-feedback">
+                    <div *ngIf="f.confirmarSenha.errors['required']">Confirmação de senha é obrigatória</div>
+                  </div>
+                  <div *ngIf="submitted && senhaForm.hasError('senhasDiferentes')" class="text-danger mt-1 small">
+                    Senhas não conferem
+                  </div>
+                </div>
+                
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-primary" [disabled]="loading">
+                    <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+                    Salvar Nova Senha
+                  </button>
+                </div>
+                
+                <div *ngIf="error" class="alert alert-danger mt-3">{{error}}</div>
+                <div *ngIf="success" class="alert alert-success mt-3">{{success}}</div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+  styles: []
 })
 export class TrocarSenhaComponent implements OnInit {
-  trocaSenhaForm!: FormGroup;
+  senhaForm!: FormGroup<SenhaForm>;
   loading = false;
   submitted = false;
   error = '';
   success = '';
-  primeiroAcesso = false;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private fb: FormBuilder,
     private router: Router,
     private authService: AuthService
   ) {
-    // Verifica se o usuário está logado
-    const currentUser = this.authService.currentUserValue;
-    if (!currentUser) {
+    // Verifica se o usuário está logado e é primeiro acesso
+    const user = this.authService.currentUserValue;
+    if (!user || !user.primeiroAcesso) {
       this.router.navigate(['/login']);
-    } else {
-      this.primeiroAcesso = currentUser.primeiroAcesso;
     }
   }
 
   ngOnInit() {
-    this.trocaSenhaForm = this.formBuilder.group({
-      senhaAtual: ['', Validators.required],
-      novaSenha: ['', [Validators.required, Validators.minLength(6)]],
-      confirmacaoSenha: ['', Validators.required]
-    }, {
-      validator: this.mustMatch('novaSenha', 'confirmacaoSenha')
-    });
+    this.senhaForm = this.fb.group<SenhaForm>({
+      novaSenha: this.fb.control('', {
+        validators: [Validators.required, Validators.minLength(6)],
+        nonNullable: false
+      }),
+      confirmarSenha: this.fb.control('', {
+        validators: [Validators.required],
+        nonNullable: false
+      })
+    }, { validators: conferirSenhasValidator });
   }
 
-  // Getter para facilitar o acesso aos campos do formulário
-  get f() { return this.trocaSenhaForm.controls; }
-
-  // Validador para verificar se as senhas coincidem
-  mustMatch(controlName: string, matchingControlName: string) {
-    return (formGroup: FormGroup) => {
-      const control = formGroup.controls[controlName];
-      const matchingControl = formGroup.controls[matchingControlName];
-
-      if (matchingControl.errors && !matchingControl.errors['mustMatch']) {
-        return;
-      }
-
-      // Verifica se as senhas são iguais
-      if (control.value !== matchingControl.value) {
-        matchingControl.setErrors({ mustMatch: true });
-      } else {
-        matchingControl.setErrors(null);
-      }
-    };
-  }
+  get f() { return this.senhaForm.controls; }
 
   onSubmit() {
     this.submitted = true;
-    this.error = '';
-    this.success = '';
-
-    // Para se o formulário for inválido
-    if (this.trocaSenhaForm.invalid) {
+    
+    if (this.senhaForm.invalid) {
       return;
     }
-
+    
     this.loading = true;
-
-    this.authService.trocarSenha(
-      this.f['senhaAtual'].value,
-      this.f['novaSenha'].value
-    ).subscribe({
-      next: () => {
-        this.success = 'Senha alterada com sucesso!';
-        this.loading = false;
-        
-        // Se for primeiro acesso, redireciona para o dashboard após 2 segundos
-        if (this.primeiroAcesso) {
+    this.error = '';
+    this.success = '';
+    
+    const novaSenha = this.f.novaSenha.value || '';
+    
+    this.authService.alterarSenhaPrimeiroAcesso(novaSenha)
+      .subscribe({
+        next: () => {
+          this.success = 'Senha alterada com sucesso!';
+          this.loading = false;
+          
+          // Redireciona após 2 segundos
           setTimeout(() => {
-            this.router.navigate(['/dashboard']);
+            if (this.authService.isAdminGeral()) {
+              this.router.navigate(['/representantes']);
+            } else if (this.authService.isAdminUniversidade()) {
+              this.router.navigate(['/admin-universidade']);
+            } else {
+              this.router.navigate(['/dashboard']);
+            }
           }, 2000);
+        },
+        error: (err) => {
+          this.error = 'Erro ao alterar senha: ' + 
+            (err.error && typeof err.error === 'string' ? err.error : 'Tente novamente');
+          this.loading = false;
         }
-      },
-      error: (error) => {
-        this.error = error.error && typeof error.error === 'string'
-          ? error.error
-          : 'Erro ao trocar senha. Verifique se a senha atual está correta.';
-        this.loading = false;
-      }
-    });
+      });
   }
 }

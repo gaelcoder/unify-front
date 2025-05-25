@@ -1,150 +1,86 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
-import { User } from '../models/user.model';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // URL base da API
-  private apiUrl = 'http://localhost:8080/api/auth';
-  
-  // BehaviorSubject para manter o estado do usuário atual
-  private currentUserSubject: BehaviorSubject<User | null>;
-  public currentUser: Observable<User | null>;
+  private apiUrl = 'http://localhost:8080/api';
+  private currentUserSubject: BehaviorSubject<any>;
+  public currentUser: Observable<any>;
 
-  constructor(private http: HttpClient) {
-    // Inicializa com o usuário do localStorage (se existir)
-    const storedUser = localStorage.getItem('currentUser');
-    this.currentUserSubject = new BehaviorSubject<User | null>(
-      storedUser ? JSON.parse(storedUser) : null
-    );
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {
+    this.currentUserSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem('currentUser') || 'null'));
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  // Getter para obter o valor atual do usuário
-  public get currentUserValue(): User | null {
+  public get currentUserValue(): any {
     return this.currentUserSubject.value;
   }
 
-  /**
-   * Realiza o login do usuário
-   * @param email Email do usuário
-   * @param senha Senha do usuário
-   */
-  login(email: string, senha: string): Observable<User> {
-    return this.http.post<any>(`${this.apiUrl}/login`, { email, senha })
+  login(email: string, senha: string) {
+    return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, senha })
       .pipe(
         map(response => {
-          // Armazena os detalhes do usuário e o token JWT no localStorage
-          const user: User = {
-            email: response.email,
-            tipo: response.tipo,
-            token: response.token,
-            primeiroAcesso: response.primeiroAcesso
-          };
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          this.currentUserSubject.next(user);
-          return user;
-        }),
-        catchError(error => {
-          console.error('Erro ao fazer login:', error);
-          throw error;
+          // Armazena os dados do usuário incluindo o token
+          localStorage.setItem('currentUser', JSON.stringify(response));
+          this.currentUserSubject.next(response);
+          
+          // Também armazenar o tipo separadamente para compatibilidade
+          localStorage.setItem('userType', response.tipo);
+          
+          return response;
         })
       );
   }
 
-  /**
-   * Realiza o logout do usuário
-   */
-  logout(): void {
-    // Remove o usuário do localStorage
+  logout() {
     localStorage.removeItem('currentUser');
-    // Define o usuário atual como null
+    localStorage.removeItem('userType');
     this.currentUserSubject.next(null);
+    this.router.navigate(['/login']);
   }
 
-  /**
-   * Verifica se o token atual é válido
-   */
-  validateToken(): Observable<boolean> {
-    const currentUser = this.currentUserValue;
-    
-    // Se não há usuário atual, não temos token para validar
-    if (!currentUser) {
-      return of(false);
-    }
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${currentUser.token}`
-    });
-
-    return this.http.post<any>(`${this.apiUrl}/validar`, {}, { headers })
-      .pipe(
-        map(response => {
-          // Atualiza o usuário atual com as informações mais recentes
-          const updatedUser: User = {
-            email: response.email,
-            tipo: response.tipo,
-            token: response.token,
-            primeiroAcesso: response.primeiroAcesso
-          };
-          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-          this.currentUserSubject.next(updatedUser);
-          return true;
-        }),
-        catchError(error => {
-          console.error('Token inválido:', error);
-          this.logout(); // Se o token for inválido, faz logout
-          return of(false);
-        })
-      );
-  }
-
-  /**
-   * Troca a senha do usuário
-   * @param senhaAtual Senha atual
-   * @param novaSenha Nova senha
-   */
-  trocarSenha(senhaAtual: string, novaSenha: string): Observable<any> {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.currentUserValue?.token}`
-    });
-
-    return this.http.post(`${this.apiUrl}/trocar-senha`, 
-      { senhaAtual, novaSenha }, 
-      { headers }
-    );
-  }
-
-  /**
-   * Verifica se o usuário tem determinado papel
-   * @param role Papel a ser verificado
-   */
-  hasRole(role: string): boolean {
-    const user = this.currentUserValue;
-    if (!user) return false;
-    
-    // Remove o prefixo ROLE_ para comparação
-    const userRole = user.tipo.replace('ROLE_', '');
-    const checkRole = role.replace('ROLE_', '');
-    
-    return userRole === checkRole;
-  }
-
-  /**
-   * Verifica se o usuário é admin geral
-   */
   isAdminGeral(): boolean {
-    return this.hasRole('ADMIN_GERAL');
+    const userType = localStorage.getItem('userType');
+    return userType === 'ROLE_ADMIN_GERAL';
   }
 
-  /**
-   * Verifica se o usuário é admin de universidade
-   */
   isAdminUniversidade(): boolean {
-    return this.hasRole('ADMIN_UNIVERSIDADE');
+    const userType = localStorage.getItem('userType');
+    return userType === 'ROLE_ADMIN_UNIVERSIDADE';
+  }
+  
+  isPrimeiroAcesso(): boolean {
+    const user = this.currentUserValue;
+    return user && user.primeiroAcesso === true;
+  }
+
+  alterarSenhaPrimeiroAcesso(novaSenha: string) {
+    const user = this.currentUserValue;
+    const userId = user ? user.id : null;
+    
+    if (!userId) {
+      throw new Error('Usuário não está logado');
+    }
+    
+    return this.http.post<any>(`${this.apiUrl}/auth/primeiro-acesso`, {
+      id: userId,
+      novaSenha
+    }).pipe(
+      map(response => {
+        // Atualiza o usuário no storage para refletir que não é mais primeiro acesso
+        const updatedUser = {...user, primeiroAcesso: false};
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        this.currentUserSubject.next(updatedUser);
+        return response;
+      })
+    );
   }
 }

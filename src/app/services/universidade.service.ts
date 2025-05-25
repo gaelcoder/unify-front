@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Universidade } from '../models/universidade.model';
+import {Representante} from '../models/representante.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,11 @@ export class UniversidadeService {
 
   // Obter todas as universidades
   getAll(): Observable<Universidade[]> {
-    return this.http.get<Universidade[]>(`${this.apiUrl}/universidades`);
+    return this.http.get<Universidade[]>(`${this.apiUrl}/admin/administradores/universidades`);
+  }
+
+  getAvailable(): Observable<Representante[]> {
+    return this.http.get<Representante[]>(`${this.apiUrl}/admin/administradores/representantes/disponiveis`);
   }
 
   // Obter universidade por ID

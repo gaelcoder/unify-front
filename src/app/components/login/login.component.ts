@@ -1,21 +1,26 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common';
+
+interface LoginForm {
+  email: FormControl<string | null>;
+  senha: FormControl<string | null>;
+}
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [/* Importe os módulos necessários */],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  loginForm!: FormGroup;
+  loginForm!: FormGroup<LoginForm>;
   loading = false;
   submitted = false;
   error = '';
-  returnUrl: string = '/dashboard';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -23,21 +28,24 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private authService: AuthService
   ) {
-    // Redireciona para o dashboard se já estiver logado
+    // Redireciona se já estiver logado
     if (this.authService.currentUserValue) {
-      this.router.navigate(['/dashboard']);
+      this.redirecionarUsuario();
     }
   }
 
   ngOnInit() {
-    // Inicializa o formulário
-    this.loginForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      senha: ['', Validators.required]
+    // Inicializa o formulário com sintaxe tipada
+    this.loginForm = this.formBuilder.group<LoginForm>({
+      email: this.formBuilder.control('', {
+        validators: [Validators.required, Validators.email],
+        nonNullable: false
+      }),
+      senha: this.formBuilder.control('', {
+        validators: [Validators.required],
+        nonNullable: false
+      })
     });
-
-    // Obtém a URL de retorno dos parâmetros da rota ou usa o padrão
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
   }
 
   // Getter para facilitar o acesso aos campos do formulário
@@ -54,23 +62,37 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    this.authService.login(this.f['email'].value, this.f['senha'].value)
+    const email = this.f.email.value || '';
+    const senha = this.f.senha.value || '';
+
+    this.authService.login(email, senha)
       .subscribe({
         next: (user) => {
           // Se for primeiro acesso, redireciona para troca de senha
           if (user.primeiroAcesso) {
             this.router.navigate(['/trocar-senha']);
           } else {
-            // Senão, redireciona para a página solicitada
-            this.router.navigate([this.returnUrl]);
+            // Senão, redireciona baseado no tipo de usuário
+            this.redirecionarUsuario();
           }
         },
         error: (error) => {
-          this.error = error.error && typeof error.error === 'string' 
-            ? error.error 
+          this.error = error.error && typeof error.error === 'string'
+            ? error.error
             : 'Credenciais inválidas. Por favor, tente novamente.';
           this.loading = false;
         }
       });
+  }
+
+  // Redireciona o usuário baseado no seu tipo
+  redirecionarUsuario() {
+    if (this.authService.isAdminGeral()) {
+      this.router.navigate(['/representantes']);
+    } else if (this.authService.isAdminUniversidade()) {
+      this.router.navigate(['/admin-universidade']);
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
   }
 }

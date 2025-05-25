@@ -24,7 +24,7 @@ export class RepresentanteListComponent implements OnInit {
 
   loadRepresentantes(): void {
     this.loading = true;
-    this.representanteService.getAll().subscribe({
+    this.representanteService.listarTodos().subscribe({
       next: (data) => {
         this.representantes = data;
         this.loading = false;
@@ -49,7 +49,7 @@ export class RepresentanteListComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    this.representanteService.delete(representante.id).subscribe({
+    this.representanteService.excluir(representante.id).subscribe({
       next: () => {
 
         this.loadRepresentantes();
