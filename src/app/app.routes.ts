@@ -24,37 +24,37 @@ export const routes: Routes = [
     path: 'representantes',
     component: RepresentanteListComponent,
     canActivate: [authGuard],
-    data: { roles: ['ADMIN_GERAL'] }
+    data: { roles: ['ROLE_ADMIN_GERAL'] }
   },
   {
     path: 'representantes/novo',
     component: RepresentanteFormComponent,
     canActivate: [authGuard],
-    data: { roles: ['ADMIN_GERAL'] }
+    data: { roles: ['ROLE_ADMIN_GERAL'] }
   },
   {
     path: 'representantes/editar/:id',
     component: RepresentanteFormComponent,
     canActivate: [authGuard],
-    data: { roles: ['ADMIN_GERAL'] }
+    data: { roles: ['ROLE_ADMIN_GERAL'] }
   },
   {
     path: 'universidades',
     component: UniversidadeListComponent,
     canActivate: [authGuard],
-    data: { roles: ['ADMIN_GERAL'] }
+    data: { roles: ['ROLE_ADMIN_GERAL'] }
   },
   {
     path: 'universidades/nova',
     component: UniversidadeFormComponent,
     canActivate: [authGuard],
-    data: { roles: ['ADMIN_GERAL'] }
+    data: { roles: ['ROLE_ADMIN_GERAL'] }
   },
   {
     path: 'universidades/editar/:id',
     component: UniversidadeFormComponent,
     canActivate: [authGuard],
-    data: { roles: ['ADMIN_GERAL'] }
+    data: { roles: ['ROLE_ADMIN_GERAL'] }
   },
   
   // Redirecionar qualquer rota não encontrada para login

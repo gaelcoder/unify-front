@@ -20,27 +20,23 @@ export class AuthService {
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  public get currentUserValue(): any {
+  public get currentUserValue() {
     return this.currentUserSubject.value;
   }
 
   login(email: string, senha: string) {
     return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, senha })
-      .pipe(
-        map(response => {
-          // Armazena os dados do usuário incluindo o token
-          localStorage.setItem('currentUser', JSON.stringify(response));
-          this.currentUserSubject.next(response);
-          
-          // Também armazenar o tipo separadamente para compatibilidade
-          localStorage.setItem('userType', response.tipo);
-          
-          return response;
-        })
-      );
+      .pipe(map(response => {
+        // store user details and jwt token in local storage to keep user logged in between page refreshes
+        localStorage.setItem('currentUser', JSON.stringify(response));
+        localStorage.setItem('userType', response.tipo);
+        this.currentUserSubject.next(response);
+        return response;
+      }));
   }
 
   logout() {
+    // remove user from local storage to log user out
     localStorage.removeItem('currentUser');
     localStorage.removeItem('userType');
     this.currentUserSubject.next(null);
@@ -56,7 +52,12 @@ export class AuthService {
     const userType = localStorage.getItem('userType');
     return userType === 'ROLE_ADMIN_UNIVERSIDADE';
   }
-  
+
+  isAuthenticated(): boolean {
+    const currentUser = this.currentUserValue;
+    return !!currentUser && !!currentUser.token;
+  }
+
   isPrimeiroAcesso(): boolean {
     const user = this.currentUserValue;
     return user && user.primeiroAcesso === true;

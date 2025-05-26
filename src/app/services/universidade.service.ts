@@ -14,40 +14,40 @@ export class UniversidadeService {
 
   // Obter todas as universidades
   getAll(): Observable<Universidade[]> {
-    return this.http.get<Universidade[]>(`${this.apiUrl}/admin/administradores/universidades`);
+    return this.http.get<Universidade[]>(`${this.apiUrl}/admin/universidades`);
   }
 
   getAvailable(): Observable<Representante[]> {
-    return this.http.get<Representante[]>(`${this.apiUrl}/admin/administradores/representantes/disponiveis`);
+    return this.http.get<Representante[]>(`${this.apiUrl}/admin/representantes/disponiveis`);
   }
 
   // Obter universidade por ID
   getById(id: number): Observable<Universidade> {
-    return this.http.get<Universidade>(`${this.apiUrl}/universidades/${id}`);
+    return this.http.get<Universidade>(`${this.apiUrl}/admin/universidades/${id}`);
   }
 
   // Criar nova universidade
   create(universidade: any): Observable<Universidade> {
-    return this.http.post<Universidade>(`${this.apiUrl}/universidades`, universidade);
+    return this.http.post<Universidade>(`${this.apiUrl}/admin/universidades`, universidade);
   }
 
   // Atualizar universidade existente
   update(id: number, universidade: any): Observable<Universidade> {
-    return this.http.put<Universidade>(`${this.apiUrl}/universidades/${id}`, universidade);
+    return this.http.put<Universidade>(`${this.apiUrl}/admin/universidades/${id}`, universidade);
   }
 
   // Excluir universidade
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/universidades/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/admin/universidades/${id}`);
   }
 
   // Associar representante à universidade
   associateRepresentante(universidadeId: number, representanteId: number): Observable<Universidade> {
-    return this.http.put<Universidade>(`${this.apiUrl}/universidades/${universidadeId}/representante/${representanteId}`, {});
+    return this.http.put<Universidade>(`${this.apiUrl}/admin/universidades/${universidadeId}/representante/${representanteId}`, {});
   }
 
   // Desassociar representante da universidade
   desassociarRepresentante(universidadeId: number): Observable<Universidade> {
-    return this.http.delete<Universidade>(`${this.apiUrl}/universidades/${universidadeId}/representante`);
+    return this.http.delete<Universidade>(`${this.apiUrl}/admin/universidades/${universidadeId}/representante`);
   }
 }

@@ -12,29 +12,29 @@ export class RepresentanteService {
   constructor(private http: HttpClient) { }
 
   listarTodos(): Observable<Representante[]> {
-    return this.http.get<Representante[]>(`${this.apiUrl}/admin/administradores/representantes`);
+    return this.http.get<Representante[]>(`${this.apiUrl}/admin/representantes`);
   }
 
   getAvailable(): Observable<Representante[]> {
-    return this.http.get<Representante[]>(`${this.apiUrl}/admin/administradores/representantes/disponiveis`);
+    return this.http.get<Representante[]>(`${this.apiUrl}/admin/representantes/disponiveis`);
   }
 
   create(representante: any): Observable<Representante> {
-    return this.http.post<Representante>(`${this.apiUrl}/admin/administradores/representantes`, representante);
+    return this.http.post<Representante>(`${this.apiUrl}/admin/representantes`, representante);
   }
 
 // Excluir representante
   excluir(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/admin/administradores/representantes/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/admin/representantes/${id}`);
   }
 
   update(id: number, representante: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/admin/administradores/representantes/${id}`, representante);
+    return this.http.put(`${this.apiUrl}/admin/representantes/${id}`, representante);
   }
 
 // Obter representante por ID
   getById(id: number): Observable<Representante> {
-    return this.http.get<Representante>(`${this.apiUrl}/admin/administradores/representantes/${id}`);
+    return this.http.get<Representante>(`${this.apiUrl}/admin/representantes/${id}`);
   }
 
 
