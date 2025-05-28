@@ -21,6 +21,8 @@ export class UniversidadeFormComponent implements OnInit {
   error = '';
   success = '';
   id: string | null = null;
+  selectedLogoFile: File | null = null;
+  logoPreviewUrl: string | ArrayBuffer | null = null;
   
   representantesDisponiveis: Representante[] = [];
   carregandoRepresentantes = false;
@@ -64,6 +66,7 @@ export class UniversidadeFormComponent implements OnInit {
       cnpj: ['', [Validators.required, Validators.pattern('\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}')]],
       fundacao: ['', Validators.required],
       sigla: ['', [Validators.required, Validators.maxLength(10)]],
+      logo: [null],
       campus: this.fb.array([this.fb.control('')]),
       representanteId: [null]
     });
@@ -147,11 +150,21 @@ export class UniversidadeFormComponent implements OnInit {
     }
 
     this.submitting = true;
-    // Cria uma cópia dos valores do formulário para não modificar o original
-    const formData = { ...this.universidadeForm.getRawValue() };
-    
-    // Remover campus vazios
-    formData.campus = formData.campus.filter((c: string) => c.trim() !== '');
+    const formValues = { ...this.universidadeForm.getRawValue() }; 
+
+    const formData = new FormData();
+    formData.append('universidade', new Blob([JSON.stringify({
+      nome: formValues.nome,
+      cnpj: formValues.cnpj,
+      fundacao: formValues.fundacao,
+      sigla: formValues.sigla,
+      campus: formValues.campus.filter((c: string) => c.trim() !== ''),
+      representanteId: formValues.representanteId
+    })], { type: 'application/json' }));
+
+    if (this.selectedLogoFile) {
+      formData.append('logo', this.selectedLogoFile, this.selectedLogoFile.name);
+    }
     
     if (this.editMode && this.id) {
       this.universidadeService.update(+this.id, formData).subscribe({
@@ -260,6 +273,25 @@ export class UniversidadeFormComponent implements OnInit {
         this.submitting = false;
       }
     });
+  }
+
+  onFileSelected(event: Event): void {
+    const element = event.currentTarget as HTMLInputElement;
+    let fileList: FileList | null = element.files;
+    if (fileList && fileList.length > 0) {
+      this.selectedLogoFile = fileList[0];
+      this.universidadeForm.patchValue({ logo: this.selectedLogoFile });
+      // For preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.logoPreviewUrl = reader.result;
+      };
+      reader.readAsDataURL(this.selectedLogoFile);
+    } else {
+      this.selectedLogoFile = null;
+      this.logoPreviewUrl = null;
+      this.universidadeForm.patchValue({ logo: null });
+    }
   }
 
   // Método auxiliar para extrair mensagens de erro

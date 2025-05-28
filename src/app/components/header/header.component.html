@@ -1,19 +1,38 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container">
-    <a class="navbar-brand" routerLink="/">UniFy</a>
+    <a class="navbar-brand d-flex align-items-center" routerLink="/">
+      <img *ngIf="universidadeLogoUrl" [src]="universidadeLogoUrl" alt="Logo Universidade" class="me-2" style="height: 30px; width: auto; border-radius: 4px;">
+      <span *ngIf="universidadeNome">{{ universidadeNome }}</span>
+      <span *ngIf="!universidadeNome">UniFy</span>
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item" *ngIf="currentUser">
+          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="currentUser && authService.isAdminGeral()">
           <a class="nav-link" routerLink="/universidades" routerLinkActive="active">Universidades</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="currentUser && authService.isAdminGeral()">
           <a class="nav-link" routerLink="/representantes" routerLinkActive="active">Representantes</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item" *ngIf="!currentUser">
+          <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+        </li>
+        <li class="nav-item dropdown" *ngIf="currentUser">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUserMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ currentUser.email }} ({{ currentUser.tipo }})
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUserMenu">
+            <li><a class="dropdown-item" routerLink="/perfil">Meu Perfil</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><button class="dropdown-item" (click)="logout()">Logout</button></li>
+          </ul>
         </li>
       </ul>
     </div>

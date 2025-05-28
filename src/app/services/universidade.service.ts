@@ -27,13 +27,13 @@ export class UniversidadeService {
   }
 
   // Criar nova universidade
-  create(universidade: any): Observable<Universidade> {
-    return this.http.post<Universidade>(`${this.apiUrl}/admin/universidades`, universidade);
+  create(formData: FormData): Observable<Universidade> {
+    return this.http.post<Universidade>(`${this.apiUrl}/admin/universidades`, formData);
   }
 
   // Atualizar universidade existente
-  update(id: number, universidade: any): Observable<Universidade> {
-    return this.http.put<Universidade>(`${this.apiUrl}/admin/universidades/${id}`, universidade);
+  update(id: number, formData: FormData): Observable<Universidade> {
+    return this.http.put<Universidade>(`${this.apiUrl}/admin/universidades/${id}`, formData);
   }
 
   // Excluir universidade

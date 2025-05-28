@@ -48,6 +48,17 @@
       </div>
 
       <div class="mb-3">
+        <label for="logo" class="form-label">Logo da Universidade</label>
+        <input type="file" class="form-control" id="logo" (change)="onFileSelected($event)" accept="image/*">
+        <div *ngIf="logoPreviewUrl" class="mt-2">
+          <img [src]="logoPreviewUrl" alt="Pré-visualização da Logo" style="max-height: 100px; max-width: 200px;">
+        </div>
+        <div *ngIf="universidadeForm.get('logo')?.invalid && universidadeForm.get('logo')?.touched" class="text-danger">
+          <small *ngIf="universidadeForm.get('logo')?.errors?.['required']">Logo é obrigatória (se aplicável)</small>
+        </div>
+      </div>
+
+      <div class="mb-3">
         <label class="form-label">Campus</label>
         <div formArrayName="campus">
           <div *ngFor="let campus of campusArray.controls; let i = index" class="input-group mb-2">

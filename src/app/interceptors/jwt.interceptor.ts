@@ -13,11 +13,18 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.url.includes('/api/')) {
     if (currentUser && currentUser.token) {
       console.log('JWT Interceptor - Adding token to API request');
+      
+      let headersToSet: { [name: string]: string | string[] } = {
+        Authorization: `Bearer ${currentUser.token}`
+      };
+
+      // Only set Content-Type if the body is not FormData
+      if (!(req.body instanceof FormData)) {
+        headersToSet['Content-Type'] = 'application/json';
+      }
+
       req = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${currentUser.token}`,
-          'Content-Type': 'application/json'
-        }
+        setHeaders: headersToSet
       });
     } else {
       console.warn('JWT Interceptor - No token available for API request');
