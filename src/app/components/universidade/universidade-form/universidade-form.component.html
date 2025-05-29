@@ -1,15 +1,15 @@
-<div class="container mt-4">
-  <div *ngIf="loading" class="d-flex justify-content-center">
+<main class="container mt-4">
+  <div *ngIf="loading" class="d-flex justify-content-center" role="status">
     <div class="spinner-border" role="status">
       <span class="visually-hidden">Carregando...</span>
     </div>
   </div>
 
-  <div *ngIf="!loading">
+  <section *ngIf="!loading">
     <h2>{{ editMode ? 'Editar' : 'Cadastrar' }} Universidade</h2>
 
-    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-    <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+    <div *ngIf="error" class="alert alert-danger" role="alert">{{ error }}</div>
+    <div *ngIf="success" class="alert alert-success" role="alert">{{ success }}</div>
 
     <form [formGroup]="universidadeForm" (ngSubmit)="onSubmit()" class="mt-4">
       <div class="mb-3">
@@ -72,12 +72,12 @@
       </div>
 
       <!-- Seção de Representante -->
-      <div class="card mb-3">
-        <div class="card-header">Representante</div>
-        <div class="card-body">
+      <article class="card mb-3">
+        <header class="card-header">Representante</header>
+        <section class="card-body">
           
           <!-- Exibe informações do representante atual se existir -->
-          <div *ngIf="representanteAtual" class="mb-3">
+          <section *ngIf="representanteAtual" class="mb-3">
             <h5>Representante Atual</h5>
             <p><strong>Nome:</strong> {{ representanteAtual.nome }} {{ representanteAtual.sobrenome }}</p>
             <p><strong>Email:</strong> {{ representanteAtual.email }}</p>
@@ -86,7 +86,7 @@
             <button type="button" class="btn btn-warning mt-2" (click)="desassociarRepresentante()">
               <i class="bi bi-x-circle"></i> Desassociar Representante
             </button>
-          </div>
+          </section>
           
           <!-- Seleção de representante -->
           <div *ngIf="!representanteAtual" class="mb-3">
@@ -105,30 +105,30 @@
             </button>
           </div>
           
-          <div *ngIf="carregandoRepresentantes" class="text-center">
+          <div *ngIf="carregandoRepresentantes" class="text-center" role="status">
             <div class="spinner-border spinner-border-sm" role="status">
               <span class="visually-hidden">Carregando representantes...</span>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </article>
 
-      <div class="d-flex gap-2 mt-4">
+      <footer class="d-flex gap-2 mt-4">
         <!-- Botão de salvar/atualizar -->
         <button type="submit" class="btn btn-primary" [disabled]="universidadeForm.invalid || submitting">
           <i class="bi bi-save"></i> {{ editMode ? 'Atualizar' : 'Cadastrar' }}
         </button>
         
         <!-- Botão de cancelar -->
-        <button type="button" class="btn btn-secondary" routerLink="/universidades">
+        <a routerLink="/universidades" class="btn btn-secondary">
           <i class="bi bi-x-circle"></i> Cancelar
-        </button>
+        </a>
         
         <!-- Botão de excluir (apenas em modo de edição) -->
         <button *ngIf="editMode" type="button" class="btn btn-danger ms-auto" (click)="excluirUniversidade()">
           <i class="bi bi-trash"></i> Excluir Universidade
         </button>
-      </div>
+      </footer>
     </form>
-  </div>
-</div>
+  </section>
+</main>

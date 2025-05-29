@@ -1,0 +1,30 @@
+<main class="container mt-5">
+  <header class="text-center mb-4">
+    <h1>Dashboard Administrador Geral</h1>
+  </header>
+
+  <section class="stats-geral text-center mb-5">
+    <h2>Visão Geral</h2>
+    <div *ngIf="loadingStats" role="status">
+      <p>Carregando estatísticas...</p>
+      <div class="spinner-border text-primary">
+        <span class="visually-hidden">Carregando...</span>
+      </div>
+    </div>
+    <div *ngIf="!loadingStats && statsError" class="alert alert-danger" role="alert">
+      <p>Erro ao carregar estatísticas: {{ statsError }}</p>
+    </div>
+    <article *ngIf="!loadingStats && adminStats" class="stat-item card p-3 bg-light">
+      <h3>Total de Universidades Atendidas</h3>
+      <p class="display-4">{{ adminStats.totalUniversidades }}</p>
+    </article>
+  </section>
+
+  <section class="management-actions">
+    <h2 class="text-center mb-3">Ações de Gerenciamento</h2>
+    <nav class="d-flex justify-content-center gap-3 mt-3">
+      <a routerLink="/universidades" class="btn btn-primary btn-lg">Gerenciar Universidades</a>
+      <a routerLink="/representantes" class="btn btn-success btn-lg">Gerenciar Representantes</a>
+    </nav>
+  </section>
+</main> 

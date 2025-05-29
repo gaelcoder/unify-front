@@ -1,0 +1,11 @@
+/* Basic styling for funcionario-form */
+.container {
+    max-width: 800px;
+}
+
+.form-label .text-danger {
+    font-size: 0.8em;
+    margin-left: 2px;
+}
+
+/* Add more specific styles as needed */ 

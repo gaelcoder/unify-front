@@ -1,0 +1,138 @@
+<main class="container mt-4">
+    <header class="mb-3">
+      <h2>{{ isEditMode ? 'Editar Funcionário' : 'Cadastrar Novo Funcionário' }}</h2>
+    </header>
+  
+    <form [formGroup]="funcionarioForm" (ngSubmit)="onSubmit()">
+        <div *ngIf="isLoading" class="text-center my-3" role="status">
+            <div class="spinner-border">
+                <span class="visually-hidden">Processando...</span>
+            </div>
+        </div>
+
+        <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+            {{ errorMessage }}
+        </div>
+
+        <section>
+            <fieldset>
+                <legend class="h5">Dados Pessoais</legend>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="nome" class="form-label">Nome<span class="text-danger">*</span></label>
+                        <input type="text" id="nome" formControlName="nome" class="form-control"
+                            [ngClass]="{ 'is-invalid': funcionarioForm.get('nome')?.invalid && funcionarioForm.get('nome')?.touched }">
+                        <div *ngIf="funcionarioForm.get('nome')?.invalid && funcionarioForm.get('nome')?.touched"
+                            class="invalid-feedback">
+                            Nome é obrigatório.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="sobrenome" class="form-label">Sobrenome<span class="text-danger">*</span></label>
+                        <input type="text" id="sobrenome" formControlName="sobrenome" class="form-control"
+                            [ngClass]="{ 'is-invalid': funcionarioForm.get('sobrenome')?.invalid && funcionarioForm.get('sobrenome')?.touched }">
+                        <div *ngIf="funcionarioForm.get('sobrenome')?.invalid && funcionarioForm.get('sobrenome')?.touched"
+                            class="invalid-feedback">
+                            Sobrenome é obrigatório.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="emailPessoal" class="form-label">Email Pessoal<span class="text-danger">*</span></label>
+                        <input type="email" id="emailPessoal" formControlName="emailPessoal" class="form-control"
+                            [ngClass]="{ 'is-invalid': funcionarioForm.get('emailPessoal')?.invalid && funcionarioForm.get('emailPessoal')?.touched }">
+                        <div *ngIf="funcionarioForm.get('emailPessoal')?.errors?.['required'] && funcionarioForm.get('emailPessoal')?.touched"
+                            class="invalid-feedback">
+                            Email pessoal é obrigatório.
+                        </div>
+                        <div *ngIf="funcionarioForm.get('emailPessoal')?.errors?.['email'] && funcionarioForm.get('emailPessoal')?.touched"
+                            class="invalid-feedback">
+                            Formato de email inválido.
+                        </div>
+                    </div>
+                     <div class="col-md-6">
+                        <label for="cpf" class="form-label">CPF<span class="text-danger">*</span></label>
+                        <input type="text" id="cpf" formControlName="cpf" class="form-control" placeholder="000.000.000-00"
+                            [ngClass]="{ 'is-invalid': funcionarioForm.get('cpf')?.invalid && funcionarioForm.get('cpf')?.touched }">
+                        <div *ngIf="funcionarioForm.get('cpf')?.invalid && funcionarioForm.get('cpf')?.touched"
+                            class="invalid-feedback">
+                            CPF é obrigatório.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="rg" class="form-label">RG</label>
+                        <input type="text" id="rg" formControlName="rg" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dataNascimento" class="form-label">Data de Nascimento<span class="text-danger">*</span></label>
+                        <input type="date" id="dataNascimento" formControlName="dataNascimento" class="form-control"
+                            [ngClass]="{ 'is-invalid': funcionarioForm.get('dataNascimento')?.invalid && funcionarioForm.get('dataNascimento')?.touched }">
+                        <div *ngIf="funcionarioForm.get('dataNascimento')?.invalid && funcionarioForm.get('dataNascimento')?.touched"
+                            class="invalid-feedback">
+                            Data de nascimento é obrigatória.
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="sexo" class="form-label">Sexo<span class="text-danger">*</span></label>
+                        <select id="sexo" formControlName="sexo" class="form-select"
+                            [ngClass]="{ 'is-invalid': funcionarioForm.get('sexo')?.invalid && funcionarioForm.get('sexo')?.touched }">
+                            <option value="" disabled>Selecione...</option>
+                            <option value="MASCULINO">Masculino</option>
+                            <option value="FEMININO">Feminino</option>
+                            <option value="OUTRO">Outro</option>
+                        </select>
+                        <div *ngIf="funcionarioForm.get('sexo')?.invalid && funcionarioForm.get('sexo')?.touched"
+                            class="invalid-feedback">
+                            Sexo é obrigatório.
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="mt-4">
+                <legend class="h5">Dados Institucionais</legend>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="setor" class="form-label">Setor<span class="text-danger">*</span></label>
+                        <select id="setor" formControlName="setor" class="form-select"
+                            [ngClass]="{ 'is-invalid': funcionarioForm.get('setor')?.invalid && funcionarioForm.get('setor')?.touched }">
+                            <option value="" disabled>Selecione o setor...</option>
+                            <option *ngFor="let setorOpt of setores" [value]="setorOpt">{{ setorOpt }}</option>
+                        </select>
+                        <div *ngIf="funcionarioForm.get('setor')?.invalid && funcionarioForm.get('setor')?.touched"
+                            class="invalid-feedback">
+                            Setor é obrigatório.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="cargo" class="form-label">Cargo</label>
+                        <input type="text" id="cargo" formControlName="cargo" class="form-control">
+                        <!-- Add validation if cargo becomes mandatory based on setor -->
+                    </div>
+                </div>
+                <!-- 
+                    <div class="mb-3" *ngIf="!isEditMode"> 
+                        <label for="universidadeId" class="form-label">Universidade <span class="text-danger">*</span></label>
+                        <select id="universidadeId" formControlName="universidadeId" class="form-select">
+                            <option value="null" disabled>Selecione a Universidade</option>
+                            <option *ngFor="let uni of universidades" [value]="uni.id">{{ uni.nome }}</option>
+                        </select>
+                    </div>
+                -->
+            </fieldset>
+        </section>
+
+        <footer class="mt-4 d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary me-2" (click)="goBack()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="funcionarioForm.invalid || isLoading">
+                {{ isEditMode ? 'Salvar Alterações' : 'Cadastrar Funcionário' }}
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm ms-1"></span>
+            </button>
+        </footer>
+    </form>
+</main> 

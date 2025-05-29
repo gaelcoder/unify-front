@@ -1,0 +1,17 @@
+/* Styles for Admin Geral Dashboard */
+main {
+  padding-top: 2rem;
+}
+
+header h1 {
+  color: #333;
+}
+
+section p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+nav a {
+  text-decoration: none;
+} 

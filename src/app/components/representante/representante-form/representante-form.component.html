@@ -1,9 +1,9 @@
-<div class="container mt-4">
-  <div class="card">
-    <div class="card-header bg-success text-white">
+<main class="container mt-4">
+  <section class="card">
+    <header class="card-header bg-success text-white">
       <h2 class="mb-0">Novo Representante</h2>
-    </div>
-    <div class="card-body">
+    </header>
+    <section class="card-body">
       <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
         {{ success }}
         <button type="button" class="btn-close" (click)="success = ''"></button>
@@ -81,13 +81,13 @@
           </div>
         </div>
         
-        <div class="d-flex justify-content-between mt-4">
+        <footer class="d-flex justify-content-between mt-4">
           <a routerLink="/representantes" class="btn btn-secondary">Cancelar</a>
           <button type="submit" class="btn btn-success" [disabled]="submitting">
             {{ submitting ? 'Salvando...' : 'Salvar Representante' }}
           </button>
-        </div>
+        </footer>
       </form>
-    </div>
-  </div>
-</div>
+    </section>
+  </section>
+</main>

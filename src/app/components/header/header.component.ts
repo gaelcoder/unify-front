@@ -22,8 +22,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.currentUserSubscription = this.authService.currentUser.subscribe(user => {
       this.currentUser = user;
-      if (user && user.universidadeNome) {
-        this.universidadeNome = user.universidadeNome;
+      if (user) {
+        this.universidadeNome = user.universidadeNome || null;
         if (user.universidadeLogoPath) {
           this.universidadeLogoUrl = `http://localhost:8080/api/files/${user.universidadeLogoPath}`;
         } else {
@@ -34,6 +34,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.universidadeLogoUrl = null;
       }
     });
+  }
+
+  getDashboardPath(): string {
+    if (this.authService.isAdminGeral()) {
+      return '/dashboard-admin-geral';
+    } else if (this.authService.isAdminUniversidade()) {
+      return '/dashboard-admin-universidade';
+    } else if (this.currentUser) {
+      return '/home'; 
+    }
+    return '/login';
+  }
+
+  testDashboardClick() {
+    console.log('HeaderComponent: Dashboard link clicked via (click) handler. Attempting to navigate to /dashboard-admin-geral...');
+    this.router.navigate(['/dashboard-admin-geral'])
+      .then(navigated => {
+        console.log('[HeaderComponent] Navigation promise resolved. Navigated:', navigated);
+        if (!navigated) {
+          console.warn('[HeaderComponent] Navigation was not successful (e.g., guard returned false or route not found).');
+        }
+      })
+      .catch(err => {
+        console.error('[HeaderComponent] Navigation promise rejected with error:', err);
+      });
   }
 
   ngOnDestroy(): void {

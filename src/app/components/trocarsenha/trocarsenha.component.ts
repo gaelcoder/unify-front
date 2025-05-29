@@ -135,11 +135,11 @@ export class TrocarSenhaComponent implements OnInit {
           // Redireciona após 2 segundos
           setTimeout(() => {
             if (this.authService.isAdminGeral()) {
-              this.router.navigate(['/representantes']);
+              this.router.navigate(['/dashboard-admin-geral']);
             } else if (this.authService.isAdminUniversidade()) {
-              this.router.navigate(['/admin-universidade']);
+              this.router.navigate(['/dashboard-admin-universidade']);
             } else {
-              this.router.navigate(['/dashboard']);
+              this.router.navigate(['/home']);
             }
           }, 2000);
         },

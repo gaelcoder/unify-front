@@ -44,13 +44,11 @@ export class AuthService {
   }
 
   isAdminGeral(): boolean {
-    const userType = localStorage.getItem('userType');
-    return userType === 'ROLE_ADMIN_GERAL';
+    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_ADMIN_GERAL';
   }
 
   isAdminUniversidade(): boolean {
-    const userType = localStorage.getItem('userType');
-    return userType === 'ROLE_ADMIN_UNIVERSIDADE';
+    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_ADMIN_UNIVERSIDADE';
   }
 
   isAuthenticated(): boolean {

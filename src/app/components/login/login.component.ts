@@ -28,14 +28,22 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private authService: AuthService
   ) {
-    // Redireciona se já estiver logado
-    if (this.authService.currentUserValue) {
-      this.redirecionarUsuario();
-    }
+    // Constructor is now cleaner, ngOnInit will handle initial state.
   }
 
   ngOnInit() {
-    // Inicializa o formulário com sintaxe tipada
+    // If user is already logged in and not in a 'primeiroAcesso' state,
+    // try to redirect them away from login, unless they were sent here by a guard with a returnUrl.
+    if (this.authService.currentUserValue && !this.authService.isPrimeiroAcesso()) {
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+        if (!returnUrl) { 
+            console.log('[LoginComponent OnInit] User already logged in, not primeiroAcesso, no returnUrl. Attempting proactive redirect.');
+            this.redirecionarUsuario();
+        } else {
+            console.log(`[LoginComponent OnInit] User already logged in, but returnUrl (${returnUrl}) exists. Staying on login page for guard to handle.`);
+        }
+    }
+
     this.loginForm = this.formBuilder.group<LoginForm>({
       email: this.formBuilder.control('', {
         validators: [Validators.required, Validators.email],
@@ -54,7 +62,6 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
 
-    // Para se o formulário for inválido
     if (this.loginForm.invalid) {
       return;
     }
@@ -68,12 +75,19 @@ export class LoginComponent implements OnInit {
     this.authService.login(email, senha)
       .subscribe({
         next: (user) => {
-          // Se for primeiro acesso, redireciona para troca de senha
+          console.log('[LoginComponent onSubmit] Login successful. User data received:', user);
           if (user.primeiroAcesso) {
+            console.log('[LoginComponent onSubmit] Primeiro acesso detectado. Redirecionando para /trocar-senha');
             this.router.navigate(['/trocar-senha']);
           } else {
-            // Senão, redireciona baseado no tipo de usuário
-            this.redirecionarUsuario();
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+            if (returnUrl) {
+              console.log(`[LoginComponent onSubmit] Login successful. Navigating to returnUrl: ${returnUrl}`);
+              this.router.navigateByUrl(returnUrl);
+            } else {
+              console.log('[LoginComponent onSubmit] Login successful. No returnUrl. Redirecionando usuário com base no tipo.');
+              this.redirecionarUsuario();
+            }
           }
         },
         error: (error) => {
@@ -85,14 +99,22 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  // Redireciona o usuário baseado no seu tipo
   redirecionarUsuario() {
-    if (this.authService.isAdminGeral()) {
-      this.router.navigate(['/representantes']);
-    } else if (this.authService.isAdminUniversidade()) {
-      this.router.navigate(['/admin-universidade']);
+    const isAdminGeral = this.authService.isAdminGeral();
+    const isAdminUniversidade = this.authService.isAdminUniversidade();
+    const currentUserTipo = this.authService.currentUserValue?.tipo;
+
+    console.log(`[LoginComponent redirecionarUsuario] isAdminGeral: ${isAdminGeral}, isAdminUniversidade: ${isAdminUniversidade}, currentUserTipo: ${currentUserTipo}`);
+
+    if (isAdminGeral) {
+      console.log('[LoginComponent redirecionarUsuario] Redirecionando para /dashboard-admin-geral');
+      this.router.navigate(['/dashboard-admin-geral']);
+    } else if (isAdminUniversidade) {
+      console.log('[LoginComponent redirecionarUsuario] Redirecionando para /dashboard-admin-universidade');
+      this.router.navigate(['/dashboard-admin-universidade']);
     } else {
-      this.router.navigate(['/dashboard']);
+      console.log('[LoginComponent redirecionarUsuario] Redirecionando para /home');
+      this.router.navigate(['/home']);
     }
   }
 }

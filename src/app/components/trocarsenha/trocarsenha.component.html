@@ -1,5 +1,5 @@
-<div class="senha-container">
-  <div class="senha-card">
+<main class="senha-container">
+  <section class="senha-card">
     <h2 class="text-center">Troque sua senha</h2>
     <p class="text-center mb-4">Este é seu primeiro acesso. Por favor, defina uma nova senha.</p>
     
@@ -31,7 +31,7 @@
         </button>
       </div>
       
-      <div *ngIf="error" class="alert alert-danger mt-3">{{error}}</div>
+      <div *ngIf="error" class="alert alert-danger mt-3" role="alert">{{error}}</div>
     </form>
-  </div>
-</div>
+  </section>
+</main>

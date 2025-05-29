@@ -1,0 +1,38 @@
+/* Styles for Admin Universidade Dashboard */
+main {
+  padding-top: 2rem;
+}
+
+header h1 {
+  color: #007bff; /* Primary blue */
+}
+
+section p {
+  font-size: 1.1rem;
+}
+
+nav a {
+  margin-right: 10px;
+}
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: .25rem;
+  margin-bottom: 1rem;
+}
+
+.card h3 {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.card p.display-4 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+} 
