@@ -1,26 +1,18 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+// HttpClientModule removed, HttpClient might be removed if not used elsewhere
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router'; // For routerLink and Router
+import { Router, RouterModule } from '@angular/router';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { FuncionarioService } from '../../../services/funcionario.service'; // Adjusted path
+import { Funcionario } from '../../../models/funcionario.model'; // Assuming Funcionario model exists
 
-// Actual Funcionario interface based on backend DTOs (adjust if necessary)
-export interface Funcionario {
-  id: number;
-  nome: string;
-  sobrenome: string;
-  emailInstitucional: string;
-  setor: 'RH' | 'Secretaria'; // Use specific types if known
-  cargo?: string; // Cargo might be optional or part of another DTO
-  primeiroAcesso?: boolean;
-  // Add other relevant fields from your FuncionarioDTO
-}
+// Interface definition can be removed if Funcionario is imported from models
 
 @Component({
   selector: 'app-funcionario-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule], // HttpClientModule for direct http call
+  imports: [CommonModule, RouterModule], // HttpClientModule removed
   templateUrl: './funcionario-list.component.html',
   styleUrls: ['./funcionario-list.component.css']
 })
@@ -29,10 +21,10 @@ export class FuncionarioListComponent implements OnInit {
   loading: boolean = true;
   error: string | null = null;
 
-  private http = inject(HttpClient);
-  private router = inject(Router); // Added Router injection
+  // HttpClient injection removed
+  private router = inject(Router);
 
-  constructor() { }
+  constructor(private funcionarioService: FuncionarioService) { } // Injected FuncionarioService
 
   ngOnInit(): void {
     this.loadFuncionarios();
@@ -41,7 +33,7 @@ export class FuncionarioListComponent implements OnInit {
   loadFuncionarios(): void {
     this.loading = true;
     this.error = null;
-    this.http.get<Funcionario[]>('/api/admin-universidade/funcionarios')
+    this.funcionarioService.listarTodosPorUniversidade() // Using the service method
       .pipe(
         tap(data => {
           this.funcionarios = data;
@@ -49,7 +41,7 @@ export class FuncionarioListComponent implements OnInit {
         catchError(err => {
           console.error('Erro ao buscar funcionários:', err);
           this.error = 'Não foi possível carregar a lista de funcionários. Tente novamente mais tarde.';
-          return of([]); // Return empty array on error to clear previous data
+          return of([]);
         }),
         finalize(() => {
           this.loading = false;
@@ -59,18 +51,26 @@ export class FuncionarioListComponent implements OnInit {
   }
 
   editarFuncionario(funcionario: Funcionario): void {
-    // console.log('Editar (placeholder):', funcionario);
-    this.router.navigate(['/funcionarios/editar', funcionario.id]);
+    this.router.navigate(['/admin-universidade/funcionarios/editar', funcionario.id]); // Adjusted route
   }
 
-  excluirFuncionario(funcionario: Funcionario): void {
-    console.log('Excluir (placeholder):', funcionario);
-    // Implement actual exclusion logic with confirmation and API call
-    // this.funcionarios = this.funcionarios.filter(f => f.id !== funcionario.id);
+  excluirFuncionario(id: number): void { // Changed to accept id
+    if (confirm('Tem certeza que deseja excluir este funcionário?')) {
+      this.funcionarioService.delete(id).pipe(
+        tap(() => {
+          this.funcionarios = this.funcionarios.filter(f => f.id !== id);
+          // Optionally, show a success message
+        }),
+        catchError(err => {
+          console.error('Erro ao excluir funcionário:', err);
+          this.error = 'Não foi possível excluir o funcionário.';
+          return of(null);
+        })
+      ).subscribe();
+    }
   }
 
-  // Optional: Method to navigate to the new funcionário form
   navigateToNovoFuncionario(): void {
-    this.router.navigate(['/funcionarios/novo']);
+    this.router.navigate(['/admin-universidade/funcionarios/novo']); // Adjusted route
   }
 }

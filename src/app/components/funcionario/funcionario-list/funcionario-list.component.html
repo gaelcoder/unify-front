@@ -1,7 +1,7 @@
 <main class="container mt-5">
   <header class="d-flex justify-content-between align-items-center mb-4">
     <h2>Lista de Funcionários</h2>
-    <a routerLink="/funcionarios/novo" class="btn btn-primary">Novo Funcionário</a>
+    <a routerLink="/admin-universidade/funcionarios/novo" class="btn btn-primary">Novo Funcionário</a>
     <!-- <button type="button" (click)="navigateToNovoFuncionario()" class="btn btn-primary">Novo Funcionário</button> -->
   </header>
 
@@ -20,29 +20,27 @@
       <thead>
         <tr>
           <th>Nome Completo</th>
-          <th>Email Institucional</th>
+          <th>Email</th>
           <th>Setor</th>
-          <th>Cargo</th>
           <th>Ações</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let funcionario of funcionarios">
           <td>{{ funcionario.nome }} {{ funcionario.sobrenome }}</td>
-          <td>{{ funcionario.emailInstitucional }}</td>
+          <td>{{ funcionario.email }}</td>
           <td>{{ funcionario.setor }}</td>
-          <td>{{ funcionario.cargo || 'N/A' }}</td>
           <td>
             <button type="button" (click)="editarFuncionario(funcionario)" class="btn btn-sm btn-primary me-2">
               Editar
             </button>
-            <button type="button" (click)="excluirFuncionario(funcionario)" class="btn btn-sm btn-danger">
+            <button type="button" (click)="excluirFuncionario(funcionario.id)" class="btn btn-sm btn-danger">
               Excluir
             </button>
           </td>
         </tr>
         <tr *ngIf="funcionarios.length === 0 && !loading">
-          <td colspan="5" class="text-center">Nenhum funcionário encontrado.</td>
+          <td colspan="4" class="text-center">Nenhum funcionário encontrado.</td>
         </tr>
       </tbody>
     </table>

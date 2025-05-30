@@ -110,8 +110,8 @@ export class LoginComponent implements OnInit {
       console.log('[LoginComponent redirecionarUsuario] Redirecionando para /dashboard-admin-geral');
       this.router.navigate(['/dashboard-admin-geral']);
     } else if (isAdminUniversidade) {
-      console.log('[LoginComponent redirecionarUsuario] Redirecionando para /dashboard-admin-universidade');
-      this.router.navigate(['/dashboard-admin-universidade']);
+      console.log('[LoginComponent redirecionarUsuario] Redirecionando para /admin-universidade/dashboard');
+      this.router.navigate(['/admin-universidade/dashboard']);
     } else {
       console.log('[LoginComponent redirecionarUsuario] Redirecionando para /home');
       this.router.navigate(['/home']);

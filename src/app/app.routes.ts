@@ -66,30 +66,18 @@ export const routes: Routes = [
     data: { roles: [UserRole.AdminGeral] }
   },
 
-  // Admin Universidade (e Admin Geral também pode ter acesso se necessário)
+  // Admin Universidade
   {
-    path: 'dashboard-admin-universidade',
-    component: AdminUniversidadeDashboardComponent,
+    path: 'admin-universidade', // Parent path
     canActivate: [authGuard],
-    data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] }
-  },
-  {
-    path: 'funcionarios',
-    component: FuncionarioListComponent,
-    canActivate: [authGuard],
-    data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] }
-  },
-  {
-    path: 'funcionarios/novo',
-    component: FuncionarioFormComponent,
-    canActivate: [authGuard],
-    data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] }
-  },
-  {
-    path: 'funcionarios/editar/:id',
-    component: FuncionarioFormComponent,
-    canActivate: [authGuard],
-    data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] }
+    data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] },
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, // Default child
+      { path: 'dashboard', component: AdminUniversidadeDashboardComponent },
+      { path: 'funcionarios', component: FuncionarioListComponent },
+      { path: 'funcionarios/novo', component: FuncionarioFormComponent },
+      { path: 'funcionarios/editar/:id', component: FuncionarioFormComponent }
+    ]
   },
 
   // Empty path route - matches exactly ''

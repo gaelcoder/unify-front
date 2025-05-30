@@ -40,7 +40,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.authService.isAdminGeral()) {
       return '/dashboard-admin-geral';
     } else if (this.authService.isAdminUniversidade()) {
-      return '/dashboard-admin-universidade';
+      return '/admin-universidade/dashboard';
     } else if (this.currentUser) {
       return '/home'; 
     }

@@ -30,10 +30,30 @@ const routes: Routes = [
   { path: 'representantes/editar/:id', component: RepresentanteFormComponent, canActivate: [authGuard], data: { roles: [UserRole.AdminGeral] } },
 
   // Admin Universidade
-  { path: 'dashboard-admin-universidade', component: AdminUniversidadeDashboardComponent, canActivate: [authGuard], data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] } },
-  { path: 'funcionarios', component: FuncionarioListComponent, canActivate: [authGuard], data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] } },
-  { path: 'funcionarios/novo', component: FuncionarioFormComponent, canActivate: [authGuard], data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] } },
-  { path: 'funcionarios/editar/:id', component: FuncionarioFormComponent, canActivate: [authGuard], data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] } },
+  {
+    path: 'admin-universidade/dashboard',
+    component: AdminUniversidadeDashboardComponent,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] }
+  },
+  {
+    path: 'admin-universidade/funcionarios',
+    component: FuncionarioListComponent,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] }
+  },
+  {
+    path: 'admin-universidade/funcionarios/novo',
+    component: FuncionarioFormComponent,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] }
+  },
+  {
+    path: 'admin-universidade/funcionarios/editar/:id',
+    component: FuncionarioFormComponent,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] }
+  },
 
   // Fallback
   { path: '**', redirectTo: '/home' } // Or a 404 component

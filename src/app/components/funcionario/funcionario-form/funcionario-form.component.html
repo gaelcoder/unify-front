@@ -40,14 +40,14 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="emailPessoal" class="form-label">Email Pessoal<span class="text-danger">*</span></label>
-                        <input type="email" id="emailPessoal" formControlName="emailPessoal" class="form-control"
-                            [ngClass]="{ 'is-invalid': funcionarioForm.get('emailPessoal')?.invalid && funcionarioForm.get('emailPessoal')?.touched }">
-                        <div *ngIf="funcionarioForm.get('emailPessoal')?.errors?.['required'] && funcionarioForm.get('emailPessoal')?.touched"
+                        <label for="email" class="form-label">Email<span class="text-danger">*</span></label>
+                        <input type="email" id="email" formControlName="email" class="form-control"
+                            [ngClass]="{ 'is-invalid': funcionarioForm.get('email')?.invalid && funcionarioForm.get('email')?.touched }">
+                        <div *ngIf="funcionarioForm.get('email')?.errors?.['required'] && funcionarioForm.get('email')?.touched"
                             class="invalid-feedback">
-                            Email pessoal é obrigatório.
+                            Email é obrigatório.
                         </div>
-                        <div *ngIf="funcionarioForm.get('emailPessoal')?.errors?.['email'] && funcionarioForm.get('emailPessoal')?.touched"
+                        <div *ngIf="funcionarioForm.get('email')?.errors?.['email'] && funcionarioForm.get('email')?.touched"
                             class="invalid-feedback">
                             Formato de email inválido.
                         </div>
@@ -65,10 +65,6 @@
                 
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label for="rg" class="form-label">RG</label>
-                        <input type="text" id="rg" formControlName="rg" class="form-control">
-                    </div>
-                    <div class="col-md-4">
                         <label for="dataNascimento" class="form-label">Data de Nascimento<span class="text-danger">*</span></label>
                         <input type="date" id="dataNascimento" formControlName="dataNascimento" class="form-control"
                             [ngClass]="{ 'is-invalid': funcionarioForm.get('dataNascimento')?.invalid && funcionarioForm.get('dataNascimento')?.touched }">
@@ -78,18 +74,11 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <label for="sexo" class="form-label">Sexo<span class="text-danger">*</span></label>
-                        <select id="sexo" formControlName="sexo" class="form-select"
-                            [ngClass]="{ 'is-invalid': funcionarioForm.get('sexo')?.invalid && funcionarioForm.get('sexo')?.touched }">
-                            <option value="" disabled>Selecione...</option>
-                            <option value="MASCULINO">Masculino</option>
-                            <option value="FEMININO">Feminino</option>
-                            <option value="OUTRO">Outro</option>
-                        </select>
-                        <div *ngIf="funcionarioForm.get('sexo')?.invalid && funcionarioForm.get('sexo')?.touched"
-                            class="invalid-feedback">
-                            Sexo é obrigatório.
-                        </div>
+                        <label for="telefone" class="form-label">Telefone</label>
+                        <input type="text" id="telefone" formControlName="telefone" class="form-control"
+                            placeholder="(00) 00000-0000"
+                            [ngClass]="{ 'is-invalid': funcionarioForm.get('telefone')?.invalid && funcionarioForm.get('telefone')?.touched }">
+                        <!-- Add validation messages for telefone if needed -->
                     </div>
                 </div>
             </fieldset>
@@ -110,20 +99,20 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="cargo" class="form-label">Cargo</label>
-                        <input type="text" id="cargo" formControlName="cargo" class="form-control">
-                        <!-- Add validation if cargo becomes mandatory based on setor -->
+                        <label for="salario" class="form-label">Salário (R$)<span class="text-danger">*</span></label>
+                        <input type="number" id="salario" formControlName="salario" class="form-control"
+                               placeholder="2500.00"
+                               [ngClass]="{ 'is-invalid': funcionarioForm.get('salario')?.invalid && funcionarioForm.get('salario')?.touched }">
+                        <div *ngIf="funcionarioForm.get('salario')?.errors?.['required'] && funcionarioForm.get('salario')?.touched"
+                             class="invalid-feedback">
+                            Salário é obrigatório.
+                        </div>
+                        <div *ngIf="funcionarioForm.get('salario')?.errors?.['min'] && funcionarioForm.get('salario')?.touched"
+                             class="invalid-feedback">
+                            Salário deve ser um valor positivo.
+                        </div>
                     </div>
                 </div>
-                <!-- 
-                    <div class="mb-3" *ngIf="!isEditMode"> 
-                        <label for="universidadeId" class="form-label">Universidade <span class="text-danger">*</span></label>
-                        <select id="universidadeId" formControlName="universidadeId" class="form-select">
-                            <option value="null" disabled>Selecione a Universidade</option>
-                            <option *ngFor="let uni of universidades" [value]="uni.id">{{ uni.nome }}</option>
-                        </select>
-                    </div>
-                -->
             </fieldset>
         </section>
 

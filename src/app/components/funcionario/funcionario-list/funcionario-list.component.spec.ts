@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter } from '@angular/router';
 import { FuncionarioListComponent } from './funcionario-list.component';
 
 describe('FuncionarioListComponent', () => {
@@ -8,7 +8,7 @@ describe('FuncionarioListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ RouterTestingModule ],
+      providers: [ provideRouter([]) ],
       declarations: [ FuncionarioListComponent ]
     })
     .compileComponents();

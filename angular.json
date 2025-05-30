@@ -62,7 +62,8 @@
               "buildTarget": "UniFy:build:production"
             },
             "development": {
-              "buildTarget": "UniFy:build:development"
+              "buildTarget": "UniFy:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

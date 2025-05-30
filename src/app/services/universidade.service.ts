@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Universidade } from '../models/universidade.model';
-import {Representante} from '../models/representante.model';
+import { Representante } from '../models/representante.model';
+import { UniversidadeStatsDTO } from '../models/universidade-stats.model';
 
 @Injectable({
   providedIn: 'root'
@@ -49,5 +50,10 @@ export class UniversidadeService {
   // Desassociar representante da universidade
   desassociarRepresentante(universidadeId: number): Observable<Universidade> {
     return this.http.delete<Universidade>(`${this.apiUrl}/admin/universidades/${universidadeId}/representante`);
+  }
+
+  // Obter estatísticas da universidade do administrador logado
+  getMinhaUniversidadeStats(): Observable<UniversidadeStatsDTO> {
+    return this.http.get<UniversidadeStatsDTO>(`${this.apiUrl}/admin-universidade/minha-universidade/stats`);
   }
 }

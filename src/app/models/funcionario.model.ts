@@ -7,6 +7,7 @@ export interface Funcionario {
     email: string;
     telefone: string;
     setor: string;
+    salario?: number;
     universidade?: any;
   }
   
@@ -18,5 +19,6 @@ export interface Funcionario {
     email: string;
     telefone: string;
     setor: string;
+    salario: number;
   }
   
