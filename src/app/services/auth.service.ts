@@ -27,7 +27,6 @@ export class AuthService {
   login(email: string, senha: string) {
     return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, senha })
       .pipe(map(response => {
-        // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem('currentUser', JSON.stringify(response));
         localStorage.setItem('userType', response.tipo);
         this.currentUserSubject.next(response);
@@ -36,7 +35,6 @@ export class AuthService {
   }
 
   logout() {
-    // remove user from local storage to log user out
     localStorage.removeItem('currentUser');
     localStorage.removeItem('userType');
     this.currentUserSubject.next(null);
@@ -49,6 +47,22 @@ export class AuthService {
 
   isAdminUniversidade(): boolean {
     return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_ADMIN_UNIVERSIDADE';
+  }
+
+  isFuncionarioRH(): boolean {
+    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_FUNCIONARIO_RH';
+  }
+
+  isFuncionario(): boolean {
+    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_FUNCIONARIO';
+  }
+
+  isProfessor(): boolean {
+    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_PROFESSOR';
+  }
+
+  isAluno(): boolean {
+    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_ALUNO';
   }
 
   isAuthenticated(): boolean {
