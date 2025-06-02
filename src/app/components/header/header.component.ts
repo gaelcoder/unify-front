@@ -41,8 +41,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       return '/dashboard-admin-geral';
     } else if (this.authService.isAdminUniversidade()) {
       return '/admin-universidade/dashboard';
-    } else if (this.currentUser) {
-      return '/home'; 
+    } else if (this.authService.isFuncionarioRH()) {
+      return '/painel-rh'; 
     }
     return '/login';
   }

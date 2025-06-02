@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { UserRole } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -27,10 +28,29 @@ export class AuthService {
   login(email: string, senha: string) {
     return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, senha })
       .pipe(map(response => {
-        // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem('currentUser', JSON.stringify(response));
         localStorage.setItem('userType', response.tipo);
         this.currentUserSubject.next(response);
+
+        // Navigate based on user type
+        if (response.primeiroAcesso) {
+          this.router.navigate(['/trocar-senha']);
+        } else {
+          const userRoles = response.tipo.split(','); // Roles can be a comma-separated string
+          if (userRoles.includes(UserRole.AdminGeral)) {
+            this.router.navigate(['/dashboard-admin-geral']);
+          } else if (userRoles.includes(UserRole.AdminUniversidade)) {
+            this.router.navigate(['/admin-universidade/dashboard']);
+          } else if (userRoles.includes(UserRole.FuncionarioRH)) {
+            this.router.navigate(['/painel-rh']);
+          } else if (userRoles.includes(UserRole.Professor)) {
+            this.router.navigate(['/home']); // Placeholder -  Professor dashboard if available
+          } else if (userRoles.includes(UserRole.Aluno)) {
+            this.router.navigate(['/home']); // Placeholder - Aluno dashboard if available
+          } else {
+            this.router.navigate(['/home']); // Default fallback
+          }
+        }
         return response;
       }));
   }
@@ -49,6 +69,22 @@ export class AuthService {
 
   isAdminUniversidade(): boolean {
     return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_ADMIN_UNIVERSIDADE';
+  }
+
+  isFuncionarioRH(): boolean {
+    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_FUNCIONARIO_RH';
+  }
+
+  isFuncionario(): boolean {
+    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_FUNCIONARIO';
+  }
+
+  isAluno(): boolean {
+    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_ALUNO';
+  }
+
+  isProfessor(): boolean {
+    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_PROFESSOR';
   }
 
   isAuthenticated(): boolean {

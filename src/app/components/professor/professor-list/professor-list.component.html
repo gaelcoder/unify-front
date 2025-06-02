@@ -1,0 +1,50 @@
+<main class="container mt-5">
+  <header class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Lista de Professores</h2>
+    <!-- Button to navigate to the new professor form -->
+    <button type="button" (click)="navigateToNovoProfessor()" class="btn btn-primary">Novo Professor</button>
+  </header>
+
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+
+  <div *ngIf="loading" class="text-center" role="status">
+    <div class="spinner-border">
+      <span class="visually-hidden">Carregando...</span>
+    </div>
+  </div>
+
+  <section *ngIf="!loading && !error" class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nome Completo</th>
+          <th>Email Institucional</th>
+          <th>Titulação</th>
+          <th>Área de Atuação</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let professor of professores">
+          <td>{{ professor.nome }} {{ professor.sobrenome }}</td>
+          <td>{{ professor.emailInstitucional || professor.email }}</td> <!-- Display institutional or personal if former not present -->
+          <td>{{ professor.titulacao }}</td>
+          <td>{{ professor.areaAtuacao }}</td>
+          <td>
+            <button type="button" (click)="editarProfessor(professor)" class="btn btn-sm btn-primary me-2">
+              Editar
+            </button>
+            <button type="button" (click)="excluirProfessor(professor.id)" class="btn btn-sm btn-danger">
+              Excluir
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="professores.length === 0 && !loading">
+          <td colspan="5" class="text-center">Nenhum professor encontrado.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</main> 

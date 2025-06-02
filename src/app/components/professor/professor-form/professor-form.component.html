@@ -1,0 +1,130 @@
+<main class="container mt-4">
+  <header class="mb-3">
+    <h2>{{ isEditMode ? 'Editar Professor' : 'Cadastrar Novo Professor' }}</h2>
+  </header>
+
+  <form [formGroup]="professorForm" (ngSubmit)="onSubmit()">
+    <div *ngIf="isLoading" class="text-center my-3" role="status">
+      <div class="spinner-border">
+        <span class="visually-hidden">Processando...</span>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <section>
+      <fieldset>
+        <legend class="h5">Dados Pessoais</legend>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="nome" class="form-label">Nome<span class="text-danger">*</span></label>
+            <input type="text" id="nome" formControlName="nome" class="form-control"
+              [ngClass]="{ 'is-invalid': professorForm.get('nome')?.invalid && professorForm.get('nome')?.touched }">
+            <div *ngIf="professorForm.get('nome')?.invalid && professorForm.get('nome')?.touched" class="invalid-feedback">
+              Nome é obrigatório.
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="sobrenome" class="form-label">Sobrenome<span class="text-danger">*</span></label>
+            <input type="text" id="sobrenome" formControlName="sobrenome" class="form-control"
+              [ngClass]="{ 'is-invalid': professorForm.get('sobrenome')?.invalid && professorForm.get('sobrenome')?.touched }">
+            <div *ngIf="professorForm.get('sobrenome')?.invalid && professorForm.get('sobrenome')?.touched" class="invalid-feedback">
+              Sobrenome é obrigatório.
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="email" class="form-label">Email Pessoal<span class="text-danger">*</span></label>
+            <input type="email" id="email" formControlName="email" class="form-control"
+              [ngClass]="{ 'is-invalid': professorForm.get('email')?.invalid && professorForm.get('email')?.touched }">
+            <div *ngIf="professorForm.get('email')?.errors?.['required'] && professorForm.get('email')?.touched" class="invalid-feedback">
+              Email é obrigatório.
+            </div>
+            <div *ngIf="professorForm.get('email')?.errors?.['email'] && professorForm.get('email')?.touched" class="invalid-feedback">
+              Formato de email inválido.
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="cpf" class="form-label">CPF<span class="text-danger">*</span></label>
+            <input type="text" id="cpf" formControlName="cpf" class="form-control" placeholder="000.000.000-00"
+              [ngClass]="{ 'is-invalid': professorForm.get('cpf')?.invalid && professorForm.get('cpf')?.touched }">
+            <div *ngIf="professorForm.get('cpf')?.invalid && professorForm.get('cpf')?.touched" class="invalid-feedback">
+              CPF é obrigatório.
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label for="dataNascimento" class="form-label">Data de Nascimento<span class="text-danger">*</span></label>
+            <input type="date" id="dataNascimento" formControlName="dataNascimento" class="form-control"
+              [ngClass]="{ 'is-invalid': professorForm.get('dataNascimento')?.invalid && professorForm.get('dataNascimento')?.touched }">
+            <div *ngIf="professorForm.get('dataNascimento')?.invalid && professorForm.get('dataNascimento')?.touched" class="invalid-feedback">
+              Data de nascimento é obrigatória.
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="telefone" class="form-label">Telefone<span class="text-danger">*</span></label>
+            <input type="text" id="telefone" formControlName="telefone" class="form-control" placeholder="(00) 00000-0000"
+              [ngClass]="{ 'is-invalid': professorForm.get('telefone')?.invalid && professorForm.get('telefone')?.touched }">
+            <div *ngIf="professorForm.get('telefone')?.invalid && professorForm.get('telefone')?.touched" class="invalid-feedback">
+              Telefone é obrigatório.
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="mt-4">
+        <legend class="h5">Dados Acadêmicos e Contratuais</legend>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="titulacao" class="form-label">Titulação<span class="text-danger">*</span></label>
+            <select id="titulacao" formControlName="titulacao" class="form-select"
+              [ngClass]="{ 'is-invalid': professorForm.get('titulacao')?.invalid && professorForm.get('titulacao')?.touched }">
+              <option value="" disabled>Selecione a titulação...</option>
+              <option *ngFor="let titulacaoOpt of titulacoes" [value]="titulacaoOpt">{{ titulacaoOpt }}</option>
+            </select>
+            <div *ngIf="professorForm.get('titulacao')?.invalid && professorForm.get('titulacao')?.touched" class="invalid-feedback">
+              Titulação é obrigatória.
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="areaAtuacao" class="form-label">Área de Atuação<span class="text-danger">*</span></label>
+            <input type="text" id="areaAtuacao" formControlName="areaAtuacao" class="form-control"
+              [ngClass]="{ 'is-invalid': professorForm.get('areaAtuacao')?.invalid && professorForm.get('areaAtuacao')?.touched }">
+            <div *ngIf="professorForm.get('areaAtuacao')?.invalid && professorForm.get('areaAtuacao')?.touched" class="invalid-feedback">
+              Área de atuação é obrigatória.
+            </div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="salario" class="form-label">Salário (R$)<span class="text-danger">*</span></label>
+            <input type="number" id="salario" formControlName="salario" class="form-control" placeholder="3500.00"
+                   [ngClass]="{ 'is-invalid': professorForm.get('salario')?.invalid && professorForm.get('salario')?.touched }">
+            <div *ngIf="professorForm.get('salario')?.errors?.['required'] && professorForm.get('salario')?.touched"
+                 class="invalid-feedback">
+                Salário é obrigatório.
+            </div>
+            <div *ngIf="professorForm.get('salario')?.errors?.['min'] && professorForm.get('salario')?.touched"
+                 class="invalid-feedback">
+                Salário deve ser um valor positivo.
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </section>
+
+    <footer class="mt-4 d-flex justify-content-end">
+      <button type="button" class="btn btn-secondary me-2" (click)="goBack()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="professorForm.invalid || isLoading">
+        {{ isEditMode ? 'Salvar Alterações' : 'Cadastrar Professor' }}
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm ms-1"></span>
+      </button>
+    </footer>
+  </form>
+</main> 

@@ -1,0 +1,62 @@
+<main class="container mt-5">
+  <header class="mb-4">
+    <h2 *ngIf="universidadeNome">Painel de RH - {{ universidadeNome }}</h2>
+    <h2 *ngIf="!universidadeNome">Painel de RH</h2>
+  </header>
+
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Carregando dados...</span>
+    </div>
+    <p class="mt-2">Carregando dados do dashboard...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    <h4>Erro ao Carregar Dashboard</h4>
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <section *ngIf="!isLoading && !errorMessage">
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card text-center">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Gastos Mensais Estimados</h5>
+          </div>
+          <div class="card-body">
+            <p class="card-text fs-3 fw-bold">{{ totalGastosMensais | currency:'BRL':'symbol':'1.2-2' }}</p>
+            <small class="text-muted">(Soma dos salários de funcionários e professores)</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Gerenciamento de Funcionários</h5>
+            <p class="card-text">Acesse a lista de funcionários para adicionar, editar ou remover registros.</p>
+            <button (click)="navigateToFuncionarios()" class="btn btn-primary">
+              <i class="bi bi-people-fill me-2"></i>Gerenciar Funcionários
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Gerenciamento de Professores</h5>
+            <p class="card-text">Acesse a lista de professores para adicionar, editar ou remover registros.</p>
+            <button (click)="navigateToProfessores()" class="btn btn-info text-white">
+              <i class="bi bi-person-video3 me-2"></i>Gerenciar Professores
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main> 

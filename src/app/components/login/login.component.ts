@@ -27,21 +27,20 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService
-  ) {
-    // Constructor is now cleaner, ngOnInit will handle initial state.
-  }
+  ) {}
 
   ngOnInit() {
-    // If user is already logged in and not in a 'primeiroAcesso' state,
-    // try to redirect them away from login, unless they were sent here by a guard with a returnUrl.
+    // If user is already logged in, AuthService.login will handle redirection if re-attempted or guard will prevent access.
+    // No need for proactive redirect from here if AuthService handles it post-login.
     if (this.authService.currentUserValue && !this.authService.isPrimeiroAcesso()) {
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'];
-        if (!returnUrl) { 
-            console.log('[LoginComponent OnInit] User already logged in, not primeiroAcesso, no returnUrl. Attempting proactive redirect.');
-            this.redirecionarUsuario();
-        } else {
-            console.log(`[LoginComponent OnInit] User already logged in, but returnUrl (${returnUrl}) exists. Staying on login page for guard to handle.`);
-        }
+        // Potentially navigate away if already logged in and not on a protected flow that brought them here.
+        // However, the authGuard should ideally handle this by redirecting from /login if already authenticated.
+        // For now, let AuthService.login() be the primary driver post-actual-login-attempt.
+        // A simple check can be, if not primeiroAcesso, redirect to home or a default dashboard to avoid staying on login page.
+        // This logic is tricky as it might conflict with returnUrl patterns from guards.
+        // The AuthService now handles redirection after login, so this specific ngOnInit redirect might be redundant or conflict.
+        // Consider removing or simplifying this ngOnInit block if authGuard and AuthService provide sufficient redirection.
+        console.log('[LoginComponent OnInit] User already logged in. AuthService will handle redirection on next login attempt or guard should prevent access.');
     }
 
     this.loginForm = this.formBuilder.group<LoginForm>({
@@ -56,7 +55,6 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  // Getter para facilitar o acesso aos campos do formulário
   get f() { return this.loginForm.controls; }
 
   onSubmit() {
@@ -76,45 +74,27 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: (user) => {
           console.log('[LoginComponent onSubmit] Login successful. User data received:', user);
-          if (user.primeiroAcesso) {
-            console.log('[LoginComponent onSubmit] Primeiro acesso detectado. Redirecionando para /trocar-senha');
-            this.router.navigate(['/trocar-senha']);
+          // AuthService.login() now handles all redirection logic, including primeiroAcesso and role-based dashboards.
+          // The returnUrl logic could also be centralized in AuthService or handled by the authGuard.
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+          if (returnUrl && !user.primeiroAcesso) { // Only navigate to returnUrl if not first access
+            console.log(`[LoginComponent onSubmit] Login successful. Navigating to returnUrl: ${returnUrl}`);
+            this.router.navigateByUrl(returnUrl);
+          } else if (!user.primeiroAcesso) {
+            // If no returnUrl, and not primeiroAcesso, AuthService has already navigated.
+            // If it IS primeiroAcesso, AuthService has already navigated to /trocar-senha
+            console.log('[LoginComponent onSubmit] Login successful. AuthService handled redirection or it was first access.');
           } else {
-            const returnUrl = this.route.snapshot.queryParams['returnUrl'];
-            if (returnUrl) {
-              console.log(`[LoginComponent onSubmit] Login successful. Navigating to returnUrl: ${returnUrl}`);
-              this.router.navigateByUrl(returnUrl);
-            } else {
-              console.log('[LoginComponent onSubmit] Login successful. No returnUrl. Redirecionando usuário com base no tipo.');
-              this.redirecionarUsuario();
-            }
+            // This case is if user.primeiroAcesso is true. AuthService already handled it.
+             console.log('[LoginComponent onSubmit] Primeiro acesso. AuthService handled redirection to /trocar-senha.');
           }
+          // No explicit this.router.navigate here unless it's for returnUrl and not primeiroAcesso
         },
-        error: (error) => {
-          this.error = error.error && typeof error.error === 'string'
-            ? error.error
-            : 'Credenciais inválidas. Por favor, tente novamente.';
+        error: (err) => {
+          this.error = err.error?.message || err.error || 'Credenciais inválidas ou erro no servidor.';
           this.loading = false;
         }
       });
   }
-
-  redirecionarUsuario() {
-    const isAdminGeral = this.authService.isAdminGeral();
-    const isAdminUniversidade = this.authService.isAdminUniversidade();
-    const currentUserTipo = this.authService.currentUserValue?.tipo;
-
-    console.log(`[LoginComponent redirecionarUsuario] isAdminGeral: ${isAdminGeral}, isAdminUniversidade: ${isAdminUniversidade}, currentUserTipo: ${currentUserTipo}`);
-
-    if (isAdminGeral) {
-      console.log('[LoginComponent redirecionarUsuario] Redirecionando para /dashboard-admin-geral');
-      this.router.navigate(['/dashboard-admin-geral']);
-    } else if (isAdminUniversidade) {
-      console.log('[LoginComponent redirecionarUsuario] Redirecionando para /admin-universidade/dashboard');
-      this.router.navigate(['/admin-universidade/dashboard']);
-    } else {
-      console.log('[LoginComponent redirecionarUsuario] Redirecionando para /home');
-      this.router.navigate(['/home']);
-    }
-  }
+  // Removed redirecionarUsuario() method as its logic is now in AuthService
 }

@@ -14,6 +14,9 @@ import { AdminGeralDashboardComponent } from './components/dashboard-admin-geral
 import { AdminUniversidadeDashboardComponent } from './components/dashboard-admin-universidade/dashboard-admin-universidade.component';
 import { FuncionarioListComponent } from './components/funcionario/funcionario-list/funcionario-list.component';
 import { FuncionarioFormComponent } from './components/funcionario/funcionario-form/funcionario-form.component';
+import { ProfessorListComponent } from './components/professor/professor-list/professor-list.component';
+import { ProfessorFormComponent } from './components/professor/professor-form/professor-form.component';
+import { FuncionarioRHDashboardComponent } from './components/dashboard-funcionario-rh/funcionario-rh-dashboard.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -70,14 +73,25 @@ export const routes: Routes = [
   {
     path: 'admin-universidade', // Parent path
     canActivate: [authGuard],
-    data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] },
+    data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral, UserRole.FuncionarioRH] },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, // Default child
       { path: 'dashboard', component: AdminUniversidadeDashboardComponent },
       { path: 'funcionarios', component: FuncionarioListComponent },
       { path: 'funcionarios/novo', component: FuncionarioFormComponent },
-      { path: 'funcionarios/editar/:id', component: FuncionarioFormComponent }
+      { path: 'funcionarios/editar/:id', component: FuncionarioFormComponent },
+      { path: 'professores', component: ProfessorListComponent },
+      { path: 'professores/novo', component: ProfessorFormComponent },
+      { path: 'professores/editar/:id', component: ProfessorFormComponent }
     ]
+  },
+
+  // FuncionarioRH Specific Route
+  {
+    path: 'painel-rh',
+    component: FuncionarioRHDashboardComponent,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.FuncionarioRH] } // Specifically for FuncionarioRH
   },
 
   // Empty path route - matches exactly ''
