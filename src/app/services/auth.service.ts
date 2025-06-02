@@ -43,6 +43,8 @@ export class AuthService {
             this.router.navigate(['/admin-universidade/dashboard']);
           } else if (userRoles.includes(UserRole.FuncionarioRH)) {
             this.router.navigate(['/painel-rh']);
+          } else if (userRoles.includes(UserRole.Funcionario)) {
+            this.router.navigate(['/dashboard-secretaria']);
           } else if (userRoles.includes(UserRole.Professor)) {
             this.router.navigate(['/home']); // Placeholder -  Professor dashboard if available
           } else if (userRoles.includes(UserRole.Aluno)) {

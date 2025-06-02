@@ -1,0 +1,89 @@
+<div class="container mt-4">
+  <div class="pagetitle">
+    <h1>Gerenciar Avaliações da Turma</h1>
+    <!-- Opcional: Exibir nome da turma aqui se this.turmaDetalhes$ for implementado -->
+    <!-- <h2 *ngIf="turmaDetalhes$ | async as turma">{{ turma.nomeMateria }}</h2> -->
+    <p class="text-muted">Turma ID: {{ turmaId }}</p>
+  </div>
+
+  <section class="section">
+    <button (click)="toggleCreateAvaliacaoForm()" class="btn btn-primary mb-3">
+      {{ showCreateAvaliacaoForm ? 'Cancelar Nova Avaliação' : 'Adicionar Nova Avaliação' }}
+    </button>
+
+    <div *ngIf="showCreateAvaliacaoForm" class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Criar Nova Avaliação</h5>
+        <form [formGroup]="avaliacaoForm" (ngSubmit)="onSubmitAvaliacao()">
+          <div class="mb-3">
+            <label for="nomeAvaliacao" class="form-label">Nome da Avaliação</label>
+            <input type="text" id="nomeAvaliacao" class="form-control" formControlName="nome"
+                   [ngClass]="{ 'is-invalid': avaliacaoForm.get('nome')?.invalid && avaliacaoForm.get('nome')?.touched }">
+            <div *ngIf="avaliacaoForm.get('nome')?.invalid && avaliacaoForm.get('nome')?.touched" class="invalid-feedback">
+              Nome é obrigatório.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="dataPrevista" class="form-label">Data Prevista (Opcional)</label>
+            <input type="date" id="dataPrevista" class="form-control" formControlName="dataPrevista">
+          </div>
+
+          <div class="mb-3">
+            <label for="valorMaximoPossivel" class="form-label">Valor Máximo Possível</label>
+            <input type="number" id="valorMaximoPossivel" class="form-control" formControlName="valorMaximoPossivel"
+                   [ngClass]="{ 'is-invalid': avaliacaoForm.get('valorMaximoPossivel')?.invalid && avaliacaoForm.get('valorMaximoPossivel')?.touched }">
+            <div *ngIf="avaliacaoForm.get('valorMaximoPossivel')?.invalid && avaliacaoForm.get('valorMaximoPossivel')?.touched" class="invalid-feedback">
+              <div *ngIf="avaliacaoForm.get('valorMaximoPossivel')?.errors?.['required']">Valor máximo é obrigatório.</div>
+              <div *ngIf="avaliacaoForm.get('valorMaximoPossivel')?.errors?.['min']">Valor deve ser maior que 0.</div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-success" [disabled]="avaliacaoForm.invalid">Salvar Avaliação</button>
+        </form>
+      </div>
+    </div>
+
+    <h3>Avaliações Criadas</h3>
+    <div *ngIf="avaliacoes$ | async as avaliacoes; else loadingOrErrorAvaliacoes">
+      <div *ngIf="avaliacoes && avaliacoes.length > 0; else noAvaliacoes">
+        <ul class="list-group">
+          <li *ngFor="let avaliacao of avaliacoes" class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ avaliacao.nome }}</strong> (Valor: {{ avaliacao.valorMaximoPossivel }})
+              <small class="d-block text-muted" *ngIf="avaliacao.dataPrevista">
+                Data Prevista: {{ avaliacao.dataPrevista | date:'dd/MM/yyyy' }}
+              </small>
+            </div>
+            <div>
+              <button (click)="navigateToNotas(avaliacao.id)" class="btn btn-info btn-sm me-2">Lançar/Ver Notas</button>
+              <!-- TODO: Adicionar botões de Editar/Excluir Avaliação aqui -->
+              <!-- 
+              <button class="btn btn-warning btn-sm me-2">Editar</button>
+              <button class="btn btn-danger btn-sm">Excluir</button> 
+              -->
+            </div>
+          </li>
+        </ul>
+      </div>
+      <ng-template #noAvaliacoes>
+        <div class="alert alert-info" role="alert">
+          Nenhuma avaliação criada para esta turma ainda.
+        </div>
+      </ng-template>
+    </div>
+
+    <ng-template #loadingOrErrorAvaliacoes>
+      <div *ngIf="errorLoading; else loadingAvaliacoes">
+        <div class="alert alert-danger" role="alert">
+          {{ errorLoading }}
+        </div>
+      </div>
+      <ng-template #loadingAvaliacoes>
+        <p>Carregando avaliações...</p>
+        <!-- Você pode adicionar um spinner aqui -->
+      </ng-template>
+    </ng-template>
+
+  </section>
+</div> 

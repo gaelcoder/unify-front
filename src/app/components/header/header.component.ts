@@ -36,6 +36,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
+  isAluno(): boolean {
+    return this.authService.isAluno();
+  }
+
   getDashboardPath(): string {
     if (this.authService.isAdminGeral()) {
       return '/dashboard-admin-geral';
@@ -43,6 +47,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
       return '/admin-universidade/dashboard';
     } else if (this.authService.isFuncionarioRH()) {
       return '/painel-rh'; 
+    } else if (this.authService.isFuncionario()) {
+      return '/dashboard-secretaria';
+    } else if (this.authService.isProfessor()) {
+      return '/home';
+    } else if (this.authService.isAluno()) {
+      return '/home';
     }
     return '/login';
   }

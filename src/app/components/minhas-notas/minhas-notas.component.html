@@ -1,0 +1,65 @@
+<div class="container mt-4">
+  <h2>Minhas Notas e Desempenho</h2>
+
+  <div *ngIf="isLoading" class="text-center">
+    <p>Carregando informações das turmas...</p>
+    <!-- Pode adicionar um spinner aqui -->
+  </div>
+
+  <div *ngIf="!isLoading && turmasComNotasDisplay.length === 0 && !errorLoadingTurmas" class="alert alert-info">
+    Você ainda não possui notas lançadas em nenhuma turma ou não está matriculado em turmas com avaliações.
+  </div>
+
+  <div *ngFor="let turmaInfo of turmasComNotasDisplay" class="card mb-3">
+    <div class="card-header">
+      <h5 class="mb-0">{{ turmaInfo.nomeMateria }} - {{ turmaInfo.codigoTurma || 'Turma ID: ' + turmaInfo.turmaId }}</h5>
+    </div>
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col-md-6">
+          <strong>Média Final:</strong> 
+          <span [ngClass]="getMediaClass(turmaInfo.mediaFinal, turmaInfo.notaMinimaAprovacao)">
+            {{ turmaInfo.mediaFinal !== undefined && turmaInfo.mediaFinal !== null ? (turmaInfo.mediaFinal | number:'1.1-2') : 'N/A' }}
+          </span>
+        </div>
+        <div class="col-md-6">
+          <strong>Status:</strong> 
+          <span [ngClass]="getStatusClass(turmaInfo.statusAprovacao)">
+            {{ turmaInfo.statusAprovacao || 'Pendente' }}
+          </span>
+        </div>
+      </div>
+      
+      <h6>Detalhamento das Avaliações:</h6>
+      <table class="table table-sm table-striped" *ngIf="turmaInfo.notasDetalhadas && turmaInfo.notasDetalhadas.length > 0">
+        <thead>
+          <tr>
+            <th>Avaliação</th>
+            <!-- <th>Data Prevista</th> TODO: Add if AvaliacaoDTO includes this and it's mapped -->
+            <th>Nota Obtida</th>
+            <!-- <th>Valor Máximo</th> TODO: Add if AvaliacaoDTO includes this and it's mapped -->
+            <th>Observações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let nota of turmaInfo.notasDetalhadas">
+            <td>{{ nota.nomeAvaliacao || 'N/D' }}</td>
+            <!-- <td>{{ nota.dataAvaliacao ? (nota.dataAvaliacao | date:'dd/MM/yyyy') : 'N/D' }}</td> -->
+            <td>{{ nota.valorObtido !== undefined && nota.valorObtido !== null ? nota.valorObtido : '-' }}</td>
+            <!-- <td>{{ nota.valorMaximoAvaliacao !== undefined && nota.valorMaximoAvaliacao !== null ? nota.valorMaximoAvaliacao : '-' }}</td> -->
+            <td>{{ nota.observacoes || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p *ngIf="!turmaInfo.notasDetalhadas || turmaInfo.notasDetalhadas.length === 0">
+        Nenhuma nota detalhada encontrada para esta turma.
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="errorLoadingTurmas" class="alert alert-danger">
+    <p>Ocorreu um erro ao carregar suas notas. Por favor, tente novamente mais tarde.</p>
+    <p *ngIf="errorMessage">Detalhes: {{ errorMessage }}</p>
+  </div>
+
+</div> 

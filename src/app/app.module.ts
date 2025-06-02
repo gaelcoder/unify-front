@@ -11,6 +11,8 @@ import { UniversidadeListComponent } from './components/universidade/universidad
 import { UniversidadeFormComponent } from './components/universidade/universidade-form/universidade-form.component';
 import { RepresentanteListComponent } from './components/representante/representante-list/representante-list.component';
 import { RepresentanteFormComponent } from './components/representante/representante-form/representante-form.component';
+import { MinhasNotasComponent } from './components/minhas-notas/minhas-notas.component';
+import { DashboardSecretariaComponent } from './components/dashboard-secretaria/dashboard-secretaria.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,8 @@ import { RepresentanteFormComponent } from './components/representante/represent
     UniversidadeFormComponent,
     RepresentanteListComponent,
     RepresentanteFormComponent,
+    MinhasNotasComponent,
+    DashboardSecretariaComponent,
   ],
   imports: [
     BrowserModule,

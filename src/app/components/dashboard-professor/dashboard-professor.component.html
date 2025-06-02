@@ -1,0 +1,48 @@
+<div class="container mt-4">
+  <div class="pagetitle">
+    <h1>Painel do Professor</h1>
+    <p class="text-muted">Bem-vindo(a), {{ nomeProfessor }}!</p>
+  </div>
+
+  <section class="section dashboard">
+    <h2>Minhas Turmas</h2>
+
+    <div *ngIf="minhasTurmas$ | async as turmas; else loadingOrErrorTurmas">
+      <div *ngIf="turmas && turmas.length > 0; else noTurmas">
+        <div class="list-group">
+          <button 
+            type="button" 
+            class="list-group-item list-group-item-action" 
+            *ngFor="let turma of turmas" 
+            (click)="navigateToTurma(turma.id)">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">{{ turma.nomeMateria }}</h5>
+              <small>Turno: {{ turma.turno || 'N/A' }}</small>
+            </div>
+            <p class="mb-1">
+              Graduação: {{ turma.nomeGraduacao || 'N/A' }} ({{ turma.codigoGraduacao || 'N/A' }})
+            </p>
+            <!-- Adicionar mais detalhes da turma se necessário -->
+          </button>
+        </div>
+      </div>
+      <ng-template #noTurmas>
+        <div class="alert alert-info" role="alert">
+          Você não está associado a nenhuma turma no momento.
+        </div>
+      </ng-template>
+    </div>
+
+    <ng-template #loadingOrErrorTurmas>
+      <div *ngIf="errorLoadingTurmas; else loadingTurmas">
+        <div class="alert alert-danger" role="alert">
+          Erro ao carregar suas turmas. Por favor, tente novamente mais tarde.
+        </div>
+      </div>
+      <ng-template #loadingTurmas>
+        <p>Carregando suas turmas...</p>
+        <!-- Você pode adicionar um spinner aqui -->
+      </ng-template>
+    </ng-template>
+  </section>
+</div>

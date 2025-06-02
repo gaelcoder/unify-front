@@ -29,7 +29,7 @@
       <tbody>
         <tr *ngFor="let professor of professores">
           <td>{{ professor.nome }} {{ professor.sobrenome }}</td>
-          <td>{{ professor.emailInstitucional || professor.email }}</td> <!-- Display institutional or personal if former not present -->
+          <td>{{ professor.email || professor.email }}</td> <!-- Display institutional or personal if former not present -->
           <td>{{ professor.titulacao }}</td>
           <td>{{ professor.areaAtuacao }}</td>
           <td>

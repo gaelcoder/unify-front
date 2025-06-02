@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Professor, ProfessorDTO } from '../models/professor.model';
 import { AuthService } from './auth.service';
+import { TurmaDTO } from '../core/dtos/turma.dto';
+import { AvaliacaoDTO } from '../core/dtos/avaliacao.dto';
+import { NotaDTO } from '../core/dtos/nota.dto';
+import { AlunoSimplificadoDTO } from '../core/dtos/aluno-simplificado.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -48,5 +52,51 @@ export class ProfessorService {
   delete(id: number): Observable<void> {
     // Assuming an endpoint like /api/rh/professores/{id} for deletion
     return this.http.delete<void>(`${this.getApiUrl()}/${id}`);
+  }
+
+  // --- Turmas do Professor ---
+  getMinhasTurmas(): Observable<TurmaDTO[]> {
+    // Ajuste este endpoint conforme sua API (ex: /api/professor/turmas)
+    return this.http.get<TurmaDTO[]>(`${this.getApiUrl()}/professor/minhas-turmas`); 
+  }
+
+  // --- Alunos de uma Turma ---
+  getAlunosByTurma(turmaId: number): Observable<AlunoSimplificadoDTO[]> {
+    // Ajuste este endpoint (ex: /api/turmas/{turmaId}/alunos)
+    return this.http.get<AlunoSimplificadoDTO[]>(`${this.getApiUrl()}/turmas/${turmaId}/alunos`);
+  }
+
+  // --- Avaliações ---
+  criarAvaliacao(avaliacaoData: AvaliacaoDTO): Observable<AvaliacaoDTO> {
+    return this.http.post<AvaliacaoDTO>(`${this.getApiUrl()}/avaliacoes`, avaliacaoData);
+  }
+
+  getAvaliacoesByTurma(turmaId: number): Observable<AvaliacaoDTO[]> {
+    return this.http.get<AvaliacaoDTO[]>(`${this.getApiUrl()}/avaliacoes`, { params: new HttpParams().set('turmaId', turmaId.toString()) });
+  }
+  
+  getAvaliacaoById(avaliacaoId: number): Observable<AvaliacaoDTO> {
+    return this.http.get<AvaliacaoDTO>(`${this.getApiUrl()}/avaliacoes/${avaliacaoId}`);
+  }
+
+  atualizarAvaliacao(avaliacaoId: number, avaliacaoData: AvaliacaoDTO): Observable<AvaliacaoDTO> {
+    return this.http.put<AvaliacaoDTO>(`${this.getApiUrl()}/avaliacoes/${avaliacaoId}`, avaliacaoData);
+  }
+
+  deletarAvaliacao(avaliacaoId: number): Observable<void> {
+    return this.http.delete<void>(`${this.getApiUrl()}/avaliacoes/${avaliacaoId}`);
+  }
+
+  // --- Notas ---
+  lancarOuAtualizarNota(notaData: NotaDTO): Observable<NotaDTO> {
+    return this.http.post<NotaDTO>(`${this.getApiUrl()}/notas`, notaData);
+  }
+
+  getNotasByAvaliacao(avaliacaoId: number): Observable<NotaDTO[]> {
+    return this.http.get<NotaDTO[]>(`${this.getApiUrl()}/notas`, { params: new HttpParams().set('avaliacaoId', avaliacaoId.toString()) });
+  }
+
+  getNotaEspecifica(alunoId: number, avaliacaoId: number): Observable<NotaDTO> {
+    return this.http.get<NotaDTO>(`${this.getApiUrl()}/notas/aluno/${alunoId}/avaliacao/${avaliacaoId}`);
   }
 } 

@@ -13,6 +13,8 @@ import { AdminGeralDashboardComponent } from './components/dashboard-admin-geral
 import { AdminUniversidadeDashboardComponent } from './components/dashboard-admin-universidade/dashboard-admin-universidade.component';
 import { FuncionarioListComponent } from './components/funcionario/funcionario-list/funcionario-list.component';
 import { FuncionarioFormComponent } from './components/funcionario/funcionario-form/funcionario-form.component';
+import { MinhasNotasComponent } from './components/minhas-notas/minhas-notas.component';
+import { DashboardSecretariaComponent } from './components/dashboard-secretaria/dashboard-secretaria.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [authGuard] },
@@ -53,6 +55,23 @@ const routes: Routes = [
     component: FuncionarioFormComponent,
     canActivate: [authGuard],
     data: { roles: [UserRole.AdminUniversidade, UserRole.AdminGeral] }
+  },
+
+  // Aluno
+  {
+    path: 'aluno/minhas-notas',
+    component: MinhasNotasComponent,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.Aluno] }
+  },
+
+  // Secretaria (Funcionario)
+  {
+    path: 'dashboard-secretaria',
+    component: DashboardSecretariaComponent,
+    canActivate: [authGuard],
+    // Allowing AdminUniversidade as well, as they might oversee secretaria functions
+    data: { roles: [UserRole.Funcionario, UserRole.AdminUniversidade] }
   },
 
   // Fallback
