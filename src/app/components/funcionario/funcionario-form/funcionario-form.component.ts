@@ -3,9 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FuncionarioService } from '../../../services/funcionario.service';
-// import { UniversidadeService } from '../../../services/universidade.service'; // Placeholder for university context
 import { Funcionario, FuncionarioDTO } from '../../../models/funcionario.model'; // Assuming model exists or will be created
-// import { Universidade } from '../../../models/universidade.model'; // Assuming model exists
 
 @Component({
   selector: 'app-funcionario-form',
@@ -14,14 +12,14 @@ import { Funcionario, FuncionarioDTO } from '../../../models/funcionario.model';
   templateUrl: './funcionario-form.component.html',
   styleUrls: ['./funcionario-form.component.css']
 })
+
 export class FuncionarioFormComponent implements OnInit {
   funcionarioForm: FormGroup;
   isEditMode = false;
   funcionarioId: number | null = null;
-  // universidades: Universidade[] = []; // For dropdown if needed
   isLoading = false;
   errorMessage: string | null = null;
-  setores = ['RH', 'Secretaria']; // Predefined sectors
+  setores = ['RH', 'Secretaria'];
 
   constructor(
     private fb: FormBuilder,
