@@ -119,13 +119,31 @@ export class FuncionarioSecretariaGraduacaoListComponent implements OnInit {
           console.log(`[ListComponent] Normalizing item ${index} - Manually constructed newItem.campiDisponiveis:`, newItem.campiDisponiveis, typeof newItem.campiDisponiveis);
 
           // Fallback to JSON stringify/parse if manual construction fails for campiDisponiveis
-          if (newItem.campiDisponiveis === undefined) {
+          if (newItem.campiDisponiveis === undefined && item.campiDisponiveis !== null) {
             console.warn(`[ListComponent] Normalizing item ${index} - Manual construction failed for campiDisponiveis. Falling back to stringify/parse.`);
             try {
-              const stringifiedItem = JSON.stringify(item); // We know this string contains the correct campiDisponiveis
+              const stringifiedItem = JSON.stringify(item);
               const parsedFallback = JSON.parse(stringifiedItem);
-              // Directly assign the campiDisponiveis from the parsed object, assuming it's now plain
-              newItem.campiDisponiveis = parsedFallback.campiDisponiveis;
+              console.log(`[ListComponent] Normalizing item ${index} - Parsed fallback object:`, parsedFallback);
+
+              // Iterate over keys of parsedFallback to find the one that holds the campus data
+              let foundCampusData = false;
+              for (const key in parsedFallback) {
+                if (parsedFallback.hasOwnProperty(key)) {
+                  // Basic check, could be more sophisticated (e.g., lowercase, includes)
+                  if (key.toLowerCase().includes('campus')) {
+                    console.log(`[ListComponent] Normalizing item ${index} - Found potential campus key in parsedFallback: '${key}', value:`, parsedFallback[key]);
+                    if (Array.isArray(parsedFallback[key])) {
+                      newItem.campiDisponiveis = parsedFallback[key];
+                      foundCampusData = true;
+                      break; 
+                    }
+                  }
+                }
+              }
+              if (!foundCampusData) {
+                console.error(`[ListComponent] Normalizing item ${index} - Could not find campus data in parsedFallback keys:`, Object.keys(parsedFallback));
+              }
               console.log(`[ListComponent] Normalizing item ${index} - newItem.campiDisponiveis AFTER FALLBACK:`, newItem.campiDisponiveis, typeof newItem.campiDisponiveis);
             } catch (e) {
               console.error(`[ListComponent] Normalizing item ${index} - Error during fallback stringify/parse:`, e);

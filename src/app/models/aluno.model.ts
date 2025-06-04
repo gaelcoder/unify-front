@@ -6,7 +6,7 @@ export interface AlunoDTO {
     dataNascimento: string; // Consider using Date type if appropriate for forms
     email: string;
     telefone: string;
-    graduacaoIds: number[]; // Changed from graduacaoId: number
+    graduacaoId: number; // Changed from graduacaoIds: number[] to singular graduacaoId
     // universidadeId is typically determined by the logged-in Funcionario
     // and set on the backend, so it might not be part of the DTO sent from the frontend.
     // If it can be set from the frontend in some cases, add:

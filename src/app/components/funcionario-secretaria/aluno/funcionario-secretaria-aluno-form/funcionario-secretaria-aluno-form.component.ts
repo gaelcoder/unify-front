@@ -76,13 +76,14 @@ import { GraduacaoService } from '../../../../services/graduacao.service'; // Ad
         </div>
 
         <div class="mb-3">
-          <label for="graduacaoIds" class="form-label">Graduações</label>
-          <select multiple id="graduacaoIds" formControlName="graduacaoIds" class="form-select"
-                  [ngClass]="{ 'is-invalid': alunoForm.get('graduacaoIds')?.invalid && alunoForm.get('graduacaoIds')?.touched }">
+          <label for="graduacaoId" class="form-label">Graduação</label>
+          <select id="graduacaoId" formControlName="graduacaoId" class="form-select"
+                  [ngClass]="{ 'is-invalid': alunoForm.get('graduacaoId')?.invalid && alunoForm.get('graduacaoId')?.touched }">
+            <option [ngValue]="null" disabled>Selecione uma Graduação</option>
             <option *ngFor="let graduacao of todasGraduacoes" [value]="graduacao.id">{{ graduacao.titulo }}</option>
           </select>
-          <div *ngIf="alunoForm.get('graduacaoIds')?.invalid && alunoForm.get('graduacaoIds')?.touched" class="invalid-feedback">
-            Pelo menos uma graduação deve ser selecionada.
+          <div *ngIf="alunoForm.get('graduacaoId')?.invalid && alunoForm.get('graduacaoId')?.touched" class="invalid-feedback">
+            Graduação é obrigatória.
           </div>
         </div>
 
@@ -140,7 +141,7 @@ export class FuncionarioSecretariaAlunoFormComponent implements OnInit {
       cpf: ['', Validators.required],
       dataNascimento: ['', Validators.required],
       telefone: ['', Validators.required],
-      graduacaoIds: [[], Validators.required] // Changed from graduacaoId
+      graduacaoId: [null, Validators.required] // Changed from graduacaoIds: [[], Validators.required]
     });
   }
 
@@ -172,8 +173,8 @@ export class FuncionarioSecretariaAlunoFormComponent implements OnInit {
           cpf: aluno.cpf,
           dataNascimento: aluno.dataNascimento, 
           telefone: aluno.telefone,
-          // Assuming Aluno object from backend now has 'graduacoes' array
-          graduacaoIds: aluno.graduacoes ? aluno.graduacoes.map(g => g.id) : [] 
+          // Correctly patch graduacaoId from the first element of the aluno.graduacoes array
+          graduacaoId: (aluno.graduacoes && aluno.graduacoes.length > 0 ? aluno.graduacoes[0].id : null)
         });
         this.isLoading = false;
       },
