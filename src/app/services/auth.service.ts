@@ -3,115 +3,121 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { UserRole } from '../models/user.model';
+import { User, UserRole } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api';
-  private currentUserSubject: BehaviorSubject<any>;
-  public currentUser: Observable<any>;
+  private currentUserSubject: BehaviorSubject<User | null>;
+  public currentUser: Observable<User | null>;
 
   constructor(
     private http: HttpClient,
     private router: Router
   ) {
-    this.currentUserSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem('currentUser') || 'null'));
+    const storedUserItem = localStorage.getItem('currentUser');
+    this.currentUserSubject = new BehaviorSubject<User | null>(storedUserItem ? JSON.parse(storedUserItem) : null);
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  public get currentUserValue() {
+  public get currentUserValue(): User | null {
     return this.currentUserSubject.value;
   }
 
-  login(email: string, senha: string) {
-    return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, senha })
-      .pipe(map(response => {
-        localStorage.setItem('currentUser', JSON.stringify(response));
-        localStorage.setItem('userType', response.tipo);
-        this.currentUserSubject.next(response);
+  login(email: string, senha: string): Observable<User & { targetPath: string }> {
+    return this.http.post<User>(`${this.apiUrl}/auth/login`, { email, senha })
+      .pipe(
+        map(userResponse => {
+          localStorage.setItem('currentUser', JSON.stringify(userResponse));
+          this.currentUserSubject.next(userResponse);
 
-        // Navigate based on user type
-        if (response.primeiroAcesso) {
-          this.router.navigate(['/trocar-senha']);
-        } else {
-          const userRoles = response.tipo.split(','); // Roles can be a comma-separated string
-          if (userRoles.includes(UserRole.AdminGeral)) {
-            this.router.navigate(['/dashboard-admin-geral']);
-          } else if (userRoles.includes(UserRole.AdminUniversidade)) {
-            this.router.navigate(['/admin-universidade/dashboard']);
-          } else if (userRoles.includes(UserRole.FuncionarioRH)) {
-            this.router.navigate(['/painel-rh']);
-          } else if (userRoles.includes(UserRole.Funcionario)) {
-            this.router.navigate(['/dashboard-secretaria']);
-          } else if (userRoles.includes(UserRole.Professor)) {
-            this.router.navigate(['/home']); // Placeholder -  Professor dashboard if available
-          } else if (userRoles.includes(UserRole.Aluno)) {
-            this.router.navigate(['/home']); // Placeholder - Aluno dashboard if available
+          let targetPath = '/home'; // Default target path
+
+          if (userResponse.primeiroAcesso) {
+            this.router.navigate(['/trocar-senha']); 
+            targetPath = '/trocar-senha';
           } else {
-            this.router.navigate(['/home']); // Default fallback
+            const userRoles = userResponse.tipo ? (userResponse.tipo as string).split(',') : [];
+            if (userRoles.includes(UserRole.AdminGeral)) {
+              targetPath = '/dashboard-admin-geral';
+            } else if (userRoles.includes(UserRole.AdminUniversidade)) {
+              targetPath = '/admin-universidade/dashboard';
+            } else if (userRoles.includes(UserRole.FuncionarioRH)) {
+              targetPath = '/painel-rh';
+            } else if (userRoles.includes(UserRole.Funcionario)) {
+              targetPath = '/dashboard-secretaria';
+            } else if (userRoles.includes(UserRole.Professor)) {
+              targetPath = '/home';
+            } else if (userRoles.includes(UserRole.Aluno)) {
+              targetPath = '/home';
+            }
           }
-        }
-        return response;
-      }));
+          console.log(`[AuthService login] Determined targetPath: ${targetPath} for user type: ${userResponse.tipo}. Primeiro Acesso: ${userResponse.primeiroAcesso}`);
+          return { ...userResponse, targetPath };
+        })
+      );
   }
 
   logout() {
     localStorage.removeItem('currentUser');
-    localStorage.removeItem('userType');
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
   isAdminGeral(): boolean {
-    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_ADMIN_GERAL';
+    const user = this.currentUserValue;
+    return !!user && user.tipo === UserRole.AdminGeral;
   }
 
   isAdminUniversidade(): boolean {
-    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_ADMIN_UNIVERSIDADE';
+    const user = this.currentUserValue;
+    return !!user && user.tipo === UserRole.AdminUniversidade;
   }
 
   isFuncionarioRH(): boolean {
-    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_FUNCIONARIO_RH';
+    const user = this.currentUserValue;
+    return !!user && user.tipo === UserRole.FuncionarioRH;
   }
 
   isFuncionario(): boolean {
-    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_FUNCIONARIO';
+    const user = this.currentUserValue;
+    return !!user && user.tipo === UserRole.Funcionario;
   }
 
   isAluno(): boolean {
-    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_ALUNO';
+    const user = this.currentUserValue;
+    return !!user && user.tipo === UserRole.Aluno;
   }
 
   isProfessor(): boolean {
-    return this.currentUserValue && this.currentUserValue.tipo === 'ROLE_PROFESSOR';
+    const user = this.currentUserValue;
+    return !!user && user.tipo === UserRole.Professor;
   }
 
   isAuthenticated(): boolean {
-    const currentUser = this.currentUserValue;
-    return !!currentUser && !!currentUser.token;
+    const user = this.currentUserValue;
+    return !!user && !!user.token;
   }
 
   isPrimeiroAcesso(): boolean {
     const user = this.currentUserValue;
-    return user && user.primeiroAcesso === true;
+    return !!user && user.primeiroAcesso === true;
   }
-
+  
   alterarSenhaPrimeiroAcesso(novaSenha: string) {
     const user = this.currentUserValue;
-    const userId = user ? user.id : null;
-    
-    if (!userId) {
-      throw new Error('Usuário não está logado');
+    if (!user || !user.id) {
+      console.error('User not logged in or user ID missing for alterarSenhaPrimeiroAcesso');
+      throw new Error('Usuário não está logado ou ID do usuário está faltando'); 
     }
     
     return this.http.post<any>(`${this.apiUrl}/auth/primeiro-acesso`, {
-      id: userId,
+      id: user.id,
       novaSenha
     }).pipe(
       map(response => {
-        // Atualiza o usuário no storage para refletir que não é mais primeiro acesso
         const updatedUser = {...user, primeiroAcesso: false};
         localStorage.setItem('currentUser', JSON.stringify(updatedUser));
         this.currentUserSubject.next(updatedUser);

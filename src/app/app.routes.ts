@@ -17,6 +17,7 @@ import { FuncionarioFormComponent } from './components/funcionario/funcionario-f
 import { ProfessorListComponent } from './components/professor/professor-list/professor-list.component';
 import { ProfessorFormComponent } from './components/professor/professor-form/professor-form.component';
 import { FuncionarioRHDashboardComponent } from './components/dashboard-funcionario-rh/funcionario-rh-dashboard.component';
+import { DashboardSecretariaComponent } from './components/dashboard-secretaria/dashboard-secretaria.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -94,9 +95,119 @@ export const routes: Routes = [
     data: { roles: [UserRole.FuncionarioRH] } // Specifically for FuncionarioRH
   },
 
+  // Funcionario Secretaria Dashboard
+  {
+    path: 'dashboard-secretaria',
+    component: DashboardSecretariaComponent,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.Funcionario] }
+  },
+
+  // Funcionario Secretaria Management Area
+  {
+    path: 'funcionariosecretaria',
+    canActivate: [authGuard],
+    data: { roles: [UserRole.Funcionario] },
+    children: [
+      { path: '', redirectTo: 'alunos', pathMatch: 'full' },
+      {
+        path: 'alunos',
+        loadComponent: () => import('./components/funcionario-secretaria/aluno/funcionario-secretaria-aluno-list/funcionario-secretaria-aluno-list.component').then(m => m.FuncionarioSecretariaAlunoListComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+      {
+        path: 'alunos/novo',
+        loadComponent: () => import('./components/funcionario-secretaria/aluno/funcionario-secretaria-aluno-form/funcionario-secretaria-aluno-form.component').then(m => m.FuncionarioSecretariaAlunoFormComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+      {
+        path: 'alunos/editar/:id',
+        loadComponent: () => import('./components/funcionario-secretaria/aluno/funcionario-secretaria-aluno-form/funcionario-secretaria-aluno-form.component').then(m => m.FuncionarioSecretariaAlunoFormComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+
+      // Graduações
+      {
+        path: 'graduacoes',
+        loadComponent: () => import('./components/funcionario-secretaria/graduacao/funcionario-secretaria-graduacao-list/funcionario-secretaria-graduacao-list.component').then(m => m.FuncionarioSecretariaGraduacaoListComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+      {
+        path: 'graduacoes/novo',
+        loadComponent: () => import('./components/funcionario-secretaria/graduacao/funcionario-secretaria-graduacao-form/funcionario-secretaria-graduacao-form.component').then(m => m.FuncionarioSecretariaGraduacaoFormComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+      {
+        path: 'graduacoes/editar/:id',
+        loadComponent: () => import('./components/funcionario-secretaria/graduacao/funcionario-secretaria-graduacao-form/funcionario-secretaria-graduacao-form.component').then(m => m.FuncionarioSecretariaGraduacaoFormComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+
+      // Matérias
+      {
+        path: 'materias',
+        loadComponent: () => import('./components/funcionario-secretaria/materia/funcionario-secretaria-materia-list/funcionario-secretaria-materia-list.component').then(m => m.FuncionarioSecretariaMateriaListComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+      {
+        path: 'materias/nova',
+        loadComponent: () => import('./components/funcionario-secretaria/materia/funcionario-secretaria-materia-form/funcionario-secretaria-materia-form.component').then(m => m.FuncionarioSecretariaMateriaFormComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+      {
+        path: 'materias/editar/:id',
+        loadComponent: () => import('./components/funcionario-secretaria/materia/funcionario-secretaria-materia-form/funcionario-secretaria-materia-form.component').then(m => m.FuncionarioSecretariaMateriaFormComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+
+      // Turmas
+      {
+        path: 'turmas',
+        loadComponent: () => import('./components/funcionario-secretaria/turma/funcionario-secretaria-turma-list/funcionario-secretaria-turma-list.component').then(m => m.FuncionarioSecretariaTurmaListComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+      {
+        path: 'turmas/nova',
+        loadComponent: () => import('./components/funcionario-secretaria/turma/funcionario-secretaria-turma-form/funcionario-secretaria-turma-form.component').then(m => m.FuncionarioSecretariaTurmaFormComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+      {
+        path: 'turmas/editar/:id',
+        loadComponent: () => import('./components/funcionario-secretaria/turma/funcionario-secretaria-turma-form/funcionario-secretaria-turma-form.component').then(m => m.FuncionarioSecretariaTurmaFormComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+
+      // Solicitações
+      {
+        path: 'solicitacoes-troca-turma',
+        loadComponent: () => import('./components/funcionario-secretaria/solicitacoes/solicitacoes-troca-turma-list/solicitacoes-troca-turma-list.component').then(m => m.FuncionarioSecretariaSolicitacoesTrocaTurmaListComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      },
+      {
+        path: 'solicitacoes-transferencia-graduacao',
+        loadComponent: () => import('./components/funcionario-secretaria/solicitacoes/solicitacoes-transferencia-graduacao-list/solicitacoes-transferencia-graduacao-list.component').then(m => m.FuncionarioSecretariaSolicitacoesTransferenciaGraduacaoListComponent),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.Funcionario] }
+      }
+    ]
+  },
+
   // Empty path route - matches exactly ''
   { path: '', redirectTo: '/home', pathMatch: 'full' },
 
   // Fallback para rotas não encontradas - redireciona para home
-  { path: '**', redirectTo: '/home' }
+  // { path: '**', redirectTo: '/home' } // Temporarily commented out for diagnostics
 ];

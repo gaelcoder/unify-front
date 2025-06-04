@@ -10,7 +10,7 @@ export class SecretariaService {
 
   // TODO: Amore, por favor, substitua esta URL pela URL base da sua API!
   private apiBaseUrl = 'http://localhost:8080'; // OU QUALQUER QUE SEJA SUA URL DA API
-  private apiUrl = `${this.apiBaseUrl}/api/secretaria`;
+  private apiUrl = `${this.apiBaseUrl}/api/funcionariosecretaria`;
 
   constructor(private http: HttpClient) { }
 

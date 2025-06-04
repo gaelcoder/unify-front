@@ -61,6 +61,7 @@ export class LoginComponent implements OnInit {
     this.submitted = true;
 
     if (this.loginForm.invalid) {
+      this.loading = false; // Stop loading if form is invalid
       return;
     }
 
@@ -72,26 +73,35 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(email, senha)
       .subscribe({
-        next: (user) => {
-          console.log('[LoginComponent onSubmit] Login successful. User data received:', user);
-          // AuthService.login() now handles all redirection logic, including primeiroAcesso and role-based dashboards.
-          // The returnUrl logic could also be centralized in AuthService or handled by the authGuard.
-          const returnUrl = this.route.snapshot.queryParams['returnUrl'];
-          if (returnUrl && !user.primeiroAcesso) { // Only navigate to returnUrl if not first access
-            console.log(`[LoginComponent onSubmit] Login successful. Navigating to returnUrl: ${returnUrl}`);
-            this.router.navigateByUrl(returnUrl);
-          } else if (!user.primeiroAcesso) {
-            // If no returnUrl, and not primeiroAcesso, AuthService has already navigated.
-            // If it IS primeiroAcesso, AuthService has already navigated to /trocar-senha
-            console.log('[LoginComponent onSubmit] Login successful. AuthService handled redirection or it was first access.');
+        next: (responseWithTargetPath) => { // Renamed to reflect new structure
+          console.log('[LoginComponent onSubmit] Login response from AuthService:', responseWithTargetPath);
+          this.loading = false;
+
+          // AuthService handles navigation for primeiroAcesso directly in the service.
+          // So, if it's primeiroAcesso, we don't navigate from here.
+          if (!responseWithTargetPath.primeiroAcesso && responseWithTargetPath.targetPath) {
+            console.log(`[LoginComponent onSubmit] Not primeiroAcesso. Navigating to targetPath from AuthService: ${responseWithTargetPath.targetPath}`);
+            this.router.navigate([responseWithTargetPath.targetPath]);
+          } else if (responseWithTargetPath.primeiroAcesso) {
+            console.log('[LoginComponent onSubmit] Primeiro acesso. AuthService has already handled redirection to /trocar-senha.');
           } else {
-            // This case is if user.primeiroAcesso is true. AuthService already handled it.
-             console.log('[LoginComponent onSubmit] Primeiro acesso. AuthService handled redirection to /trocar-senha.');
+            // Fallback if somehow targetPath isn't set but not primeiroAcesso (should generally not happen)
+            console.warn('[LoginComponent onSubmit] Login successful, but no specific targetPath and not primeiroAcesso. Navigating to /home as default (fallback).');
+            this.router.navigate(['/home']);
           }
-          // No explicit this.router.navigate here unless it's for returnUrl and not primeiroAcesso
         },
         error: (err) => {
-          this.error = err.error?.message || err.error || 'Credenciais inválidas ou erro no servidor.';
+          // Ensure error is properly structured for display
+          if (err.error && typeof err.error === 'object' && err.error.message) {
+            this.error = err.error.message;
+          } else if (typeof err.error === 'string') {
+            this.error = err.error;
+          } else if (err.message) {
+            this.error = err.message;
+          } else {
+            this.error = 'Credenciais inválidas ou erro no servidor.';
+          }
+          console.error('[LoginComponent onSubmit] Login error:', err);
           this.loading = false;
         }
       });

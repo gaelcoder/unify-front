@@ -8,10 +8,12 @@ export enum UserRole {
 }
 
 export interface User {
+  id?: number;
   email: string;
   tipo: UserRole;
   token: string;
   primeiroAcesso: boolean;
+  universidadeId?: number;
   universidadeNome?: string;
   universidadeLogoPath?: string; 
 }

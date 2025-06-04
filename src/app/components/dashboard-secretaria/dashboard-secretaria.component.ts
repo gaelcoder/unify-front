@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { SecretariaService } from '../../services/secretaria.service';
@@ -6,6 +8,8 @@ import { SecretariaDashboardStatsDTO } from '../../core/dtos/secretaria-dashboar
 
 @Component({
   selector: 'app-dashboard-secretaria',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './dashboard-secretaria.component.html',
   styleUrls: ['./dashboard-secretaria.component.css']
 })
@@ -16,7 +20,10 @@ export class DashboardSecretariaComponent implements OnInit {
 
   nomeUniversidade: string = 'Nome da Universidade (Carregar dinamicamente se necessário)';
 
-  constructor(private secretariaService: SecretariaService) { }
+  constructor(
+    private secretariaService: SecretariaService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.dashboardStats$ = this.secretariaService.getDashboardStats()
@@ -29,7 +36,8 @@ export class DashboardSecretariaComponent implements OnInit {
       );
   }
 
-  navigateTo(route: string): void {
-    console.log(`Secretaria navegando para: ${route}`);
+  navigateTo(fullPath: string): void {
+    console.log(`Secretaria navegando para: ${fullPath}`);
+    this.router.navigate([fullPath]);
   }
 }
