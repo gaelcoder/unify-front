@@ -45,4 +45,16 @@ export class ProfessorService {
     // Assuming an endpoint like /api/rh/professores/{id} for deletion
     return this.http.delete<void>(`${this.getApiUrl()}/${id}`);
   }
+
+  /**
+   * Fetches professors belonging to a specific university.
+   * The backend should ideally filter these, for example, by not returning professors 
+   * who are already coordinating other courses if that's a business rule.
+   * This method is intended for use cases like populating dropdowns for selection,
+   * and might use a different, more generally accessible endpoint than RH-specific professor management.
+   */
+  listarProfessoresPorUniversidadeId(universidadeId: number): Observable<Professor[]> {
+    // Path updated to match GraduacaoOperacoesController
+    return this.http.get<Professor[]>(`${this.baseApiUrl}/graduacao-operacoes/professores/por-universidade/${universidadeId}`);
+  }
 } 

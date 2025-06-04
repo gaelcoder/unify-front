@@ -1,20 +1,175 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { GraduacaoService } from '../../../../services/graduacao.service';
+import { Graduacao } from '../../../../models/graduacao.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-funcionario-secretaria-graduacao-list',
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
-    <h2>Gerenciar Graduações (Secretaria)</h2>
-    <p>Lista de graduações da universidade.</p>
-    <a routerLink="../graduacoes/novo" class="btn btn-primary mb-3">Nova Graduação</a>
-    <p><em>Funcionalidade de listagem de graduações a ser implementada.</em></p>
-    <a routerLink="/dashboard-secretaria" class="btn btn-secondary">Voltar ao Painel</a>
+    <div class="container mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Gerenciar Graduações</h2>
+        <a routerLink="../graduacoes/novo" class="btn btn-primary">Nova Graduação</a>
+      </div>
+
+      <div *ngIf="isLoading" class="alert alert-info">Carregando graduações...</div>
+      <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+      <table *ngIf="!isLoading && !error && graduacoes.length > 0" class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Semestres</th>
+            <th>Código do Curso</th>
+            <th>Coordenador</th>
+            <th>Campi Disponíveis</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let graduacao of graduacoes">
+            <td>{{ graduacao.id }}</td>
+            <td>{{ graduacao.titulo }}</td>
+            <td>{{ graduacao.semestres }}</td>
+            <td>{{ graduacao.codigoCurso }}</td>
+            <td>{{ graduacao.coordenadorDoCurso?.nome || 'N/A' }}</td>
+            <td>{{ graduacao.campiDisponiveis?.join(', ') || 'N/A' }}</td>
+            <td>
+              <a [routerLink]="['../graduacoes/editar', graduacao.id]" class="btn btn-sm btn-outline-primary me-2">
+                <i class="fas fa-edit"></i> Editar
+              </a>
+              <button (click)="deletarGraduacao(graduacao.id)" class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-trash-alt"></i> Deletar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="!isLoading && !error && graduacoes.length === 0" class="alert alert-warning">
+        Nenhuma graduação encontrada.
+      </div>
+
+      <a routerLink="/dashboard-secretaria" class="btn btn-secondary mt-3">Voltar ao Painel</a>
+    </div>
   `,
-  styles: []
+  styles: [`
+    .container {
+      max-width: 1200px;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    th, td {
+        vertical-align: middle;
+    }
+    .fa-edit, .fa-trash-alt {
+        margin-right: 5px;
+    }
+  `]
 })
-export class FuncionarioSecretariaGraduacaoListComponent {
-  constructor() {}
+export class FuncionarioSecretariaGraduacaoListComponent implements OnInit {
+  graduacoes: Graduacao[] = [];
+  isLoading: boolean = false;
+  error: string | null = null;
+
+  constructor(private graduacaoService: GraduacaoService) {}
+
+  ngOnInit(): void {
+    this.loadGraduacoes();
+  }
+
+  loadGraduacoes(): void {
+    this.isLoading = true;
+    this.error = null;
+    this.graduacaoService.listarTodas().subscribe({
+      next: (data) => {
+        console.log('[ListComponent] Raw data received from service (type):', typeof data, data instanceof Array, data);
+
+        const normalizedData = data.map((item, index) => {
+          console.log(`[ListComponent] Normalizing item ${index} (original item from service):`, item);
+
+          // Attempt direct manual construction, hoping to trigger getters if they exist
+          const newItem = {
+            id: item.id,
+            titulo: item.titulo,
+            semestres: item.semestres,
+            codigoCurso: item.codigoCurso,
+            universidade: item.universidade,
+            coordenadorDoCurso: item.coordenadorDoCurso,
+            materias: item.materias,
+            alunos: item.alunos,
+            campiDisponiveis: item.campiDisponiveis // If item has a getter, this should invoke it
+          };
+          
+          console.log(`[ListComponent] Normalizing item ${index} - Manually constructed newItem:`, newItem);
+          console.log(`[ListComponent] Normalizing item ${index} - Manually constructed newItem.campiDisponiveis:`, newItem.campiDisponiveis, typeof newItem.campiDisponiveis);
+
+          // Fallback to JSON stringify/parse if manual construction fails for campiDisponiveis
+          if (newItem.campiDisponiveis === undefined) {
+            console.warn(`[ListComponent] Normalizing item ${index} - Manual construction failed for campiDisponiveis. Falling back to stringify/parse.`);
+            try {
+              const stringifiedItem = JSON.stringify(item); // We know this string contains the correct campiDisponiveis
+              const parsedFallback = JSON.parse(stringifiedItem);
+              // Directly assign the campiDisponiveis from the parsed object, assuming it's now plain
+              newItem.campiDisponiveis = parsedFallback.campiDisponiveis;
+              console.log(`[ListComponent] Normalizing item ${index} - newItem.campiDisponiveis AFTER FALLBACK:`, newItem.campiDisponiveis, typeof newItem.campiDisponiveis);
+            } catch (e) {
+              console.error(`[ListComponent] Normalizing item ${index} - Error during fallback stringify/parse:`, e);
+            }
+          }
+          return newItem;
+        });
+
+        console.log('[ListComponent] Fully normalizedData array:', normalizedData);
+        this.graduacoes = normalizedData;
+
+        if (this.graduacoes && this.graduacoes.length > 0) {
+          const firstGraduacao = this.graduacoes[0];
+          console.log('[ListComponent] First NORMALISED graduacao object (final):', firstGraduacao);
+          console.log('[ListComponent] Keys of NORMALISED firstGraduacao (final):', Object.keys(firstGraduacao));
+          console.log('[ListComponent] NORMALISED Access via bracket (final) firstGraduacao[\'campiDisponiveis\']:', firstGraduacao['campiDisponiveis']);
+          console.log('[ListComponent] NORMALISED Access via dot (final) firstGraduacao.campiDisponiveis:', firstGraduacao.campiDisponiveis);
+        }
+        this.isLoading = false;
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Erro ao carregar graduações:', err);
+        this.error = `Erro ao carregar graduações: ${err.statusText || 'Erro desconhecido'}. Detalhes: ${err.error?.message || err.message}`;
+        this.isLoading = false;
+      }
+    });
+  }
+
+  deletarGraduacao(id: number): void {
+    if (confirm('Tem certeza que deseja deletar esta graduação?')) {
+      this.isLoading = true;
+      this.graduacaoService.deletar(id).subscribe({
+        next: () => {
+          this.graduacoes = this.graduacoes.filter(g => g.id !== id);
+          this.isLoading = false;
+          alert('Graduação deletada com sucesso!');
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error(`Erro ao deletar graduação ${id}:`, err);
+          this.error = `Erro ao deletar graduação: ${err.statusText || 'Erro desconhecido'}. Detalhes: ${err.error?.message || err.message}`;
+          this.isLoading = false;
+          alert(`Erro ao deletar graduação. ${this.error}`);
+        }
+      });
+    }
+  }
 } 

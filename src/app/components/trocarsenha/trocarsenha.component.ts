@@ -137,7 +137,9 @@ export class TrocarSenhaComponent implements OnInit {
             if (this.authService.isAdminGeral()) {
               this.router.navigate(['/dashboard-admin-geral']);
             } else if (this.authService.isAdminUniversidade()) {
-              this.router.navigate(['/dashboard-admin-universidade']);
+              this.router.navigate(['/admin-universidade/dashboard']);
+            } else if (this.authService.isFuncionario()) {
+              this.router.navigate(['/dashboard-secretaria']);
             } else {
               this.router.navigate(['/home']);
             }

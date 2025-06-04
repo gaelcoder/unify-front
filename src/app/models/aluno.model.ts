@@ -6,7 +6,7 @@ export interface AlunoDTO {
     dataNascimento: string; // Consider using Date type if appropriate for forms
     email: string;
     telefone: string;
-    graduacaoId: number;
+    graduacaoIds: number[]; // Changed from graduacaoId: number
     // universidadeId is typically determined by the logged-in Funcionario
     // and set on the backend, so it might not be part of the DTO sent from the frontend.
     // If it can be set from the frontend in some cases, add:
@@ -23,11 +23,11 @@ export interface Aluno {
     telefone: string;
     matricula: string;
     cr: number;
-    graduacao: {
+    graduacoes: Array<{ // Changed from graduacao to graduacoes and made it an array
         id: number;
-        nome: string;
+        titulo: string; // Changed from nome to titulo
         // Add other graduacao details if needed
-    };
+    }>;
     universidade: {
         id: number;
         nome: string;

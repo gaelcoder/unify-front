@@ -43,7 +43,7 @@ import { catchError, tap } from 'rxjs/operators';
                 <td>{{ aluno.nome }} {{ aluno.sobrenome }}</td>
                 <td>{{ aluno.email }}</td>
                 <td>{{ aluno.cpf }}</td>
-                <td>{{ aluno.graduacao?.nome || 'N/A' }}</td>
+                <td>{{ (aluno.graduacoes && aluno.graduacoes.length > 0 ? aluno.graduacoes[0].titulo : null) || 'N/A' }}</td>
                 <td>
                   <a [routerLink]="['../alunos/editar', aluno.id]" class="btn btn-sm btn-outline-primary me-2">Editar</a>
                   <button (click)="confirmDelete(aluno)" class="btn btn-sm btn-outline-danger">Excluir</button>

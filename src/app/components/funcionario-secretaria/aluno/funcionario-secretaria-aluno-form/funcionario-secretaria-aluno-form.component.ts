@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlunoService } from '../../../../services/aluno.service'; // Adjusted path
 import { AlunoDTO } from '../../../../models/aluno.model'; // Adjusted path
+import { Graduacao } from '../../../../models/graduacao.model'; // Added import
+import { GraduacaoService } from '../../../../services/graduacao.service'; // Added import
 
 @Component({
   selector: 'app-funcionario-secretaria-aluno-form',
@@ -74,13 +76,14 @@ import { AlunoDTO } from '../../../../models/aluno.model'; // Adjusted path
         </div>
 
         <div class="mb-3">
-          <label for="graduacaoId" class="form-label">ID da Graduação</label>
-          <input type="number" id="graduacaoId" formControlName="graduacaoId" class="form-control"
-                 [ngClass]="{ 'is-invalid': alunoForm.get('graduacaoId')?.invalid && alunoForm.get('graduacaoId')?.touched }">
-          <div *ngIf="alunoForm.get('graduacaoId')?.invalid && alunoForm.get('graduacaoId')?.touched" class="invalid-feedback">
-            ID da Graduação é obrigatório e deve ser um número.
+          <label for="graduacaoIds" class="form-label">Graduações</label>
+          <select multiple id="graduacaoIds" formControlName="graduacaoIds" class="form-select"
+                  [ngClass]="{ 'is-invalid': alunoForm.get('graduacaoIds')?.invalid && alunoForm.get('graduacaoIds')?.touched }">
+            <option *ngFor="let graduacao of todasGraduacoes" [value]="graduacao.id">{{ graduacao.titulo }}</option>
+          </select>
+          <div *ngIf="alunoForm.get('graduacaoIds')?.invalid && alunoForm.get('graduacaoIds')?.touched" class="invalid-feedback">
+            Pelo menos uma graduação deve ser selecionada.
           </div>
-           <!-- TODO: Replace with a dropdown of available Graduacoes -->
         </div>
 
         <div class="mt-3">
@@ -106,16 +109,19 @@ export class FuncionarioSecretariaAlunoFormComponent implements OnInit {
   alunoId: number | null = null;
   isLoading = false;
   errorMessage: string | null = null;
+  todasGraduacoes: Graduacao[] = []; // Added property
 
   constructor(
     private fb: FormBuilder,
     private alunoService: AlunoService,
+    @Inject(GraduacaoService) private graduacaoService: GraduacaoService, // Added @Inject
     private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.initForm();
+    this.loadGraduacoesDisponiveis(); // Added call
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.isEditMode = true;
@@ -134,7 +140,23 @@ export class FuncionarioSecretariaAlunoFormComponent implements OnInit {
       cpf: ['', Validators.required],
       dataNascimento: ['', Validators.required],
       telefone: ['', Validators.required],
-      graduacaoId: [null, [Validators.required, Validators.pattern(/^[0-9]+$/)]]
+      graduacaoIds: [[], Validators.required] // Changed from graduacaoId
+    });
+  }
+
+  loadGraduacoesDisponiveis(): void { // Added method
+    this.isLoading = true;
+    // Assuming GraduacaoService has a method like listarTodas() or getGraduacoes()
+    this.graduacaoService.listarTodas().subscribe({
+      next: (graduacoes: Graduacao[]) => { // Added Graduacao[] type
+        this.todasGraduacoes = graduacoes;
+        this.isLoading = false;
+      },
+      error: (err: any) => { // Added any type for err
+        console.error('Erro ao carregar graduações:', err);
+        this.errorMessage = 'Erro ao carregar lista de graduações. Tente novamente mais tarde.';
+        this.isLoading = false; // Ensure isLoading is set to false on error
+      }
     });
   }
 
@@ -143,16 +165,15 @@ export class FuncionarioSecretariaAlunoFormComponent implements OnInit {
     this.isLoading = true;
     this.alunoService.buscarAlunoPorId(this.alunoId).subscribe({
       next: (aluno) => {
-        // The backend Aluno object might have more fields than AlunoDTO
-        // We need to map it to the form structure, which expects AlunoDTO fields.
         this.alunoForm.patchValue({
           nome: aluno.nome,
           sobrenome: aluno.sobrenome,
           email: aluno.email,
           cpf: aluno.cpf,
-          dataNascimento: aluno.dataNascimento, // Ensure date format matches input type='date' (YYYY-MM-DD)
+          dataNascimento: aluno.dataNascimento, 
           telefone: aluno.telefone,
-          graduacaoId: aluno.graduacao.id // Assuming Aluno object has nested graduacao.id
+          // Assuming Aluno object from backend now has 'graduacoes' array
+          graduacaoIds: aluno.graduacoes ? aluno.graduacoes.map(g => g.id) : [] 
         });
         this.isLoading = false;
       },
