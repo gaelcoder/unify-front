@@ -11,6 +11,7 @@ import { UniversidadeService } from '../../../../services/universidade.service';
 import { Universidade } from '../../../../models/universidade.model';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, catchError, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-funcionario-secretaria-graduacao-form',
@@ -62,16 +63,47 @@ import { switchMap, catchError, tap } from 'rxjs/operators';
           <div *ngIf="isLoadingProfessores" class="form-text">Carregando professores...</div>
         </div>
 
+        <!-- DUAL LISTBOX FOR CAMPI SELECTION -->
         <div class="mb-3">
-          <label class="form-label">Campi Disponíveis (Opcional)</label>
+          <label class="form-label">Campi Disponíveis</label>
           <div *ngIf="isLoadingCampi" class="form-text">Carregando campi...</div>
-          <div *ngIf="!isLoadingCampi && campiDaUniversidade.length === 0" class="form-text">Nenhum campus configurado para esta universidade.</div>
-          <div formArrayName="campiDisponiveis" class="list-group">
-            <label *ngFor="let control of campiDisponiveisArrayControls; let i = index" class="list-group-item">
-              <input type="checkbox" [formControlName]="i" class="form-check-input me-2"> {{ campiDaUniversidade[i] }}
-            </label>
+          <div *ngIf="!isLoadingCampi && campiDaUniversidade.length === 0" class="alert alert-info">Nenhum campus configurado para esta universidade.</div>
+          
+          <div *ngIf="!isLoadingCampi && campiDaUniversidade.length > 0" class="row">
+            <!-- Available Campi Column -->
+            <div class="col-md-5">
+              <h6>Disponíveis</h6>
+              <div class="list-group dual-listbox">
+                <button type="button" *ngFor="let campus of availableCampi" 
+                        class="list-group-item list-group-item-action"
+                        (click)="selectCampus(campus)">
+                  {{ campus }}
+                </button>
+                <div *ngIf="availableCampi.length === 0" class="list-group-item text-muted">Nenhum campus disponível.</div>
+              </div>
+            </div>
+
+            <!-- Action Buttons Column -->
+            <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
+              <button type="button" class="btn btn-outline-primary btn-sm mb-2 w-100" (click)="selectAllCampi()" title="Selecionar Todos">&gt;&gt;</button>
+              <button type="button" class="btn btn-outline-primary btn-sm mt-2 w-100" (click)="deselectAllCampi()" title="Remover Todos">&lt;&lt;</button>
+            </div>
+
+            <!-- Selected Campi Column -->
+            <div class="col-md-5">
+              <h6>Selecionados</h6>
+              <div class="list-group dual-listbox">
+                <button type="button" *ngFor="let campus of selectedCampi"
+                        class="list-group-item list-group-item-action"
+                        (click)="deselectCampus(campus)">
+                  {{ campus }}
+                </button>
+                <div *ngIf="selectedCampi.length === 0" class="list-group-item text-muted">Nenhum campus selecionado.</div>
+              </div>
+            </div>
           </div>
         </div>
+        <!-- END DUAL LISTBOX -->
 
         <div class="mt-3">
           <button type="submit" [disabled]="graduacaoForm.invalid || isLoading || isLoadingProfessores || isLoadingCampi" class="btn btn-primary me-2">
@@ -87,7 +119,25 @@ import { switchMap, catchError, tap } from 'rxjs/operators';
       </form>
     </div>
   `,
-  styles: []
+  styles: [`
+    .dual-listbox {
+      height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: .25rem;
+      padding: 0;
+    }
+    .dual-listbox .list-group-item {
+      cursor: pointer;
+    }
+    .dual-listbox .list-group-item:hover {
+      background-color: #f0f0f0;
+    }
+    .dual-listbox .list-group-item.text-muted {
+      cursor: default;
+      background-color: transparent;
+    }
+  `]
 })
 export class FuncionarioSecretariaGraduacaoFormComponent implements OnInit {
   graduacaoForm!: FormGroup;
@@ -103,10 +153,6 @@ export class FuncionarioSecretariaGraduacaoFormComponent implements OnInit {
   
   private universidadeIdDoUsuario: number | undefined;
 
-  get campiDisponiveisArrayControls() {
-    return (this.graduacaoForm.get('campiDisponiveis') as FormArray).controls;
-  }
-
   constructor(
     private fb: FormBuilder,
     private graduacaoService: GraduacaoService,
@@ -121,16 +167,14 @@ export class FuncionarioSecretariaGraduacaoFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.loadRelatedData();
-
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.isEditMode = true;
       this.graduacaoId = +idParam;
-      this.loadGraduacaoData();
     } else {
       this.isEditMode = false;
     }
+    this.loadRelatedData();
   }
 
   initForm(): void {
@@ -139,35 +183,56 @@ export class FuncionarioSecretariaGraduacaoFormComponent implements OnInit {
       semestres: [null, [Validators.required, Validators.min(1)]],
       codigoCurso: ['', Validators.required],
       coordenadorDoCursoId: [null],
-      campiDisponiveis: this.fb.array([])
+      campiSelecionados: [[]]
     });
   }
 
-  createCampusCheckboxes(campiFromGraduacao?: string[]): void {
-    console.log('[Debug] createCampusCheckboxes called. campiDaUniversidade:', this.campiDaUniversidade, 'campiFromGraduacao:', campiFromGraduacao);
-    const campiFormArray = this.graduacaoForm.get('campiDisponiveis') as FormArray;
-    campiFormArray.clear();
-    this.campiDaUniversidade.forEach(campusName => {
-      const isSelected = campiFromGraduacao ? campiFromGraduacao.includes(campusName) : false;
-      campiFormArray.push(this.fb.control(isSelected));
-    });
-    console.log('[Debug] createCampusCheckboxes - FormArray controls count after population:', campiFormArray.length);
+  get selectedCampi(): string[] {
+    return this.graduacaoForm.get('campiSelecionados')?.value || [];
+  }
+
+  get availableCampi(): string[] {
+    const selected = this.selectedCampi;
+    return this.campiDaUniversidade.filter(c => !selected.includes(c)).sort((a, b) => a.localeCompare(b));
+  }
+  
+  selectCampus(campus: string): void {
+    const currentSelected = this.selectedCampi;
+    if (!currentSelected.includes(campus)) {
+      this.graduacaoForm.get('campiSelecionados')?.setValue([...currentSelected, campus].sort((a, b) => a.localeCompare(b)));
+    }
+  }
+
+  deselectCampus(campus: string): void {
+    const currentSelected = this.selectedCampi;
+    this.graduacaoForm.get('campiSelecionados')?.setValue(currentSelected.filter(c => c !== campus).sort((a, b) => a.localeCompare(b)));
+  }
+
+  selectAllCampi(): void {
+    this.graduacaoForm.get('campiSelecionados')?.setValue([...this.campiDaUniversidade].sort((a, b) => a.localeCompare(b)));
+  }
+
+  deselectAllCampi(): void {
+    this.graduacaoForm.get('campiSelecionados')?.setValue([]);
   }
 
   loadRelatedData(): void {
     if (!this.universidadeIdDoUsuario) {
       this.errorMessage = 'Não foi possível identificar a universidade do usuário.';
+      this.isLoadingProfessores = false; 
+      this.isLoadingCampi = false;
       return;
     }
     this.isLoadingProfessores = true;
     this.isLoadingCampi = true;
+    this.errorMessage = null; 
 
     forkJoin({
       professores: this.professorService.listarProfessoresPorUniversidadeId(this.universidadeIdDoUsuario).pipe(
         catchError(err => {
           console.error('Erro ao carregar professores:', err);
           this.errorMessage = (this.errorMessage || '') + ' Erro ao carregar professores.';
-          return of([]);
+          return of([]); 
         })
       ),
       universidade: this.universidadeService.buscarUniversidadePorId(this.universidadeIdDoUsuario).pipe(
@@ -175,25 +240,25 @@ export class FuncionarioSecretariaGraduacaoFormComponent implements OnInit {
         catchError(err => {
           console.error('Erro ao carregar dados da universidade/campi:', err);
           this.errorMessage = (this.errorMessage || '') + ' Erro ao carregar campi.';
-          return of(null);
+          return of(null); 
         })
       )
     }).subscribe({
       next: (results) => {
         this.professoresDisponiveis = results.professores;
-        if (results.universidade && results.universidade.campus) {
-          this.campiDaUniversidade = results.universidade.campus;
-        } else {
-          this.campiDaUniversidade = [];
-        }
+        this.campiDaUniversidade = results.universidade?.campus || [];
         console.log('[Debug] loadRelatedData - campiDaUniversidade set to:', this.campiDaUniversidade);
-        if (!this.isEditMode) {
-            this.createCampusCheckboxes();
+
+        if (this.isEditMode && this.graduacaoId) {
+          this.loadGraduacaoData();
+        } else if (!this.isEditMode) {
+          this.isLoadingProfessores = false; 
+          this.isLoadingCampi = false;
         }
-        this.isLoadingProfessores = false;
-        this.isLoadingCampi = false;
       },
-      error: () => {
+      error: (err) => { 
+        console.error('Erro ao carregar dados relacionados (professores/universidade):', err);
+        this.errorMessage = (this.errorMessage || '') + ' Erro fatal ao carregar dados necessários para o formulário.';
         this.isLoadingProfessores = false;
         this.isLoadingCampi = false;
       }
@@ -201,23 +266,34 @@ export class FuncionarioSecretariaGraduacaoFormComponent implements OnInit {
   }
 
   loadGraduacaoData(): void {
-    if (!this.graduacaoId) return;
-    this.isLoading = true;
-    this.graduacaoService.buscarPorId(this.graduacaoId).subscribe({
+    if (!this.graduacaoId) {
+        this.isLoadingProfessores = false; 
+        this.isLoadingCampi = false;
+        return;
+    }
+    this.isLoading = true; 
+
+    this.graduacaoService.buscarGraduacaoParaSecretariaPorId(this.graduacaoId).subscribe({
       next: (graduacao) => {
         this.graduacaoForm.patchValue({
           titulo: graduacao.titulo,
           semestres: graduacao.semestres,
           codigoCurso: graduacao.codigoCurso,
-          coordenadorDoCursoId: graduacao.coordenadorDoCurso?.id
+          coordenadorDoCursoId: graduacao.coordenadorDoCurso?.id ?? null,
         });
-        this.createCampusCheckboxes(graduacao.campiDisponiveis);
+        
+        this.graduacaoForm.get('campiSelecionados')?.setValue(graduacao.campusDisponiveis || []);
+        
         this.isLoading = false;
+        this.isLoadingProfessores = false; 
+        this.isLoadingCampi = false;
       },
       error: (err: any) => {
         console.error('Erro ao carregar dados da graduação:', err);
-        this.errorMessage = 'Erro ao carregar dados da graduação.';
+        this.errorMessage = err.message || 'Erro ao carregar dados da graduação.';
         this.isLoading = false;
+        this.isLoadingProfessores = false;
+        this.isLoadingCampi = false;
       }
     });
   }
@@ -236,21 +312,15 @@ export class FuncionarioSecretariaGraduacaoFormComponent implements OnInit {
     this.errorMessage = null;
     
     const formValue = this.graduacaoForm.value;
-    console.log("Form Value on Submit:", formValue);
-    console.log("Campi Disponiveis from Form:", formValue.campiDisponiveis);
 
-    const selectedCampi = this.graduacaoForm.value.campiDisponiveis
-      .map((checked: boolean, i: number) => checked ? this.campiDaUniversidade[i] : null)
-      .filter((value: string | null) => value !== null);
-    
-    console.log("Selected Campi to be sent:", selectedCampi);
+    const selectedCampiSubmit = formValue.campiSelecionados || [];
 
     const graduacaoData: GraduacaoDTO = {
       titulo: formValue.titulo,
       semestres: formValue.semestres,
       codigoCurso: formValue.codigoCurso,
       coordenadorDoCursoId: formValue.coordenadorDoCursoId,
-      campiDisponiveis: selectedCampi
+      campusDisponiveis: selectedCampiSubmit
     };
 
     if (this.isEditMode && this.graduacaoId) {

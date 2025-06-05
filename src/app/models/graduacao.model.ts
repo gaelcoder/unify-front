@@ -3,7 +3,7 @@ export interface GraduacaoDTO {
   semestres: number;
   codigoCurso: string;
   coordenadorDoCursoId?: number;
-  campiDisponiveis?: string[];
+  campusDisponiveis?: string[];
 }
 
 export interface Graduacao {
@@ -19,7 +19,7 @@ export interface Graduacao {
     id: number;
     nome?: string;
   };
-  campiDisponiveis?: string[];
+  campusDisponiveis?: string[];
   materias?: any[];
   alunos?: any[];
 } 

@@ -8,28 +8,39 @@ import { Aluno, AlunoDTO } from '../models/aluno.model'; // Adjusted path if mod
 })
 export class AlunoService {
 
-  private apiBaseUrl = 'http://localhost:8080'; // Should be configurable or from environment
-  private resourceUrl = `${this.apiBaseUrl}/api/funcionariosecretaria/alunos`;
+  // private apiBaseUrl = 'http://localhost:8080'; // No longer needed for resourceUrl
+  private resourceUrl = '/api/funcionariosecretaria/alunos'; // Changed to relative path
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    console.log('[AlunoService] Constructor called');
+  }
 
   listarAlunos(): Observable<Aluno[]> {
+    console.log('[AlunoService] listarAlunos called');
+    console.log(`[AlunoService] Making HTTP GET request to: ${this.resourceUrl}`);
     return this.http.get<Aluno[]>(this.resourceUrl);
   }
 
   criarAluno(aluno: AlunoDTO): Observable<Aluno> {
-    return this.http.post<Aluno>(this.resourceUrl, aluno);
+    // If other methods also use apiBaseUrl, they might need adjustment too,
+    // but focusing on listarAlunos for now.
+    // Assuming they also use relative paths or this.resourceUrl format
+    const createUrl = '/api/funcionariosecretaria/alunos'; // Example for consistency
+    return this.http.post<Aluno>(createUrl, aluno);
   }
 
   buscarAlunoPorId(id: number): Observable<Aluno> {
-    return this.http.get<Aluno>(`${this.resourceUrl}/${id}`);
+    const searchUrl = `/api/funcionariosecretaria/alunos/${id}`;
+    return this.http.get<Aluno>(searchUrl);
   }
 
   atualizarAluno(id: number, aluno: AlunoDTO): Observable<Aluno> {
-    return this.http.put<Aluno>(`${this.resourceUrl}/${id}`, aluno);
+    const updateUrl = `/api/funcionariosecretaria/alunos/${id}`;
+    return this.http.put<Aluno>(updateUrl, aluno);
   }
 
   deletarAluno(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.resourceUrl}/${id}`);
+    const deleteUrl = `/api/funcionariosecretaria/alunos/${id}`;
+    return this.http.delete<void>(deleteUrl);
   }
 } 

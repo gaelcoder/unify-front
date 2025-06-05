@@ -38,7 +38,7 @@ import { HttpErrorResponse } from '@angular/common/http';
             <td>{{ graduacao.semestres }}</td>
             <td>{{ graduacao.codigoCurso }}</td>
             <td>{{ graduacao.coordenadorDoCurso?.nome || 'N/A' }}</td>
-            <td>{{ graduacao.campiDisponiveis?.join(', ') || 'N/A' }}</td>
+            <td>{{ graduacao.campusDisponiveis?.join(', ') || 'N/A' }}</td>
             <td>
               <a [routerLink]="['../graduacoes/editar', graduacao.id]" class="btn btn-sm btn-outline-primary me-2">
                 <i class="fas fa-edit"></i> Editar
@@ -97,12 +97,7 @@ export class FuncionarioSecretariaGraduacaoListComponent implements OnInit {
     this.error = null;
     this.graduacaoService.listarTodas().subscribe({
       next: (data) => {
-        console.log('[ListComponent] Raw data received from service (type):', typeof data, data instanceof Array, data);
-
         const normalizedData = data.map((item, index) => {
-          console.log(`[ListComponent] Normalizing item ${index} (original item from service):`, item);
-
-          // Attempt direct manual construction, hoping to trigger getters if they exist
           const newItem = {
             id: item.id,
             titulo: item.titulo,
@@ -112,29 +107,20 @@ export class FuncionarioSecretariaGraduacaoListComponent implements OnInit {
             coordenadorDoCurso: item.coordenadorDoCurso,
             materias: item.materias,
             alunos: item.alunos,
-            campiDisponiveis: item.campiDisponiveis // If item has a getter, this should invoke it
+            campusDisponiveis: item.campusDisponiveis
           };
           
-          console.log(`[ListComponent] Normalizing item ${index} - Manually constructed newItem:`, newItem);
-          console.log(`[ListComponent] Normalizing item ${index} - Manually constructed newItem.campiDisponiveis:`, newItem.campiDisponiveis, typeof newItem.campiDisponiveis);
-
-          // Fallback to JSON stringify/parse if manual construction fails for campiDisponiveis
-          if (newItem.campiDisponiveis === undefined && item.campiDisponiveis !== null) {
-            console.warn(`[ListComponent] Normalizing item ${index} - Manual construction failed for campiDisponiveis. Falling back to stringify/parse.`);
+          if (newItem.campusDisponiveis === undefined && item.campusDisponiveis !== null) {
             try {
               const stringifiedItem = JSON.stringify(item);
               const parsedFallback = JSON.parse(stringifiedItem);
-              console.log(`[ListComponent] Normalizing item ${index} - Parsed fallback object:`, parsedFallback);
 
-              // Iterate over keys of parsedFallback to find the one that holds the campus data
               let foundCampusData = false;
               for (const key in parsedFallback) {
                 if (parsedFallback.hasOwnProperty(key)) {
-                  // Basic check, could be more sophisticated (e.g., lowercase, includes)
                   if (key.toLowerCase().includes('campus')) {
-                    console.log(`[ListComponent] Normalizing item ${index} - Found potential campus key in parsedFallback: '${key}', value:`, parsedFallback[key]);
                     if (Array.isArray(parsedFallback[key])) {
-                      newItem.campiDisponiveis = parsedFallback[key];
+                      newItem.campusDisponiveis = parsedFallback[key];
                       foundCampusData = true;
                       break; 
                     }
@@ -142,25 +128,16 @@ export class FuncionarioSecretariaGraduacaoListComponent implements OnInit {
                 }
               }
               if (!foundCampusData) {
-                console.error(`[ListComponent] Normalizing item ${index} - Could not find campus data in parsedFallback keys:`, Object.keys(parsedFallback));
               }
-              console.log(`[ListComponent] Normalizing item ${index} - newItem.campiDisponiveis AFTER FALLBACK:`, newItem.campiDisponiveis, typeof newItem.campiDisponiveis);
             } catch (e) {
-              console.error(`[ListComponent] Normalizing item ${index} - Error during fallback stringify/parse:`, e);
             }
           }
           return newItem;
         });
 
-        console.log('[ListComponent] Fully normalizedData array:', normalizedData);
         this.graduacoes = normalizedData;
 
         if (this.graduacoes && this.graduacoes.length > 0) {
-          const firstGraduacao = this.graduacoes[0];
-          console.log('[ListComponent] First NORMALISED graduacao object (final):', firstGraduacao);
-          console.log('[ListComponent] Keys of NORMALISED firstGraduacao (final):', Object.keys(firstGraduacao));
-          console.log('[ListComponent] NORMALISED Access via bracket (final) firstGraduacao[\'campiDisponiveis\']:', firstGraduacao['campiDisponiveis']);
-          console.log('[ListComponent] NORMALISED Access via dot (final) firstGraduacao.campiDisponiveis:', firstGraduacao.campiDisponiveis);
         }
         this.isLoading = false;
       },

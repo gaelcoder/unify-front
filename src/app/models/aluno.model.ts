@@ -1,3 +1,5 @@
+import { Graduacao } from './graduacao.model'; // Added import
+
 export interface AlunoDTO {
     id?: number; // ID is optional for creation, present for update
     nome: string;
@@ -23,11 +25,7 @@ export interface Aluno {
     telefone: string;
     matricula: string;
     cr: number;
-    graduacoes: Array<{ // Changed from graduacao to graduacoes and made it an array
-        id: number;
-        titulo: string; // Changed from nome to titulo
-        // Add other graduacao details if needed
-    }>;
+    graduacao?: Graduacao; // Changed from graduacoes: Array<...> to graduacao?: Graduacao
     universidade: {
         id: number;
         nome: string;

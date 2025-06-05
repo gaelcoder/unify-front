@@ -173,8 +173,7 @@ export class FuncionarioSecretariaAlunoFormComponent implements OnInit {
           cpf: aluno.cpf,
           dataNascimento: aluno.dataNascimento, 
           telefone: aluno.telefone,
-          // Correctly patch graduacaoId from the first element of the aluno.graduacoes array
-          graduacaoId: (aluno.graduacoes && aluno.graduacoes.length > 0 ? aluno.graduacoes[0].id : null)
+          graduacaoId: aluno.graduacao?.id || null
         });
         this.isLoading = false;
       },
