@@ -92,14 +92,6 @@
               Titulação é obrigatória.
             </div>
           </div>
-          <div class="col-md-6">
-            <label for="areaAtuacao" class="form-label">Área de Atuação<span class="text-danger">*</span></label>
-            <input type="text" id="areaAtuacao" formControlName="areaAtuacao" class="form-control"
-              [ngClass]="{ 'is-invalid': professorForm.get('areaAtuacao')?.invalid && professorForm.get('areaAtuacao')?.touched }">
-            <div *ngIf="professorForm.get('areaAtuacao')?.invalid && professorForm.get('areaAtuacao')?.touched" class="invalid-feedback">
-              Área de atuação é obrigatória.
-            </div>
-          </div>
         </div>
         <div class="row mb-3">
           <div class="col-md-6">

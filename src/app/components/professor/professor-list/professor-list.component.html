@@ -31,7 +31,6 @@
           <td>{{ professor.nome }} {{ professor.sobrenome }}</td>
           <td>{{ professor.email || professor.email }}</td> <!-- Display institutional or personal if former not present -->
           <td>{{ professor.titulacao }}</td>
-          <td>{{ professor.areaAtuacao }}</td>
           <td>
             <button type="button" (click)="editarProfessor(professor)" class="btn btn-sm btn-primary me-2">
               Editar

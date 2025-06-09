@@ -7,7 +7,6 @@ export interface Professor {
   email: string; 
   telefone: string;
   titulacao: string;
-  areaAtuacao: string;
   salario?: number; 
   universidadeId?: number;
 }
@@ -20,6 +19,5 @@ export interface ProfessorDTO {
   email?: string;
   telefone: string;
   titulacao: string;
-  areaAtuacao: string;
   salario: number;
 } 

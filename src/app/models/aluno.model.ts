@@ -9,6 +9,7 @@ export interface AlunoDTO {
     email: string;
     telefone: string;
     graduacaoId: number; // Changed from graduacaoIds: number[] to singular graduacaoId
+    campus: string;
     // universidadeId is typically determined by the logged-in Funcionario
     // and set on the backend, so it might not be part of the DTO sent from the frontend.
     // If it can be set from the frontend in some cases, add:
@@ -25,6 +26,7 @@ export interface Aluno {
     telefone: string;
     matricula: string;
     cr: number;
+    campus: string;
     graduacao?: Graduacao; // Changed from graduacoes: Array<...> to graduacao?: Graduacao
     universidade: {
         id: number;

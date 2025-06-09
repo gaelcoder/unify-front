@@ -34,7 +34,6 @@ export class ProfessorFormComponent implements OnInit {
       dataNascimento: ['', Validators.required],
       telefone: ['', Validators.required],
       titulacao: ['', Validators.required],
-      areaAtuacao: ['', Validators.required],
       salario: [null, [Validators.required, Validators.min(0)]] // Add salario control
     });
   }
