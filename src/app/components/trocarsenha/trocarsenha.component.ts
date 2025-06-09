@@ -29,55 +29,8 @@ export const conferirSenhasValidator: ValidatorFn = (control: AbstractControl): 
   selector: 'app-trocar-senha',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  template: `
-    <div class="container mt-5">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">
-              <h4>Alterar Senha - Primeiro Acesso</h4>
-            </div>
-            <div class="card-body">
-              <form [formGroup]="senhaForm" (ngSubmit)="onSubmit()">
-                <div class="mb-3">
-                  <label for="novaSenha" class="form-label">Nova Senha</label>
-                  <input type="password" id="novaSenha" formControlName="novaSenha" 
-                         class="form-control" [ngClass]="{'is-invalid': submitted && f.novaSenha.errors}">
-                  <div *ngIf="submitted && f.novaSenha.errors" class="invalid-feedback">
-                    <div *ngIf="f.novaSenha.errors['required']">Senha é obrigatória</div>
-                    <div *ngIf="f.novaSenha.errors['minlength']">Senha deve ter pelo menos 6 caracteres</div>
-                  </div>
-                </div>
-                
-                <div class="mb-3">
-                  <label for="confirmarSenha" class="form-label">Confirmar Senha</label>
-                  <input type="password" id="confirmarSenha" formControlName="confirmarSenha" 
-                         class="form-control" [ngClass]="{'is-invalid': submitted && (f.confirmarSenha.errors || senhaForm.hasError('senhasDiferentes'))}">
-                  <div *ngIf="submitted && f.confirmarSenha.errors" class="invalid-feedback">
-                    <div *ngIf="f.confirmarSenha.errors['required']">Confirmação de senha é obrigatória</div>
-                  </div>
-                  <div *ngIf="submitted && senhaForm.hasError('senhasDiferentes')" class="text-danger mt-1 small">
-                    Senhas não conferem
-                  </div>
-                </div>
-                
-                <div class="d-grid">
-                  <button type="submit" class="btn btn-primary" [disabled]="loading">
-                    <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
-                    Salvar Nova Senha
-                  </button>
-                </div>
-                
-                <div *ngIf="error" class="alert alert-danger mt-3">{{error}}</div>
-                <div *ngIf="success" class="alert alert-success mt-3">{{success}}</div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: []
+  templateUrl: './trocarsenha.component.html',
+  styleUrls: ['./trocarsenha.component.css']
 })
 export class TrocarSenhaComponent implements OnInit {
   senhaForm!: FormGroup<SenhaForm>;

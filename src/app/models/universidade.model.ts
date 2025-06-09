@@ -1,11 +1,20 @@
+import { Representante } from './representante.model';
+
 export interface Universidade {
-  id?: number;
+  id: number;
   nome: string;
   cnpj: string;
-  fundacao: string; // formato ISO YYYY-MM-DD
-  sigla: string;
+  fundacao: string; // Using string for date to simplify data transfer
+  sigla?: string;
+  logoPath?: string;
+  representante: Representante | null;
   campus: string[];
-  representante?: any;
+}
+
+export interface UniversidadeCampusDTO {
+  id: number;
+  nome: string;
+  campus: string[];
 }
 
 export interface UniversidadeDTO {

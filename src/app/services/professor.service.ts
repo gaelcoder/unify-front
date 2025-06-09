@@ -32,6 +32,10 @@ export class ProfessorService {
     return this.http.get<Professor[]>(`${this.getApiUrl()}`);
   }
 
+  listarProfessoresParaSecretaria(): Observable<Professor[]> {
+    return this.http.get<Professor[]>(`${this.baseApiUrl}/funcionariosecretaria/professores`);
+  }
+
   buscarPorId(id: number): Observable<Professor> {
     return this.http.get<Professor>(`${this.getApiUrl()}/${id}`);
   }

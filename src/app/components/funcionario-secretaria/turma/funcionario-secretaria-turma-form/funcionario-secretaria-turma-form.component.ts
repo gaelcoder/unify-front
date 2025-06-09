@@ -7,12 +7,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
   selector: 'app-funcionario-secretaria-turma-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  template: `
-    <h2>Formulário de Turma (Secretaria)</h2>
-    <p><em>Funcionalidade de formulário de turma (novo/editar) a ser implementada.</em></p>
-    <a routerLink="../" class="btn btn-secondary">Voltar para Lista</a>
-  `,
-  styles: []
+  templateUrl: './funcionario-secretaria-turma-form.component.html',
+  styleUrls: ['./funcionario-secretaria-turma-form.component.css']
 })
 export class FuncionarioSecretariaTurmaFormComponent implements OnInit {
   isEditMode = false;

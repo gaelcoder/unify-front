@@ -57,7 +57,15 @@ export class UniversidadeService {
     return this.http.get<UniversidadeStatsDTO>(`${this.apiUrl}/admin-universidade/minha-universidade/stats`);
   }
 
+  getMinhaUniversidade(): Observable<Universidade> {
+    return this.http.get<Universidade>(`${this.apiUrl}/universidades/minha-universidade`);
+  }
+
   buscarUniversidadePorId(id: number): Observable<Universidade> {
     return this.http.get<Universidade>(`${this.apiUrl}/universidades/${id}`);
+  }
+
+  getCampusesByMateriaId(materiaId: number): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/funcionariosecretaria/materias/${materiaId}/campuses`);
   }
 }

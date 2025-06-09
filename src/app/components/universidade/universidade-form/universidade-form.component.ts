@@ -19,7 +19,7 @@ export class UniversidadeFormComponent implements OnInit {
   loading = false;
   submitting = false;
   error = '';
-  success = '';
+  success: string | null = null;
   id: string | null = null;
   selectedLogoFile: File | null = null;
   logoPreviewUrl: string | ArrayBuffer | null = null;
@@ -27,7 +27,7 @@ export class UniversidadeFormComponent implements OnInit {
   representantesDisponiveis: Representante[] = [];
   carregandoRepresentantes = false;
   universidadeAtual: any = null;
-  representanteAtual: Representante | null = null;
+  representanteAtual: Representante | null | undefined = null;
 
   get campusArray() {
     return this.universidadeForm.get('campus') as FormArray;

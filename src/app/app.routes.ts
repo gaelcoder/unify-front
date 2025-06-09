@@ -172,19 +172,19 @@ export const routes: Routes = [
       // Turmas
       {
         path: 'turmas',
-        loadComponent: () => import('./components/funcionario-secretaria/turma/funcionario-secretaria-turma-list/funcionario-secretaria-turma-list.component').then(m => m.FuncionarioSecretariaTurmaListComponent),
+        loadComponent: () => import('./components/funcionario-secretaria/turma-list/turma-list.component').then(m => m.TurmaListComponent),
         canActivate: [authGuard],
         data: { roles: [UserRole.Funcionario] }
       },
       {
         path: 'turmas/nova',
-        loadComponent: () => import('./components/funcionario-secretaria/turma/funcionario-secretaria-turma-form/funcionario-secretaria-turma-form.component').then(m => m.FuncionarioSecretariaTurmaFormComponent),
+        loadComponent: () => import('./components/funcionario-secretaria/turma-form/turma-form.component').then(m => m.TurmaFormComponent),
         canActivate: [authGuard],
         data: { roles: [UserRole.Funcionario] }
       },
       {
         path: 'turmas/editar/:id',
-        loadComponent: () => import('./components/funcionario-secretaria/turma/funcionario-secretaria-turma-form/funcionario-secretaria-turma-form.component').then(m => m.FuncionarioSecretariaTurmaFormComponent),
+        loadComponent: () => import('./components/funcionario-secretaria/turma-form/turma-form.component').then(m => m.TurmaFormComponent),
         canActivate: [authGuard],
         data: { roles: [UserRole.Funcionario] }
       },
