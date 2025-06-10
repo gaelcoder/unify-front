@@ -52,7 +52,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     } else if (this.authService.isProfessor()) {
       return '/home';
     } else if (this.authService.isAluno()) {
-      return '/home';
+      return '/aluno/dashboard';
     }
     return '/login';
   }

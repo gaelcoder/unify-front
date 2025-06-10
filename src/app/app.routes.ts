@@ -18,6 +18,7 @@ import { ProfessorListComponent } from './components/professor/professor-list/pr
 import { ProfessorFormComponent } from './components/professor/professor-form/professor-form.component';
 import { FuncionarioRHDashboardComponent } from './components/dashboard-funcionario-rh/funcionario-rh-dashboard.component';
 import { DashboardSecretariaComponent } from './components/dashboard-secretaria/dashboard-secretaria.component';
+import { DashboardAlunoComponent } from './components/dashboard-aluno/dashboard-aluno.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -101,6 +102,14 @@ export const routes: Routes = [
     component: DashboardSecretariaComponent,
     canActivate: [authGuard],
     data: { roles: [UserRole.Funcionario] }
+  },
+
+  // Aluno Dashboard
+  {
+    path: 'aluno/dashboard',
+    component: DashboardAlunoComponent,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.Aluno] }
   },
 
   // Funcionario Secretaria Management Area

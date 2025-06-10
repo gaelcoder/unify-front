@@ -51,7 +51,7 @@ export class AuthService {
             } else if (userRoles.includes(UserRole.Professor)) {
               targetPath = '/home';
             } else if (userRoles.includes(UserRole.Aluno)) {
-              targetPath = '/home';
+              targetPath = '/aluno/dashboard';
             }
           }
           console.log(`[AuthService login] Determined targetPath: ${targetPath} for user type: ${userResponse.tipo}. Primeiro Acesso: ${userResponse.primeiroAcesso}`);

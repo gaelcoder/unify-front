@@ -19,9 +19,6 @@
         <li class="nav-item" *ngIf="currentUser && authService.isAdminGeral()">
           <a class="nav-link" routerLink="/representantes" routerLinkActive="active">Representantes</a>
         </li>
-        <li class="nav-item" *ngIf="currentUser && isAluno()">
-          <a class="nav-link" routerLink="/aluno/minhas-notas" routerLinkActive="active">Minhas Notas</a>
-        </li>
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item" *ngIf="!currentUser">
