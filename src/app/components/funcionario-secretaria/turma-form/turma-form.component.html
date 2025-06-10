@@ -48,9 +48,9 @@
     <p *ngIf="!turmaForm.get('campus')?.value || !turmaForm.get('materiaId')?.value">
       Selecione uma matéria e um campus para ver os alunos elegíveis.
     </p>
-    <p>Selecionados: {{ alunosSelecionados.length }} de {{ turmaForm.get('limiteAlunos')?.value }}</p>
+    <p>Selecionados: {{ turmaForm.get('alunoIds')?.value.length || 0 }} de {{ turmaForm.get('limiteAlunos')?.value }}</p>
 
-    <div class="aluno-list" formArrayName="alunoIds">
+    <div class="aluno-list">
       <div *ngIf="alunosElegiveis.length === 0 && turmaForm.get('campus')?.value && turmaForm.get('materiaId')?.value">
         Nenhum aluno elegível encontrado para os filtros selecionados.
       </div>
@@ -58,8 +58,8 @@
         <input class="form-check-input"
                type="checkbox"
                [id]="'aluno' + i"
-               [checked]="isAlunoSelecionado(aluno)"
-               (change)="onAlunoSelect(aluno, $event)">
+               [checked]="isAlunoSelecionado(aluno.id)"
+               (change)="onAlunoSelect(aluno.id, $event)">
         <label class="form-check-label" [for]="'aluno' + i">
           {{ aluno.nome }} (Matrícula: {{ aluno.matricula }})
         </label>

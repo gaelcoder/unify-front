@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TurmaService } from '../../../core/services/turma.service';
 import { MateriaService } from '../../../services/materia.service';
@@ -29,7 +29,6 @@ export class TurmaFormComponent implements OnInit {
   professores: Professor[] = [];
   campi: string[] = [];
   alunosElegiveis: Aluno[] = [];
-  alunosSelecionados: Aluno[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -46,43 +45,43 @@ export class TurmaFormComponent implements OnInit {
       turno: ['', Validators.required],
       campus: ['', Validators.required],
       limiteAlunos: [30, [Validators.required, Validators.min(1)]],
-      alunoIds: this.fb.array([])
+      alunoIds: [[]]
     });
   }
 
   ngOnInit(): void {
-    this.loadInitialData();
     this.turmaId = this.route.snapshot.params['id'];
     this.isEditMode = !!this.turmaId;
 
-    if (this.isEditMode) {
-      this.turmaService.getTurmaById(this.turmaId!).pipe(
-        tap(turma => this.turmaForm.patchValue({
-          materiaId: turma.materia.id,
-          professorId: turma.professor.id,
-          turno: turma.turno,
-          campus: turma.campus,
-          limiteAlunos: turma.limiteAlunos
-        })),
-        switchMap(turma => {
-          this.alunosSelecionados = turma.alunos;
-          return this.turmaService.getAlunosElegiveis(turma.campus, turma.materia.id);
-        })
-      ).subscribe((alunos: Aluno[]) => {
-        this.alunosElegiveis = alunos;
-        // Preencher o FormArray com os alunos que já estavam na turma
-        const alunoIdsFArray = this.turmaForm.get('alunoIds') as FormArray;
-        this.alunosSelecionados.forEach(aluno => alunoIdsFArray.push(this.fb.control(aluno.id)));
-      });
-    }
+    this.loadInitialData().then(() => {
+      if (this.isEditMode && this.turmaId) {
+        this.turmaService.getTurmaById(this.turmaId).subscribe(turma => {
+          this.turmaForm.patchValue({
+            materiaId: turma.materia.id,
+            professorId: turma.professor.id,
+            turno: turma.turno,
+            campus: turma.campus,
+            limiteAlunos: turma.limiteAlunos,
+            alunoIds: turma.alunos.map(a => a.id)
+          });
+          
+          this.turmaForm.get('materiaId')?.disable();
+          this.turmaForm.get('turno')?.disable();
+          this.turmaForm.get('campus')?.disable();
+          this.turmaForm.get('limiteAlunos')?.disable();
+          
+          this.onCampusOuMateriaChange();
+        });
+      }
+    });
 
-    this.turmaForm.get('campus')?.valueChanges.subscribe(val => this.onCampusOuMateriaChange());
-    this.turmaForm.get('materiaId')?.valueChanges.subscribe(val => this.onCampusOuMateriaChange());
+    this.turmaForm.get('campus')?.valueChanges.subscribe(() => this.onCampusOuMateriaChange());
+    this.turmaForm.get('materiaId')?.valueChanges.subscribe(() => this.onCampusOuMateriaChange());
   }
 
-  loadInitialData(): void {
-    this.materiaService.listarMaterias().subscribe((data: Materia[]) => this.materias = data);
-    this.professorService.listarProfessoresParaSecretaria().subscribe((data: Professor[]) => this.professores = data);
+  async loadInitialData(): Promise<void> {
+    this.materias = await this.materiaService.listarMaterias().toPromise() || [];
+    this.professores = await this.professorService.listarProfessoresParaSecretaria().toPromise() || [];
   }
 
   onCampusOuMateriaChange(): void {
@@ -92,10 +91,9 @@ export class TurmaFormComponent implements OnInit {
     if (campus && materiaId) {
       this.turmaService.getAlunosElegiveis(campus, materiaId).subscribe((alunos: Aluno[]) => {
         this.alunosElegiveis = alunos;
-        // Resetar seleções ao mudar o filtro
-        this.alunosSelecionados = [];
-        const alunoIdsFArray = this.turmaForm.get('alunoIds') as FormArray;
-        alunoIdsFArray.clear();
+        if (!this.isEditMode) {
+          this.turmaForm.get('alunoIds')?.setValue([]);
+        }
       });
     }
   }
@@ -105,53 +103,56 @@ export class TurmaFormComponent implements OnInit {
     if (materiaId) {
       this.universidadeService.getCampusesByMateriaId(materiaId).subscribe(campuses => {
         this.campi = campuses;
-        this.turmaForm.get('campus')?.reset(); // Reseta o campus ao mudar a matéria
       });
-      this.onCampusOuMateriaChange();
     } else {
       this.campi = [];
     }
+    this.turmaForm.get('campus')?.reset({ value: '', disabled: this.isEditMode });
   }
 
-  onAlunoSelect(aluno: Aluno, event: any): void {
+  onAlunoSelect(alunoId: number, event: any): void {
     const isChecked = event.target.checked;
-    const alunoIdsFArray = this.turmaForm.get('alunoIds') as FormArray;
-
+    const limite = this.turmaForm.get('limiteAlunos')?.value;
+    const currentSelection = this.turmaForm.get('alunoIds')?.value as number[];
+    
     if (isChecked) {
-      if (this.alunosSelecionados.length >= this.turmaForm.get('limiteAlunos')?.value) {
+      if (currentSelection.length >= limite) {
         alert('Limite de alunos na turma atingido!');
         event.target.checked = false;
         return;
       }
-      this.alunosSelecionados.push(aluno);
-      alunoIdsFArray.push(this.fb.control(aluno.id));
+      this.turmaForm.get('alunoIds')?.setValue([...currentSelection, alunoId]);
     } else {
-      const index = this.alunosSelecionados.findIndex(a => a.id === aluno.id);
-      if (index > -1) {
-        this.alunosSelecionados.splice(index, 1);
-        alunoIdsFArray.removeAt(index);
-      }
+      this.turmaForm.get('alunoIds')?.setValue(currentSelection.filter(id => id !== alunoId));
     }
   }
 
-  isAlunoSelecionado(aluno: Aluno): boolean {
-    return this.alunosSelecionados.some(a => a.id === aluno.id);
+  isAlunoSelecionado(alunoId: number): boolean {
+    const currentSelection = this.turmaForm.get('alunoIds')?.value as number[];
+    return currentSelection.includes(alunoId);
   }
 
   onSubmit(): void {
     if (this.turmaForm.invalid) {
+      Object.keys(this.turmaForm.controls).forEach(field => {
+        const control = this.turmaForm.get(field);
+        control?.markAsTouched({ onlySelf: true });
+      });
       return;
     }
 
-    const turmaData: TurmaCreate = this.turmaForm.value;
+    const formValue = this.turmaForm.getRawValue();
 
     if (this.isEditMode) {
-      // O backend não suporta edição, então redirecionamos para a lista.
-      // Em uma implementação real, chamaríamos um serviço de update.
-      console.warn("Funcionalidade de edição não implementada no backend. Redirecionando...");
-      this.router.navigate(['/funcionariosecretaria/turmas']);
+      const turmaData = {
+        professorId: formValue.professorId,
+        alunoIds: formValue.alunoIds
+      };
+      this.turmaService.updateTurma(this.turmaId!, turmaData).subscribe(() => {
+        this.router.navigate(['/funcionariosecretaria/turmas']);
+      });
     } else {
-      this.turmaService.createTurma(turmaData).subscribe(() => {
+      this.turmaService.createTurma(formValue).subscribe(() => {
         this.router.navigate(['/funcionariosecretaria/turmas']);
       });
     }

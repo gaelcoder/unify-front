@@ -24,6 +24,10 @@ export class TurmaService {
     return this.http.post<Turma>(this.apiUrl, turma);
   }
 
+  updateTurma(id: number, turma: any): Observable<Turma> {
+    return this.http.put<Turma>(`${this.apiUrl}/${id}`, turma);
+  }
+
   deleteTurma(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
