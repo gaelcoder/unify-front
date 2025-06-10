@@ -57,23 +57,31 @@ export class TurmaFormComponent implements OnInit {
     this.loadInitialData().then(() => {
       if (this.isEditMode && this.turmaId) {
         this.turmaService.getTurmaById(this.turmaId).subscribe(turma => {
-          this.turmaForm.patchValue({
-            materiaId: turma.materia.id,
-            professorId: turma.professor.id,
-            turno: turma.turno,
-            diaSemana: turma.diaSemana,
-            campus: turma.campus,
-            limiteAlunos: turma.limiteAlunos,
-            alunoIds: turma.alunos.map(a => a.id)
+          // Primeiro, carregue os campi para a matéria da turma
+          this.universidadeService.getCampusesByMateriaId(turma.materia.id).subscribe(campuses => {
+            this.campi = campuses;
+            
+            // Agora que os campi estão na lista, defina os valores do formulário
+            this.turmaForm.patchValue({
+              materiaId: turma.materia.id,
+              professorId: turma.professor.id,
+              turno: turma.turno,
+              diaSemana: turma.diaSemana,
+              campus: turma.campus,
+              limiteAlunos: turma.limiteAlunos,
+              alunoIds: turma.alunos.map(a => a.id)
+            });
+
+            // Desabilite os campos após definir os valores
+            this.turmaForm.get('materiaId')?.disable();
+            this.turmaForm.get('turno')?.disable();
+            this.turmaForm.get('diaSemana')?.disable();
+            this.turmaForm.get('campus')?.disable();
+            this.turmaForm.get('limiteAlunos')?.disable();
+
+            // Finalmente, carregue os alunos elegíveis
+            this.onCampusOuMateriaChange();
           });
-          
-          this.turmaForm.get('materiaId')?.disable();
-          this.turmaForm.get('turno')?.disable();
-          this.turmaForm.get('diaSemana')?.disable();
-          this.turmaForm.get('campus')?.disable();
-          this.turmaForm.get('limiteAlunos')?.disable();
-          
-          this.onCampusOuMateriaChange();
         });
       }
     });
