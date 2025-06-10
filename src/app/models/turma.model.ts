@@ -7,6 +7,7 @@ export interface Turma {
   materia: Materia;
   professor: Professor;
   turno: string;
+  diaSemana: string;
   campus: string;
   limiteAlunos: number;
   alunos: Aluno[];
@@ -16,6 +17,7 @@ export interface TurmaCreate {
   materiaId: number;
   professorId: number;
   turno: string;
+  diaSemana: string;
   campus: string;
   limiteAlunos: number;
   alunoIds: number[];

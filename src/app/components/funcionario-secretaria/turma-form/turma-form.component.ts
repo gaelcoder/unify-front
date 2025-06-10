@@ -43,6 +43,7 @@ export class TurmaFormComponent implements OnInit {
       materiaId: ['', Validators.required],
       professorId: ['', Validators.required],
       turno: ['', Validators.required],
+      diaSemana: ['', Validators.required],
       campus: ['', Validators.required],
       limiteAlunos: [30, [Validators.required, Validators.min(1)]],
       alunoIds: [[]]
@@ -60,6 +61,7 @@ export class TurmaFormComponent implements OnInit {
             materiaId: turma.materia.id,
             professorId: turma.professor.id,
             turno: turma.turno,
+            diaSemana: turma.diaSemana,
             campus: turma.campus,
             limiteAlunos: turma.limiteAlunos,
             alunoIds: turma.alunos.map(a => a.id)
@@ -67,6 +69,7 @@ export class TurmaFormComponent implements OnInit {
           
           this.turmaForm.get('materiaId')?.disable();
           this.turmaForm.get('turno')?.disable();
+          this.turmaForm.get('diaSemana')?.disable();
           this.turmaForm.get('campus')?.disable();
           this.turmaForm.get('limiteAlunos')?.disable();
           
