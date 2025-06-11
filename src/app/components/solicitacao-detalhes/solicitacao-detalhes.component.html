@@ -1,0 +1,26 @@
+<div class="container mt-4">
+  <div *ngIf="isLoading" class="text-center">
+    <p>Loading...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && solicitacao" class="card">
+    <div class="card-header">
+      <h2>Solicitation Details</h2>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Type: {{ solicitacao.tipo }}</h5>
+      <p class="card-text"><strong>ID:</strong> {{ solicitacao.id }}</p>
+      <p class="card-text"><strong>Status:</strong> {{ solicitacao.status }}</p>
+      <p class="card-text"><strong>Date:</strong> {{ solicitacao.dataSolicitacao | date: 'medium' }}</p>
+      <p class="card-text"><strong>Message:</strong></p>
+      <p class="card-text">{{ solicitacao.mensagem }}</p>
+    </div>
+    <div class="card-footer">
+      <button [routerLink]="['/aluno/solicitacoes']" class="btn btn-secondary">Back to List</button>
+    </div>
+  </div>
+</div> 

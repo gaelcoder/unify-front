@@ -148,6 +148,14 @@ export const routes: Routes = [
     data: { roles: [UserRole.Aluno] }
   },
 
+  // Rota de detalhes compartilhada
+  {
+    path: 'solicitacoes/detalhes/:id',
+    loadComponent: () => import('./components/solicitacao-detalhes/solicitacao-detalhes.component').then(m => m.SolicitacaoDetalhesComponent),
+    canActivate: [authGuard],
+    data: { roles: [UserRole.Aluno, UserRole.Funcionario] }
+  },
+
   // Funcionario Secretaria Management Area
   {
     path: 'funcionariosecretaria',

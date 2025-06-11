@@ -34,4 +34,12 @@ export class SolicitacaoService {
   updateSolicitacaoStatus(id: number, statusUpdate: SolicitacaoStatusUpdateDTO): Observable<Solicitacao> {
     return this.http.patch<Solicitacao>(`${this.apiUrl}/${id}/status`, statusUpdate);
   }
+
+  updateStatus(id: number, status: string): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(`${this.apiUrl}/${id}/status`, { status });
+  }
+
+  getById(id: number): Observable<Solicitacao> {
+    return this.http.get<Solicitacao>(`${this.apiUrl}/${id}`);
+  }
 } 

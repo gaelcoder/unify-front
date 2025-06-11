@@ -1,0 +1,11 @@
+.card {
+  margin-top: 20px;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+}
+
+.card-footer {
+  text-align: right;
+} 

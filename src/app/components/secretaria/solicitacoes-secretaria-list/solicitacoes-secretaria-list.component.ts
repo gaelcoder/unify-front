@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { SolicitacaoService } from '../../../services/solicitacao.service';
 import { SolicitacaoSecretariaDTO, StatusSolicitacao } from '../../../models/solicitacao.model';
 import { UniversidadeService } from '../../../services/universidade.service';
@@ -9,7 +10,7 @@ import { AuthService } from '../../../services/auth.service';
 @Component({
   selector: 'app-solicitacoes-secretaria-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './solicitacoes-secretaria-list.component.html',
   styleUrls: ['./solicitacoes-secretaria-list.component.css']
 })
