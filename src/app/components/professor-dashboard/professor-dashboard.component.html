@@ -1,0 +1,34 @@
+<div class="dashboard-container">
+  <h1>Dashboard do Professor</h1>
+  <p>Bem-vindo ao seu painel.</p>
+
+  <button (click)="verificarTurmas()">Verificar Turmas</button>
+
+  <div *ngIf="turmas" class="turmas-container">
+    <h2>Minhas Turmas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Matéria</th>
+          <th>Turno</th>
+          <th>Dia da Semana</th>
+          <th>Campus</th>
+          <th>Nº de Alunos</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let turma of turmas">
+          <td>{{ turma.nomeMateria }}</td>
+          <td>{{ turma.turno }}</td>
+          <td>{{ turma.diaSemana }}</td>
+          <td>{{ turma.campus }}</td>
+          <td>{{ turma.numeroDeAlunos }}</td>
+          <td>
+            <button (click)="gerarRelatorio(turma.id)">Gerar Relação</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div> 

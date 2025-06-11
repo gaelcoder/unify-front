@@ -4,6 +4,15 @@ import { Observable } from 'rxjs';
 import { Professor, ProfessorDTO } from '../models/professor.model';
 import { AuthService } from './auth.service';
 
+export interface Turma {
+  id: number;
+  nomeMateria: string;
+  turno: string;
+  diaSemana: string;
+  campus: string;
+  numeroDeAlunos: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -13,14 +22,13 @@ export class ProfessorService {
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getApiUrl(): string {
-    // Assuming only FUNCIONARIO_RH can manage professors through this specific path for now
     if (this.authService.isFuncionarioRH()) {
       return `${this.baseApiUrl}/rh/professores`;
+    } else if (this.authService.isProfessor()) {
+        return `${this.baseApiUrl}/professores`;
     }
-    // Fallback or error if other roles attempt to use this service without a defined path
-    // This might need adjustment if other roles get professor management capabilities at different endpoints
     console.warn('ProfessorService called by a user role not explicitly handled for API endpoint determination.');
-    return `${this.baseApiUrl}/rh/professores`; // Defaulting to RH path, consider throwing error or specific handling
+    return `${this.baseApiUrl}/professores`; 
   }
 
   create(professorDto: ProfessorDTO): Observable<Professor> {
@@ -28,7 +36,6 @@ export class ProfessorService {
   }
 
   listarTodosPorUniversidade(): Observable<Professor[]> {
-    // The backend for /api/rh/professores by default lists for the RH's university
     return this.http.get<Professor[]>(`${this.getApiUrl()}`);
   }
 
@@ -41,12 +48,10 @@ export class ProfessorService {
   }
 
   update(id: number, professorDto: ProfessorDTO): Observable<Professor> {
-    // Assuming an endpoint like /api/rh/professores/{id} for updates
     return this.http.put<Professor>(`${this.getApiUrl()}/${id}`, professorDto);
   }
 
   delete(id: number): Observable<void> {
-    // Assuming an endpoint like /api/rh/professores/{id} for deletion
     return this.http.delete<void>(`${this.getApiUrl()}/${id}`);
   }
 
@@ -58,7 +63,16 @@ export class ProfessorService {
    * and might use a different, more generally accessible endpoint than RH-specific professor management.
    */
   listarProfessoresPorUniversidadeId(universidadeId: number): Observable<Professor[]> {
-    // Path updated to match GraduacaoOperacoesController
     return this.http.get<Professor[]>(`${this.baseApiUrl}/graduacao-operacoes/professores/por-universidade/${universidadeId}`);
+  }
+
+  getTurmas(): Observable<Turma[]> {
+    return this.http.get<Turma[]>(`${this.getApiUrl()}/turmas`);
+  }
+
+  gerarRelatorio(turmaId: number): Observable<Blob> {
+    return this.http.get(`${this.getApiUrl()}/turmas/${turmaId}/relatorio`, {
+      responseType: 'blob'
+    });
   }
 } 

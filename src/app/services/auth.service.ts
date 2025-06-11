@@ -49,7 +49,7 @@ export class AuthService {
             } else if (userRoles.includes(UserRole.Funcionario)) {
               targetPath = '/dashboard-secretaria';
             } else if (userRoles.includes(UserRole.Professor)) {
-              targetPath = '/home';
+              targetPath = '/professor-dashboard';
             } else if (userRoles.includes(UserRole.Aluno)) {
               targetPath = '/aluno/dashboard';
             }
@@ -78,22 +78,22 @@ export class AuthService {
 
   isFuncionarioRH(): boolean {
     const user = this.currentUserValue;
-    return !!user && user.tipo === UserRole.FuncionarioRH;
+    return !!user && !!user.tipo && (user.tipo as string).split(',').includes(UserRole.FuncionarioRH);
   }
 
   isFuncionario(): boolean {
     const user = this.currentUserValue;
-    return !!user && user.tipo === UserRole.Funcionario;
+    return !!user && !!user.tipo && (user.tipo as string).split(',').includes(UserRole.Funcionario);
   }
 
   isAluno(): boolean {
     const user = this.currentUserValue;
-    return !!user && user.tipo === UserRole.Aluno;
+    return !!user && !!user.tipo && (user.tipo as string).split(',').includes(UserRole.Aluno);
   }
 
   isProfessor(): boolean {
     const user = this.currentUserValue;
-    return !!user && user.tipo === UserRole.Professor;
+    return !!user && !!user.tipo && (user.tipo as string).split(',').includes(UserRole.Professor);
   }
 
   isAuthenticated(): boolean {
@@ -128,7 +128,7 @@ export class AuthService {
 
   isFuncionarioSecretaria(): boolean {
     const user = this.currentUserValue;
-    return user?.tipo === UserRole.Funcionario;
+    return !!user && !!user.tipo && (user.tipo as string).split(',').includes(UserRole.Funcionario);
   }
 
   getUniversidadeId(): number | null {
