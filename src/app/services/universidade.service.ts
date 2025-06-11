@@ -9,7 +9,7 @@ import { UniversidadeStatsDTO } from '../models/universidade-stats.model';
   providedIn: 'root'
 })
 export class UniversidadeService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = '/api';
 
   constructor(private http: HttpClient) { }
 
@@ -67,5 +67,9 @@ export class UniversidadeService {
 
   getCampusesByMateriaId(materiaId: number): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/funcionariosecretaria/materias/${materiaId}/campuses`);
+  }
+
+  getCampi(universidadeId: number): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/universidades/${universidadeId}/campi`);
   }
 }

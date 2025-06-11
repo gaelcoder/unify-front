@@ -1,0 +1,38 @@
+<div class="container mt-4">
+  <h2>Nova Solicitação</h2>
+  <hr>
+
+  <form [formGroup]="solicitacaoForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="tipo" class="form-label">Tipo de Solicitação</label>
+      <select id="tipo" class="form-select" formControlName="tipo" [class.is-invalid]="solicitacaoForm.get('tipo')?.invalid && solicitacaoForm.get('tipo')?.touched">
+        <option value="" disabled>Selecione um tipo...</option>
+        <option *ngFor="let tipo of tiposSolicitacao" [value]="tipo.key">{{ tipo.value }}</option>
+      </select>
+      <div *ngIf="solicitacaoForm.get('tipo')?.invalid && solicitacaoForm.get('tipo')?.touched" class="invalid-feedback">
+        Por favor, selecione o tipo da solicitação.
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="mensagem" class="form-label">Mensagem</label>
+      <textarea id="mensagem" class="form-control" formControlName="mensagem" rows="5" [class.is-invalid]="solicitacaoForm.get('mensagem')?.invalid && solicitacaoForm.get('mensagem')?.touched"></textarea>
+      <div *ngIf="solicitacaoForm.get('mensagem')?.invalid && solicitacaoForm.get('mensagem')?.touched" class="invalid-feedback">
+        <div *ngIf="solicitacaoForm.get('mensagem')?.errors?.['required']">A mensagem é obrigatória.</div>
+        <div *ngIf="solicitacaoForm.get('mensagem')?.errors?.['minlength']">A mensagem deve ter pelo menos 10 caracteres.</div>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <button type="button" class="btn btn-secondary me-2" [routerLink]="['/aluno/solicitacoes']">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        {{ isLoading ? 'Enviando...' : 'Enviar Solicitação' }}
+      </button>
+    </div>
+  </form>
+</div> 

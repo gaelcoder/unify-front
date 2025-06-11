@@ -15,10 +15,10 @@ export class AlunoService {
     console.log('[AlunoService] Constructor called');
   }
 
-  listarAlunos(): Observable<Aluno[]> {
+  listarAlunos(): Observable<any[]> {
     console.log('[AlunoService] listarAlunos called');
     console.log(`[AlunoService] Making HTTP GET request to: ${this.resourceUrl}`);
-    return this.http.get<Aluno[]>(this.resourceUrl);
+    return this.http.get<any[]>(this.resourceUrl);
   }
 
   criarAluno(aluno: AlunoDTO): Observable<Aluno> {
@@ -29,9 +29,9 @@ export class AlunoService {
     return this.http.post<Aluno>(createUrl, aluno);
   }
 
-  buscarAlunoPorId(id: number): Observable<Aluno> {
+  buscarAlunoPorId(id: number): Observable<any> {
     const searchUrl = `/api/funcionariosecretaria/alunos/${id}`;
-    return this.http.get<Aluno>(searchUrl);
+    return this.http.get<any>(searchUrl);
   }
 
   atualizarAluno(id: number, aluno: AlunoDTO): Observable<Aluno> {

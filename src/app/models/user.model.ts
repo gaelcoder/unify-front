@@ -15,5 +15,6 @@ export interface User {
   primeiroAcesso: boolean;
   universidadeId?: number;
   universidadeNome?: string;
-  universidadeLogoPath?: string; 
+  universidadeLogoPath?: string;
+  alunoId?: number;
 }

@@ -62,7 +62,7 @@ import { catchError, tap, shareReplay } from 'rxjs/operators';
   styles: []
 })
 export class FuncionarioSecretariaAlunoListComponent implements OnInit {
-  alunos$: Observable<Aluno[]> = of([]);
+  alunos$: Observable<any[]> = of([]);
   isLoading = true;
   errorLoadingAlunos = false;
 
@@ -103,7 +103,7 @@ export class FuncionarioSecretariaAlunoListComponent implements OnInit {
     console.log('[AlunoListComponent] alumnos$ (service call) prepared with shareReplay and subscribed to trigger.');
   }
 
-  confirmDelete(aluno: Aluno): void {
+  confirmDelete(aluno: any): void {
     if (confirm(`Tem certeza que deseja excluir o aluno ${aluno.nome} ${aluno.sobrenome} (Matrícula: ${aluno.matricula})? Esta ação não pode ser desfeita.`)) {
       this.alunoService.deletarAluno(aluno.id).subscribe({
         next: () => {

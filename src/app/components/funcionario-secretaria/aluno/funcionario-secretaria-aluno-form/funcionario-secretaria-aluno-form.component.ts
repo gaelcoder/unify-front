@@ -222,7 +222,7 @@ export class FuncionarioSecretariaAlunoFormComponent implements OnInit {
     });
   }
 
-  patchFormWithAlunoData(aluno: Aluno): void {
+  patchFormWithAlunoData(aluno: any): void {
     this.alunoForm.patchValue({
       nome: aluno.nome,
       sobrenome: aluno.sobrenome,
@@ -233,8 +233,12 @@ export class FuncionarioSecretariaAlunoFormComponent implements OnInit {
       graduacaoId: aluno.graduacao?.id || null
     });
   
-    // Manually trigger the value change logic for graduation to populate and set the campus
-    this.onGraduacaoChange(aluno.graduacao?.id || null);
+    if (aluno.graduacao && aluno.graduacao.campusDisponiveis) {
+      this.campiDisponiveis = aluno.graduacao.campusDisponiveis;
+      this.alunoForm.get('campus')?.enable();
+    }
+    
+    // Set the campus value after populating the options
     this.alunoForm.get('campus')?.setValue(aluno.campus);
   }
 

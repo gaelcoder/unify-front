@@ -19,6 +19,7 @@ import { ProfessorFormComponent } from './components/professor/professor-form/pr
 import { FuncionarioRHDashboardComponent } from './components/dashboard-funcionario-rh/funcionario-rh-dashboard.component';
 import { DashboardSecretariaComponent } from './components/dashboard-secretaria/dashboard-secretaria.component';
 import { DashboardAlunoComponent } from './components/dashboard-aluno/dashboard-aluno.component';
+import { SolicitacoesSecretariaListComponent } from './components/secretaria/solicitacoes-secretaria-list/solicitacoes-secretaria-list.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -104,10 +105,45 @@ export const routes: Routes = [
     data: { roles: [UserRole.Funcionario] }
   },
 
+  {
+    path: 'solicitacoes-secretaria',
+    component: SolicitacoesSecretariaListComponent,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.Funcionario] }
+  },
+
   // Aluno Dashboard
   {
     path: 'aluno/dashboard',
     component: DashboardAlunoComponent,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.Aluno] }
+  },
+
+  // Aluno Grade Horaria
+  {
+    path: 'aluno/grade-horaria',
+    loadComponent: () => import('./components/aluno/grade-horaria/grade-horaria.component').then(m => m.GradeHorariaComponent),
+    canActivate: [authGuard],
+    data: { roles: [UserRole.Aluno] }
+  },
+
+  // Aluno Solicitacoes
+  {
+    path: 'aluno/solicitacoes',
+    loadComponent: () => import('./components/aluno/solicitacoes/solicitacao-aluno-list/solicitacao-aluno-list.component').then(m => m.SolicitacaoAlunoListComponent),
+    canActivate: [authGuard],
+    data: { roles: [UserRole.Aluno] }
+  },
+  {
+    path: 'aluno/solicitacoes/nova',
+    loadComponent: () => import('./components/aluno/solicitacoes/solicitacao-aluno-form/solicitacao-aluno-form.component').then(m => m.SolicitacaoAlunoFormComponent),
+    canActivate: [authGuard],
+    data: { roles: [UserRole.Aluno] }
+  },
+  {
+    path: 'aluno/solicitacoes/:id',
+    loadComponent: () => import('./components/aluno/solicitacoes/solicitacao-aluno-detalhe/solicitacao-aluno-detalhe.component').then(m => m.SolicitacaoAlunoDetalheComponent),
     canActivate: [authGuard],
     data: { roles: [UserRole.Aluno] }
   },

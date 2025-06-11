@@ -4,8 +4,8 @@
     <div class="col-lg-6 mx-auto">
       <p class="lead mb-4">Bem-vindo(a) ao seu portal. Utilize os botões abaixo para acessar as funcionalidades disponíveis.</p>
       <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-        <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Gerar Grade Horária</button>
-        <button type="button" class="btn btn-outline-secondary btn-lg px-4">Fazer Solicitação</button>
+        <button (click)="navigateTo('/aluno/solicitacoes')" class="btn btn-outline-secondary btn-lg px-4">Minhas Solicitações</button>
+        <button (click)="navigateTo('/aluno/solicitacao-historico')" class="btn btn-outline-secondary btn-lg px-4">Gerar Grade Horária</button>
       </div>
     </div>
   </div>

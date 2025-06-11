@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { SecretariaService } from '../../services/secretaria.service';
@@ -9,7 +9,7 @@ import { SecretariaDashboardStatsDTO } from '../../core/dtos/secretaria-dashboar
 @Component({
   selector: 'app-dashboard-secretaria',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './dashboard-secretaria.component.html',
   styleUrls: ['./dashboard-secretaria.component.css']
 })

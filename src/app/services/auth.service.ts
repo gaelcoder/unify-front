@@ -125,4 +125,14 @@ export class AuthService {
       })
     );
   }
+
+  isFuncionarioSecretaria(): boolean {
+    const user = this.currentUserValue;
+    return user?.tipo === UserRole.Funcionario;
+  }
+
+  getUniversidadeId(): number | null {
+    const user = this.currentUserValue;
+    return user?.universidadeId || null;
+  }
 }
