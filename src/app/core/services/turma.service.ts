@@ -32,11 +32,15 @@ export class TurmaService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getAlunosElegiveis(campus: string, materiaId: number): Observable<Aluno[]> {
-    let params = new HttpParams();
-    params = params.append('campus', campus);
-    params = params.append('materiaId', materiaId.toString());
-
+  getAlunosElegiveis(campus: string, materiaId: number, diaSemana: string, turno: string, turmaId?: number): Observable<Aluno[]> {
+    let params = new HttpParams()
+      .set('campus', campus)
+      .set('materiaId', materiaId.toString())
+      .set('diaSemana', diaSemana)
+      .set('turno', turno);
+    if (turmaId) {
+      params = params.set('turmaId', turmaId.toString());
+    }
     return this.http.get<Aluno[]>(`${this.apiUrl}/alunos-elegiveis`, { params });
   }
 } 

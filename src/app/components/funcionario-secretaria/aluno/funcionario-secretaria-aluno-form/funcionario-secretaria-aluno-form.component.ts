@@ -232,6 +232,7 @@ export class FuncionarioSecretariaAlunoFormComponent implements OnInit {
       telefone: aluno.telefone,
       graduacaoId: aluno.graduacao?.id || null
     });
+    this.alunoForm.get('cpf')?.disable();
   
     if (aluno.graduacao && aluno.graduacao.campusDisponiveis) {
       this.campiDisponiveis = aluno.graduacao.campusDisponiveis;
@@ -246,9 +247,18 @@ export class FuncionarioSecretariaAlunoFormComponent implements OnInit {
     // When submitting, enable the campus control to get its value
     this.alunoForm.get('campus')?.enable({ onlySelf: true, emitEvent: false });
 
+    if (this.isEditMode) {
+      this.alunoForm.get('cpf')?.enable({ onlySelf: true, emitEvent: false });
+    }
+
     if (this.alunoForm.invalid) {
       this.alunoForm.markAllAsTouched();
-      this.alunoForm.get('campus')?.disable({ onlySelf: true, emitEvent: false }); // Re-disable if invalid
+      // Disable campus again if validation fails to maintain UI state
+      this.alunoForm.get('campus')?.disable({ onlySelf: true, emitEvent: false });
+
+      if (this.isEditMode) {
+        this.alunoForm.get('cpf')?.disable({ onlySelf: true, emitEvent: false });
+      }
       return;
     }
 

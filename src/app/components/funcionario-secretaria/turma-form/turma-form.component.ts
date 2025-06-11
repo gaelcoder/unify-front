@@ -54,50 +54,61 @@ export class TurmaFormComponent implements OnInit {
     this.turmaId = this.route.snapshot.params['id'];
     this.isEditMode = !!this.turmaId;
 
-    this.loadInitialData().then(() => {
-      if (this.isEditMode && this.turmaId) {
-        this.turmaService.getTurmaById(this.turmaId).subscribe(turma => {
-
-          this.universidadeService.getCampusesByMateriaId(turma.materia.id).subscribe(campuses => {
-            this.campi = campuses;
-
-            this.turmaForm.patchValue({
-              materiaId: turma.materia.id,
-              professorId: turma.professor.id,
-              turno: turma.turno,
-              diaSemana: turma.diaSemana,
-              campus: turma.campus,
-              limiteAlunos: turma.limiteAlunos,
-              alunoIds: turma.alunos.map(a => a.id)
-            });
-
-            this.turmaForm.get('materiaId')?.disable();
-            this.turmaForm.get('turno')?.disable();
-            this.turmaForm.get('diaSemana')?.disable();
-            this.turmaForm.get('campus')?.disable();
-            this.turmaForm.get('limiteAlunos')?.disable();
-
-            this.onCampusOuMateriaChange();
-          });
-        });
-      }
+    this.materiaService.listarMaterias().subscribe(materias => {
+      this.materias = materias;
     });
+
+    if (this.isEditMode && this.turmaId) {
+      this.turmaService.getTurmaById(this.turmaId).subscribe(turma => {
+        this.universidadeService.getCampusesByMateriaId(turma.materia.id).subscribe(campuses => {
+          this.campi = campuses;
+          this.turmaForm.patchValue(turma);
+          this.turmaForm.get('materiaId')?.setValue(turma.materia.id);
+          this.turmaForm.get('professorId')?.setValue(turma.professor.id);
+          this.turmaForm.get('alunoIds')?.setValue(turma.alunos.map(a => a.id));
+
+          this.turmaForm.get('materiaId')?.disable();
+          this.turmaForm.get('turno')?.disable();
+          this.turmaForm.get('diaSemana')?.disable();
+          this.turmaForm.get('campus')?.disable();
+          
+          this.loadProfessoresDisponiveis();
+          this.onCampusOuMateriaChange();
+        });
+      });
+    }
 
     this.turmaForm.get('campus')?.valueChanges.subscribe(() => this.onCampusOuMateriaChange());
     this.turmaForm.get('materiaId')?.valueChanges.subscribe(() => this.onCampusOuMateriaChange());
+    this.turmaForm.get('diaSemana')?.valueChanges.subscribe(() => {
+      this.onCampusOuMateriaChange();
+      this.loadProfessoresDisponiveis();
+    });
+    this.turmaForm.get('turno')?.valueChanges.subscribe(() => {
+      this.onCampusOuMateriaChange();
+      this.loadProfessoresDisponiveis();
+    });
   }
 
-  async loadInitialData(): Promise<void> {
-    this.materias = await this.materiaService.listarMaterias().toPromise() || [];
-    this.professores = await this.professorService.listarProfessoresParaSecretaria().toPromise() || [];
+  loadProfessoresDisponiveis(): void {
+    const diaSemana = this.turmaForm.get('diaSemana')?.value;
+    const turno = this.turmaForm.get('turno')?.value;
+    if (diaSemana && turno) {
+      this.professorService.getProfessoresDisponiveis(diaSemana, turno, this.turmaId).subscribe(professores => {
+        this.professores = professores;
+      });
+    }
   }
 
   onCampusOuMateriaChange(): void {
     const campus = this.turmaForm.get('campus')?.value;
     const materiaId = this.turmaForm.get('materiaId')?.value;
+    const diaSemana = this.turmaForm.get('diaSemana')?.value;
+    const turno = this.turmaForm.get('turno')?.value;
 
-    if (campus && materiaId) {
-      this.turmaService.getAlunosElegiveis(campus, materiaId).subscribe((alunos: Aluno[]) => {
+    if (campus && materiaId && diaSemana && turno) {
+      const turmaId = this.isEditMode ? this.turmaId : undefined;
+      this.turmaService.getAlunosElegiveis(campus, materiaId, diaSemana, turno, turmaId).subscribe((alunos: Aluno[]) => {
         this.alunosElegiveis = alunos;
         if (!this.isEditMode) {
           this.turmaForm.get('alunoIds')?.setValue([]);

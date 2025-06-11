@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Professor, ProfessorDTO } from '../models/professor.model';
 import { AuthService } from './auth.service';
@@ -18,6 +18,8 @@ export interface Turma {
 })
 export class ProfessorService {
   private baseApiUrl = 'http://localhost:8080/api';
+  private apiUrl = '/api/funcionariosecretaria/professores';
+  private adminApiUrl = '/api/admin-universidade/professores';
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
@@ -40,7 +42,7 @@ export class ProfessorService {
   }
 
   listarProfessoresParaSecretaria(): Observable<Professor[]> {
-    return this.http.get<Professor[]>(`${this.baseApiUrl}/funcionariosecretaria/professores`);
+    return this.http.get<Professor[]>(this.apiUrl);
   }
 
   buscarPorId(id: number): Observable<Professor> {
@@ -74,5 +76,20 @@ export class ProfessorService {
     return this.http.get(`${this.getApiUrl()}/turmas/${turmaId}/relatorio`, {
       responseType: 'blob'
     });
+  }
+
+  getProfessoresDisponiveis(diaSemana: string, turno: string, turmaId?: number): Observable<Professor[]> {
+    let params = new HttpParams()
+      .set('diaSemana', diaSemana)
+      .set('turno', turno);
+    if (turmaId) {
+      params = params.set('turmaId', turmaId.toString());
+    }
+    return this.http.get<Professor[]>(`${this.apiUrl}/disponiveis`, { params });
+  }
+
+  // Métodos para Admin de Universidade
+  listarProfessores(): Observable<Professor[]> {
+    return this.http.get<Professor[]>(`${this.adminApiUrl}`);
   }
 } 

@@ -22,6 +22,7 @@ import { DashboardAlunoComponent } from './components/dashboard-aluno/dashboard-
 import { SolicitacoesSecretariaListComponent } from './components/secretaria/solicitacoes-secretaria-list/solicitacoes-secretaria-list.component';
 
 export const routes: Routes = [
+  { path: '', loadComponent: () => import('./components/index/index.component').then(m => m.IndexComponent) },
   { path: 'login', component: LoginComponent },
   { path: 'trocar-senha', component: TrocarSenhaComponent },
 
