@@ -11,8 +11,8 @@ export class SolicitacaoService {
 
   constructor(private http: HttpClient) { }
 
-  getSolicitacoesByAluno(alunoId: number): Observable<Solicitacao[]> {
-    return this.http.get<Solicitacao[]>(`${this.apiUrl}/aluno/${alunoId}`);
+  getSolicitacoesByAluno(alunoId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/aluno/${alunoId}`);
   }
 
   createSolicitacao(solicitacao: SolicitacaoCreateDTO): Observable<Solicitacao> {
