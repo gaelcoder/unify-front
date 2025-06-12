@@ -30,10 +30,10 @@ export class RepresentanteFormComponent implements OnInit {
     this.representanteForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(2)]],
       sobrenome: ['', [Validators.required]],
-      cpf: ['', [Validators.required, Validators.pattern(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/)]],
+      cpf: ['', [Validators.required]],
       dataNascimento: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      telefone: ['', [Validators.required, Validators.pattern(/^\(\d{2}\) \d{5}\-\d{4}$/)]],
+      telefone: ['', [Validators.required]],
       cargo: ['', [Validators.required]]
     });
   }

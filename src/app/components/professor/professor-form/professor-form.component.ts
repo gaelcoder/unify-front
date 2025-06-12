@@ -4,11 +4,12 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ProfessorService } from '../../../services/professor.service';
 import { ProfessorDTO } from '../../../models/professor.model';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-professor-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, NgxMaskDirective],
   templateUrl: './professor-form.component.html',
   styleUrls: ['./professor-form.component.css']
 })

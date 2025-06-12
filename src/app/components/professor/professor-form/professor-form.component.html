@@ -51,6 +51,7 @@
           <div class="col-md-6">
             <label for="cpf" class="form-label">CPF<span class="text-danger">*</span></label>
             <input type="text" id="cpf" formControlName="cpf" class="form-control" placeholder="000.000.000-00"
+              mask="000.000.000-00"
               [ngClass]="{ 'is-invalid': professorForm.get('cpf')?.invalid && professorForm.get('cpf')?.touched }">
             <div *ngIf="professorForm.get('cpf')?.invalid && professorForm.get('cpf')?.touched" class="invalid-feedback">
               CPF é obrigatório.
@@ -70,6 +71,7 @@
           <div class="col-md-4">
             <label for="telefone" class="form-label">Telefone<span class="text-danger">*</span></label>
             <input type="text" id="telefone" formControlName="telefone" class="form-control" placeholder="(00) 00000-0000"
+              mask="(00) 00000-0000"
               [ngClass]="{ 'is-invalid': professorForm.get('telefone')?.invalid && professorForm.get('telefone')?.touched }">
             <div *ngIf="professorForm.get('telefone')?.invalid && professorForm.get('telefone')?.touched" class="invalid-feedback">
               Telefone é obrigatório.

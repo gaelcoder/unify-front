@@ -6,11 +6,12 @@ import { AlunoService } from '../../../../services/aluno.service';
 import { AlunoDTO, Aluno } from '../../../../models/aluno.model';
 import { Graduacao } from '../../../../models/graduacao.model';
 import { GraduacaoService } from '../../../../services/graduacao.service';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-funcionario-secretaria-aluno-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgxMaskDirective],
   template: `
     <div class="container mt-4">
       <h2>{{ isEditMode ? 'Editar Aluno' : 'Novo Aluno' }} (Secretaria)</h2>
@@ -49,11 +50,11 @@ import { GraduacaoService } from '../../../../services/graduacao.service';
         <div class="mb-3">
           <label for="cpf" class="form-label">CPF</label>
           <input type="text" id="cpf" formControlName="cpf" class="form-control"
+                 mask="000.000.000-00"
                  [ngClass]="{ 'is-invalid': alunoForm.get('cpf')?.invalid && alunoForm.get('cpf')?.touched }">
           <div *ngIf="alunoForm.get('cpf')?.invalid && alunoForm.get('cpf')?.touched" class="invalid-feedback">
             CPF é obrigatório.
           </div>
-          <!-- TODO: Add CPF mask and validation -->
         </div>
 
         <div class="mb-3">
@@ -68,11 +69,11 @@ import { GraduacaoService } from '../../../../services/graduacao.service';
         <div class="mb-3">
           <label for="telefone" class="form-label">Telefone</label>
           <input type="text" id="telefone" formControlName="telefone" class="form-control"
+                 mask="(00) 00000-0000"
                  [ngClass]="{ 'is-invalid': alunoForm.get('telefone')?.invalid && alunoForm.get('telefone')?.touched }">
            <div *ngIf="alunoForm.get('telefone')?.invalid && alunoForm.get('telefone')?.touched" class="invalid-feedback">
             Telefone é obrigatório.
           </div>
-          <!-- TODO: Add Telefone mask -->
         </div>
 
         <div class="mb-3">

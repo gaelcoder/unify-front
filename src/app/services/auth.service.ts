@@ -40,12 +40,12 @@ export class AuthService {
             targetPath = '/trocar-senha';
           } else {
             const userRoles = userResponse.tipo ? (userResponse.tipo as string).split(',') : [];
-            if (userRoles.includes(UserRole.AdminGeral)) {
+            if (userRoles.includes(UserRole.FuncionarioRH)) {
+              targetPath = '/painel-rh';
+            } else if (userRoles.includes(UserRole.AdminGeral)) {
               targetPath = '/dashboard-admin-geral';
             } else if (userRoles.includes(UserRole.AdminUniversidade)) {
               targetPath = '/admin-universidade/dashboard';
-            } else if (userRoles.includes(UserRole.FuncionarioRH)) {
-              targetPath = '/painel-rh';
             } else if (userRoles.includes(UserRole.Funcionario)) {
               targetPath = '/dashboard-secretaria';
             } else if (userRoles.includes(UserRole.Professor)) {
@@ -68,12 +68,12 @@ export class AuthService {
 
   isAdminGeral(): boolean {
     const user = this.currentUserValue;
-    return !!user && user.tipo === UserRole.AdminGeral;
+    return !!user && !!user.tipo && (user.tipo as string).split(',').includes(UserRole.AdminGeral);
   }
 
   isAdminUniversidade(): boolean {
     const user = this.currentUserValue;
-    return !!user && user.tipo === UserRole.AdminUniversidade;
+    return !!user && !!user.tipo && (user.tipo as string).split(',').includes(UserRole.AdminUniversidade);
   }
 
   isFuncionarioRH(): boolean {

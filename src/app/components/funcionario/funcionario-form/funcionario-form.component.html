@@ -55,6 +55,7 @@
                      <div class="col-md-6">
                         <label for="cpf" class="form-label">CPF<span class="text-danger fs-small ms-1">*</span></label>
                         <input type="text" id="cpf" formControlName="cpf" class="form-control" placeholder="000.000.000-00"
+                            mask="000.000.000-00"
                             [ngClass]="{ 'is-invalid': funcionarioForm.get('cpf')?.invalid && funcionarioForm.get('cpf')?.touched }">
                         <div *ngIf="funcionarioForm.get('cpf')?.invalid && funcionarioForm.get('cpf')?.touched"
                             class="invalid-feedback">
@@ -77,6 +78,7 @@
                         <label for="telefone" class="form-label">Telefone</label>
                         <input type="text" id="telefone" formControlName="telefone" class="form-control"
                             placeholder="(00) 00000-0000"
+                            mask="(00) 00000-0000"
                             [ngClass]="{ 'is-invalid': funcionarioForm.get('telefone')?.invalid && funcionarioForm.get('telefone')?.touched }">
                         <!-- Add validation messages for telefone if needed -->
                     </div>

@@ -4,11 +4,12 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FuncionarioService } from '../../../services/funcionario.service';
 import { Funcionario, FuncionarioDTO } from '../../../models/funcionario.model'; // Assuming model exists or will be created
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-funcionario-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, NgxMaskDirective],
   templateUrl: './funcionario-form.component.html'
 })
 

@@ -68,7 +68,7 @@ export class UniversidadeFormComponent implements OnInit {
   initForm(): void {
     this.universidadeForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
-      cnpj: ['', [Validators.required, Validators.pattern('\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}')]],
+      cnpj: ['', [Validators.required]],
       fundacao: ['', Validators.required],
       sigla: ['', [Validators.required, Validators.maxLength(10)]],
       logo: [null],
