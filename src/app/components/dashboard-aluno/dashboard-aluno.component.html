@@ -1,12 +1,26 @@
-<div class="container mt-4">
-  <div class="px-4 py-5 my-5 text-center">
-    <h1 class="display-5 fw-bold">Dashboard do Aluno</h1>
-    <div class="col-lg-6 mx-auto">
-      <p class="lead mb-4">Bem-vindo(a) ao seu portal. Utilize os botões abaixo para acessar as funcionalidades disponíveis.</p>
-      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-        <button [routerLink]="['/aluno/solicitacoes']" class="btn btn-outline-secondary btn-lg px-4">Minhas Solicitações</button>
-        <button (click)="gerarGradeHoraria()" class="btn btn-outline-secondary btn-lg px-4">Gerar PDF de Grade Horária</button>
+<div class="container mt-5">
+  <div class="text-center mb-5">
+    <h1 class="display-4">Dashboard do Aluno</h1>
+    <p class="lead">Bem-vindo(a) ao seu portal.</p>
+  </div>
+
+  <div class="row justify-content-center g-4">
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="card-title">Minhas Solicitações</h5>
+          <p class="card-text">Acompanhe suas solicitações de documentos e serviços.</p>
+          <a routerLink="/aluno/solicitacoes" class="btn btn-primary">Acessar</a>
+        </div>
       </div>
     </div>
-  </div>
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="card-title">Grade Horária</h5>
+          <p class="card-text">Visualize e gere o PDF da sua grade horária atual.</p>
+          <button (click)="gerarGradeHoraria()" class="btn btn-primary">Gerar PDF</button>
+        </div>
+      </div>
+    </div>
 </div>

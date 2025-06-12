@@ -7,8 +7,8 @@
     {{ errorMessage }}
   </div>
 
-  <div *ngIf="!isLoading && solicitacao" class="card">
-    <div class="card-header">
+  <div *ngIf="!isLoading && solicitacao" class="card mt-4">
+    <div class="card-header bg-light">
       <h2>Solicitation Details</h2>
     </div>
     <div class="card-body">
@@ -19,7 +19,7 @@
       <p class="card-text"><strong>Message:</strong></p>
       <p class="card-text">{{ solicitacao.mensagem }}</p>
     </div>
-    <div class="card-footer">
+    <div class="card-footer text-end">
       <button [routerLink]="['/aluno/solicitacoes']" class="btn btn-secondary">Back to List</button>
     </div>
   </div>

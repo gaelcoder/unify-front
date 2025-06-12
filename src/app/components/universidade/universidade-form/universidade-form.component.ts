@@ -5,11 +5,12 @@ import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { UniversidadeService } from '../../../services/universidade.service';
 import { RepresentanteService } from '../../../services/representante.service';
 import { Representante } from '../../../models/representante.model';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-universidade-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, NgxMaskDirective],
   templateUrl: './universidade-form.component.html',
   styleUrl: './universidade-form.component.css'
 })
@@ -28,6 +29,10 @@ export class UniversidadeFormComponent implements OnInit {
   carregandoRepresentantes = false;
   universidadeAtual: any = null;
   representanteAtual: Representante | null | undefined = null;
+
+  get f() {
+    return this.universidadeForm.controls;
+  }
 
   get campusArray() {
     return this.universidadeForm.get('campus') as FormArray;
@@ -146,6 +151,7 @@ export class UniversidadeFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.universidadeForm.invalid) {
+      this.universidadeForm.markAllAsTouched();
       return;
     }
 

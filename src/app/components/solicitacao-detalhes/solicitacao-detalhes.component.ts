@@ -8,8 +8,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-solicitacao-detalhes',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './solicitacao-detalhes.component.html',
-  styleUrl: './solicitacao-detalhes.component.css'
+  templateUrl: './solicitacao-detalhes.component.html'
 })
 export class SolicitacaoDetalhesComponent implements OnInit {
   solicitacao: Solicitacao | undefined;

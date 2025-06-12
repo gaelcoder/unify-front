@@ -10,7 +10,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
-    <div class="container mt-4">
+    <div class="container-xl mt-4">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Gerenciar Graduações</h2>
         <a routerLink="../graduacoes/novo" class="btn btn-primary">Nova Graduação</a>
@@ -22,29 +22,29 @@ import { HttpErrorResponse } from '@angular/common/http';
       <table *ngIf="!isLoading && !error && graduacoes.length > 0" class="table table-striped table-hover">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Título</th>
-            <th>Semestres</th>
-            <th>Código do Curso</th>
-            <th>Coordenador</th>
-            <th>Campi Disponíveis</th>
-            <th>Ações</th>
+            <th class="align-middle">ID</th>
+            <th class="align-middle">Título</th>
+            <th class="align-middle">Semestres</th>
+            <th class="align-middle">Código do Curso</th>
+            <th class="align-middle">Coordenador</th>
+            <th class="align-middle">Campi Disponíveis</th>
+            <th class="align-middle">Ações</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let graduacao of graduacoes">
-            <td>{{ graduacao.id }}</td>
-            <td>{{ graduacao.titulo }}</td>
-            <td>{{ graduacao.semestres }}</td>
-            <td>{{ graduacao.codigoCurso }}</td>
-            <td>{{ graduacao.coordenadorDoCurso?.nome || 'N/A' }}</td>
-            <td>{{ graduacao.campusDisponiveis?.join(', ') || 'N/A' }}</td>
-            <td>
+            <td class="align-middle">{{ graduacao.id }}</td>
+            <td class="align-middle">{{ graduacao.titulo }}</td>
+            <td class="align-middle">{{ graduacao.semestres }}</td>
+            <td class="align-middle">{{ graduacao.codigoCurso }}</td>
+            <td class="align-middle">{{ graduacao.coordenadorDoCurso?.nome || 'N/A' }}</td>
+            <td class="align-middle">{{ graduacao.campusDisponiveis?.join(', ') || 'N/A' }}</td>
+            <td class="align-middle">
               <a [routerLink]="['../graduacoes/editar', graduacao.id]" class="btn btn-sm btn-outline-primary me-2">
-                <i class="fas fa-edit"></i> Editar
+                <i class="fas fa-edit me-1"></i> Editar
               </a>
               <button (click)="deletarGraduacao(graduacao.id)" class="btn btn-sm btn-outline-danger">
-                <i class="fas fa-trash-alt"></i> Deletar
+                <i class="fas fa-trash-alt me-1"></i> Deletar
               </button>
             </td>
           </tr>
@@ -58,28 +58,7 @@ import { HttpErrorResponse } from '@angular/common/http';
       <a routerLink="/dashboard-secretaria" class="btn btn-secondary mt-3">Voltar ao Painel</a>
     </div>
   `,
-  styles: [`
-    .container {
-      max-width: 1200px;
-    }
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-    .btn-secondary {
-        background-color: #6c757d;
-        border-color: #6c757d;
-    }
-    .table-hover tbody tr:hover {
-        background-color: #f8f9fa;
-    }
-    th, td {
-        vertical-align: middle;
-    }
-    .fa-edit, .fa-trash-alt {
-        margin-right: 5px;
-    }
-  `]
+  styles: []
 })
 export class FuncionarioSecretariaGraduacaoListComponent implements OnInit {
   graduacoes: Graduacao[] = [];

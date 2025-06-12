@@ -1,134 +1,129 @@
-<main class="container mt-4">
-  <div *ngIf="loading" class="d-flex justify-content-center" role="status">
-    <div class="spinner-border" role="status">
-      <span class="visually-hidden">Carregando...</span>
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+          <span class="visually-hidden">Carregando...</span>
+        </div>
+      </div>
+
+      <div *ngIf="!loading" class="card shadow-sm">
+        <div class="card-header">
+          <h1 class="h3 mb-0">{{ editMode ? 'Editar Universidade' : 'Nova Universidade' }}</h1>
+        </div>
+        <div class="card-body p-4">
+          <div *ngIf="error" class="alert alert-danger" role="alert">{{ error }}</div>
+          <div *ngIf="success" class="alert alert-success" role="alert">{{ success }}</div>
+
+          <form [formGroup]="universidadeForm" (ngSubmit)="onSubmit()">
+            <!-- Informações Básicas -->
+            <fieldset class="mb-4">
+              <legend class="h5 mb-3">Informações Básicas</legend>
+              <div class="row">
+                <div class="col-md-8 mb-3">
+                  <label for="nome" class="form-label">Nome</label>
+                  <input type="text" id="nome" class="form-control" formControlName="nome" [ngClass]="{ 'is-invalid': f['nome'].touched && f['nome'].errors }">
+                  <div *ngIf="f['nome'].touched && f['nome'].errors" class="invalid-feedback">
+                    <div *ngIf="f['nome'].errors?.['required']">Nome é obrigatório.</div>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="sigla" class="form-label">Sigla</label>
+                  <input type="text" id="sigla" class="form-control" formControlName="sigla" [ngClass]="{ 'is-invalid': f['sigla'].touched && f['sigla'].errors }">
+                  <div *ngIf="f['sigla'].touched && f['sigla'].errors" class="invalid-feedback">
+                    <div *ngIf="f['sigla'].errors?.['required']">Sigla é obrigatória.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="cnpj" class="form-label">CNPJ</label>
+                  <input type="text" id="cnpj" class="form-control" formControlName="cnpj" mask="00.000.000/0000-00" [ngClass]="{ 'is-invalid': f['cnpj'].touched && f['cnpj'].errors }">
+                  <div *ngIf="f['cnpj'].touched && f['cnpj'].errors" class="invalid-feedback">
+                    <div *ngIf="f['cnpj'].errors?.['required']">CNPJ é obrigatório.</div>
+                    <div *ngIf="f['cnpj'].errors?.['pattern']">Formato de CNPJ inválido.</div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="fundacao" class="form-label">Data de Fundação</label>
+                  <input type="date" id="fundacao" class="form-control" formControlName="fundacao" [ngClass]="{ 'is-invalid': f['fundacao'].touched && f['fundacao'].errors }">
+                  <div *ngIf="f['fundacao'].touched && f['fundacao'].errors" class="invalid-feedback">
+                    <div *ngIf="f['fundacao'].errors?.['required']">Data de fundação é obrigatória.</div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Logo e Campus -->
+            <fieldset class="mb-4">
+                <legend class="h5 mb-3">Identidade Visual e Estrutura</legend>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="logo" class="form-label">Logo</label>
+                        <input type="file" class="form-control" id="logo" (change)="onFileSelected($event)" accept="image/*" [ngClass]="{ 'is-invalid': f['logo'].touched && f['logo'].errors }">
+                        <div *ngIf="logoPreviewUrl" class="mt-2 text-center">
+                            <img [src]="logoPreviewUrl" alt="Pré-visualização" class="img-thumbnail" style="max-height: 100px;">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Campus</label>
+                        <div formArrayName="campus">
+                            <div *ngFor="let campus of campusArray.controls; let i = index" class="input-group mb-2">
+                                <input type="text" class="form-control" [formControlName]="i" placeholder="Nome do Campus">
+                                <button type="button" class="btn btn-outline-danger" (click)="removeCampus(i)">Remover</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm mt-1" (click)="addCampus()">Adicionar Campus</button>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Representante -->
+            <fieldset class="mb-4">
+              <legend class="h5 mb-3">Representante Legal</legend>
+              <div class="card">
+                <div class="card-body">
+                  <div *ngIf="representanteAtual" class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-0">{{ representanteAtual.nome }} {{ representanteAtual.sobrenome }}</h6>
+                      <small class="text-muted">{{ representanteAtual.email }} | {{ representanteAtual.cargo }}</small>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-warning" (click)="desassociarRepresentante()">Desassociar</button>
+                  </div>
+                  <div *ngIf="!representanteAtual">
+                    <label for="representanteId" class="form-label">Vincular Representante</label>
+                    <div class="input-group">
+                      <select class="form-select" id="representanteId" formControlName="representanteId">
+                        <option [ngValue]="null" disabled>Selecione um representante disponível...</option>
+                        <option *ngFor="let rep of representantesDisponiveis" [ngValue]="rep.id">
+                          {{ rep.nome }} {{ rep.sobrenome }}
+                        </option>
+                      </select>
+                      <button *ngIf="editMode" type="button" class="btn btn-outline-primary" [disabled]="!f['representanteId'].value" (click)="associarRepresentante()">Associar</button>
+                    </div>
+                    <div *ngIf="carregandoRepresentantes" class="text-center mt-2">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a routerLink="/universidades" class="btn btn-secondary">Voltar</a>
+                <div>
+                    <button *ngIf="editMode" type="button" class="btn btn-danger me-2" (click)="excluirUniversidade()">Excluir Universidade</button>
+                    <button type="submit" class="btn btn-primary" [disabled]="universidadeForm.invalid || submitting">
+                        <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        {{ submitting ? (editMode ? 'Atualizando...' : 'Cadastrando...') : (editMode ? 'Atualizar' : 'Cadastrar') }}
+                    </button>
+                </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
-
-  <section *ngIf="!loading">
-    <h2>{{ editMode ? 'Editar' : 'Cadastrar' }} Universidade</h2>
-
-    <div *ngIf="error" class="alert alert-danger" role="alert">{{ error }}</div>
-    <div *ngIf="success" class="alert alert-success" role="alert">{{ success }}</div>
-
-    <form [formGroup]="universidadeForm" (ngSubmit)="onSubmit()" class="mt-4">
-      <div class="mb-3">
-        <label for="nome" class="form-label">Nome</label>
-        <input type="text" class="form-control" id="nome" formControlName="nome">
-        <div *ngIf="universidadeForm.get('nome')?.invalid && universidadeForm.get('nome')?.touched" class="text-danger">
-          <small *ngIf="universidadeForm.get('nome')?.errors?.['required']">Nome é obrigatório</small>
-          <small *ngIf="universidadeForm.get('nome')?.errors?.['minlength']">Nome deve ter pelo menos 3 caracteres</small>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <label for="cnpj" class="form-label">CNPJ</label>
-        <input type="text" class="form-control" id="cnpj" formControlName="cnpj">
-        <div *ngIf="universidadeForm.get('cnpj')?.invalid && universidadeForm.get('cnpj')?.touched" class="text-danger">
-          <small *ngIf="universidadeForm.get('cnpj')?.errors?.['required']">CNPJ é obrigatório</small>
-          <small *ngIf="universidadeForm.get('cnpj')?.errors?.['pattern']">CNPJ inválido</small>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <label for="fundacao" class="form-label">Data de Fundação</label>
-        <input type="date" class="form-control" id="fundacao" formControlName="fundacao">
-        <div *ngIf="universidadeForm.get('fundacao')?.invalid && universidadeForm.get('fundacao')?.touched" class="text-danger">
-          <small *ngIf="universidadeForm.get('fundacao')?.errors?.['required']">Data de fundação é obrigatória</small>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <label for="sigla" class="form-label">Sigla</label>
-        <input type="text" class="form-control" id="sigla" formControlName="sigla">
-        <div *ngIf="universidadeForm.get('sigla')?.invalid && universidadeForm.get('sigla')?.touched" class="text-danger">
-          <small *ngIf="universidadeForm.get('sigla')?.errors?.['required']">Sigla é obrigatória</small>
-          <small *ngIf="universidadeForm.get('sigla')?.errors?.['maxlength']">Sigla deve ter no máximo 10 caracteres</small>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <label for="logo" class="form-label">Logo da Universidade</label>
-        <input type="file" class="form-control" id="logo" (change)="onFileSelected($event)" accept="image/*">
-        <div *ngIf="logoPreviewUrl" class="mt-2">
-          <img [src]="logoPreviewUrl" alt="Pré-visualização da Logo" style="max-height: 100px; max-width: 200px;">
-        </div>
-        <div *ngIf="universidadeForm.get('logo')?.invalid && universidadeForm.get('logo')?.touched" class="text-danger">
-          <small *ngIf="universidadeForm.get('logo')?.errors?.['required']">Logo é obrigatória (se aplicável)</small>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Campus</label>
-        <div formArrayName="campus">
-          <div *ngFor="let campus of campusArray.controls; let i = index" class="input-group mb-2">
-            <input type="text" class="form-control" [formControlName]="i">
-            <button type="button" class="btn btn-danger" (click)="removeCampus(i)">Remover</button>
-          </div>
-        </div>
-        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" (click)="addCampus()">
-          <i class="bi bi-plus-circle"></i> Adicionar Campus
-        </button>
-      </div>
-
-      <!-- Seção de Representante -->
-      <article class="card mb-3">
-        <header class="card-header">Representante</header>
-        <section class="card-body">
-          
-          <!-- Exibe informações do representante atual se existir -->
-          <section *ngIf="representanteAtual" class="mb-3">
-            <h5>Representante Atual</h5>
-            <p><strong>Nome:</strong> {{ representanteAtual.nome }} {{ representanteAtual.sobrenome }}</p>
-            <p><strong>Email:</strong> {{ representanteAtual.email }}</p>
-            <p><strong>Cargo:</strong> {{ representanteAtual.cargo }}</p>
-            
-            <button type="button" class="btn btn-warning mt-2" (click)="desassociarRepresentante()">
-              <i class="bi bi-x-circle"></i> Desassociar Representante
-            </button>
-          </section>
-          
-          <!-- Seleção de representante -->
-          <div *ngIf="!representanteAtual" class="mb-3">
-            <label for="representanteId" class="form-label">Selecione um Representante</label>
-            <select class="form-select" id="representanteId" formControlName="representanteId">
-              <option [ngValue]="null">Selecione...</option>
-              <option *ngFor="let rep of representantesDisponiveis" [ngValue]="rep.id">
-                {{ rep.nome }} {{ rep.sobrenome }} - {{ rep.cargo }}
-              </option>
-            </select>
-            
-            <button *ngIf="editMode" type="button" class="btn btn-primary mt-2" 
-                  [disabled]="!universidadeForm.get('representanteId')?.value" 
-                  (click)="associarRepresentante()">
-              <i class="bi bi-link"></i> Associar Representante
-            </button>
-          </div>
-          
-          <div *ngIf="carregandoRepresentantes" class="text-center" role="status">
-            <div class="spinner-border spinner-border-sm" role="status">
-              <span class="visually-hidden">Carregando representantes...</span>
-            </div>
-          </div>
-        </section>
-      </article>
-
-      <footer class="d-flex gap-2 mt-4">
-        <!-- Botão de salvar/atualizar -->
-        <button type="submit" class="btn btn-primary" [disabled]="universidadeForm.invalid || submitting">
-          <i class="bi bi-save"></i> {{ editMode ? 'Atualizar' : 'Cadastrar' }}
-        </button>
-        
-        <!-- Botão de cancelar -->
-        <a routerLink="/universidades" class="btn btn-secondary">
-          <i class="bi bi-x-circle"></i> Cancelar
-        </a>
-        
-        <!-- Botão de excluir (apenas em modo de edição) -->
-        <button *ngIf="editMode" type="button" class="btn btn-danger ms-auto" (click)="excluirUniversidade()">
-          <i class="bi bi-trash"></i> Excluir Universidade
-        </button>
-      </footer>
-    </form>
-  </section>
-</main>
+</div>

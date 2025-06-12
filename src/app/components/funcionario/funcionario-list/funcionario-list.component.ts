@@ -13,8 +13,7 @@ import { Funcionario } from '../../../models/funcionario.model'; // Assuming Fun
   selector: 'app-funcionario-list',
   standalone: true,
   imports: [CommonModule, RouterModule], // HttpClientModule removed
-  templateUrl: './funcionario-list.component.html',
-  styleUrls: ['./funcionario-list.component.css']
+  templateUrl: './funcionario-list.component.html'
 })
 export class FuncionarioListComponent implements OnInit {
   funcionarios: Funcionario[] = [];

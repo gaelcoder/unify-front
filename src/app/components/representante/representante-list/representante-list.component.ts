@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { RepresentanteService } from '../../../services/representante.service';
 import { Representante } from '../../../models/representante.model';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 
 @Component({
   selector: 'app-representante-list',
   standalone: true,
-  imports: [CommonModule, RouterLink], // Adicione CommonModule aqui
+  imports: [CommonModule, RouterLink, NgxMaskDirective, NgxMaskPipe],
   templateUrl: './representante-list.component.html',
   styleUrl: './representante-list.component.css'
 })

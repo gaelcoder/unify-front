@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { RepresentanteService } from '../../../services/representante.service';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-representante-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, NgxMaskDirective],
   templateUrl: './representante-form.component.html',
   styleUrl: './representante-form.component.css'
 })
@@ -37,6 +38,8 @@ export class RepresentanteFormComponent implements OnInit {
     });
   }
 
+  get f() { return this.representanteForm.controls; }
+
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const id = params['id'];
@@ -47,8 +50,7 @@ export class RepresentanteFormComponent implements OnInit {
         this.representanteForm.get('cpf')?.disable();
       }
     });
-}
-
+  }
 
   carregarRepresentante(id: number): void {
     this.loading = true;
@@ -80,7 +82,7 @@ export class RepresentanteFormComponent implements OnInit {
 
   onSubmit() {
     if (this.representanteForm.invalid) {
-      this.markFormGroupTouched(this.representanteForm);
+      this.representanteForm.markAllAsTouched();
       return;
     }
 
@@ -120,15 +122,6 @@ export class RepresentanteFormComponent implements OnInit {
         }
       });
     }
-  }
-
-  private markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
-      control.markAsTouched();
-      if (control instanceof FormGroup) {
-        this.markFormGroupTouched(control);
-      }
-    });
   }
 
   private getErrorMessage(error: any): string {

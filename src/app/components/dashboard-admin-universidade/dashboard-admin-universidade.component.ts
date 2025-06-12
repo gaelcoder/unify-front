@@ -10,8 +10,7 @@ import { UniversidadeStatsDTO } from '../../models/universidade-stats.model';
   selector: 'app-dashboard-admin-universidade',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './dashboard-admin-universidade.component.html',
-  styleUrls: ['./dashboard-admin-universidade.component.css']
+  templateUrl: './dashboard-admin-universidade.component.html'
 })
 export class AdminUniversidadeDashboardComponent implements OnInit {
   stats: UniversidadeStatsDTO | null = null;

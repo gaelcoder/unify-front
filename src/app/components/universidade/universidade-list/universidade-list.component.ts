@@ -3,11 +3,12 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { UniversidadeService } from '../../../services/universidade.service';
 import { Universidade } from '../../../models/universidade.model';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 
 @Component({
   selector: 'app-universidade-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe],
+  imports: [CommonModule, RouterLink, DatePipe, NgxMaskDirective, NgxMaskPipe],
   templateUrl: './universidade-list.component.html',
   styleUrl: './universidade-list.component.css'
 })

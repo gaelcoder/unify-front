@@ -61,7 +61,7 @@
     </p>
     <p>Selecionados: {{ turmaForm.get('alunoIds')?.value.length || 0 }} de {{ turmaForm.get('limiteAlunos')?.value }}</p>
 
-    <div class="aluno-list">
+    <div class="border p-2 rounded" style="max-height: 250px; overflow-y: auto;">
       <div *ngIf="alunosElegiveis.length === 0 && turmaForm.get('campus')?.value && turmaForm.get('materiaId')?.value">
         Nenhum aluno elegível encontrado para os filtros selecionados.
       </div>

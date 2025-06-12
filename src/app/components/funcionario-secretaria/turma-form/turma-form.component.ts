@@ -18,8 +18,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-turma-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  templateUrl: './turma-form.component.html',
-  styleUrls: ['./turma-form.component.css']
+  templateUrl: './turma-form.component.html'
 })
 export class TurmaFormComponent implements OnInit {
   turmaForm: FormGroup;

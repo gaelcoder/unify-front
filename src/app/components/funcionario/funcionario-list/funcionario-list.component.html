@@ -1,4 +1,4 @@
-<main class="container mt-5">
+<main class="container mt-5 pt-4">
   <header class="d-flex justify-content-between align-items-center mb-4">
     <h2>Lista de Funcionários</h2>
     <a routerLink="/admin-universidade/funcionarios/novo" class="btn btn-primary">Novo Funcionário</a>
@@ -19,10 +19,10 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <th>Nome Completo</th>
-          <th>Email</th>
-          <th>Setor</th>
-          <th>Ações</th>
+          <th class="fw-bold">Nome Completo</th>
+          <th class="fw-bold">Email</th>
+          <th class="fw-bold">Setor</th>
+          <th class="fw-bold">Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -32,10 +32,10 @@
           <td>{{ funcionario.setor }}</td>
           <td>
             <button type="button" (click)="editarFuncionario(funcionario)" class="btn btn-sm btn-primary me-2">
-              Editar
+              <i class="me-1"></i>Editar
             </button>
             <button type="button" (click)="excluirFuncionario(funcionario.id)" class="btn btn-sm btn-danger">
-              Excluir
+              <i class="me-1"></i>Excluir
             </button>
           </td>
         </tr>

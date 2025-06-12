@@ -73,7 +73,7 @@ import { Observable } from 'rxjs';
             <!-- Available Campi Column -->
             <div class="col-md-5">
               <h6>Disponíveis</h6>
-              <div class="list-group dual-listbox">
+              <div class="list-group border rounded overflow-auto" style="height: 200px;">
                 <button type="button" *ngFor="let campus of availableCampi" 
                         class="list-group-item list-group-item-action"
                         (click)="selectCampus(campus)">
@@ -92,7 +92,7 @@ import { Observable } from 'rxjs';
             <!-- Selected Campi Column -->
             <div class="col-md-5">
               <h6>Selecionados</h6>
-              <div class="list-group dual-listbox">
+              <div class="list-group border rounded overflow-auto" style="height: 200px;">
                 <button type="button" *ngFor="let campus of selectedCampi"
                         class="list-group-item list-group-item-action"
                         (click)="deselectCampus(campus)">
@@ -119,25 +119,7 @@ import { Observable } from 'rxjs';
       </form>
     </div>
   `,
-  styles: [`
-    .dual-listbox {
-      height: 200px;
-      overflow-y: auto;
-      border: 1px solid #ccc;
-      border-radius: .25rem;
-      padding: 0;
-    }
-    .dual-listbox .list-group-item {
-      cursor: pointer;
-    }
-    .dual-listbox .list-group-item:hover {
-      background-color: #f0f0f0;
-    }
-    .dual-listbox .list-group-item.text-muted {
-      cursor: default;
-      background-color: transparent;
-    }
-  `]
+  styles: []
 })
 export class FuncionarioSecretariaGraduacaoFormComponent implements OnInit {
   graduacaoForm!: FormGroup;

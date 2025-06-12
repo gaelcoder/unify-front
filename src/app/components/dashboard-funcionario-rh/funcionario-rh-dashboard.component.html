@@ -21,10 +21,10 @@
       <div class="col-md-6 mb-4">
         <div class="card text-center">
           <div class="card-header">
-            <h5 class="card-title mb-0">Gastos Mensais Estimados</h5>
+            <h5 class="card-title mb-3">Gastos Mensais Estimados</h5>
           </div>
           <div class="card-body">
-            <p class="card-text fs-3 fw-bold">{{ totalGastosMensais | currency:'BRL':'symbol':'1.2-2' }}</p>
+            <p class="card-text fs-3 fw-bold text-primary">{{ totalGastosMensais | currency:'BRL':'symbol':'1.2-2' }}</p>
             <small class="text-muted">(Soma dos salários de funcionários e professores)</small>
           </div>
         </div>
@@ -37,10 +37,10 @@
       <div class="col-md-6 mb-3">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Gerenciamento de Funcionários</h5>
+            <h5 class="card-title mb-3">Gerenciamento de Funcionários</h5>
             <p class="card-text">Acesse a lista de funcionários para adicionar, editar ou remover registros.</p>
             <button (click)="navigateToFuncionarios()" class="btn btn-primary">
-              <i class="bi bi-people-fill me-2"></i>Gerenciar Funcionários
+              <i class="bi bi-people-fill me-2 fs-6"></i>Gerenciar Funcionários
             </button>
           </div>
         </div>
@@ -48,10 +48,10 @@
       <div class="col-md-6 mb-3">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Gerenciamento de Professores</h5>
+            <h5 class="card-title mb-3">Gerenciamento de Professores</h5>
             <p class="card-text">Acesse a lista de professores para adicionar, editar ou remover registros.</p>
             <button (click)="navigateToProfessores()" class="btn btn-info text-white">
-              <i class="bi bi-person-video3 me-2"></i>Gerenciar Professores
+              <i class="bi bi-person-video3 me-2 fs-6"></i>Gerenciar Professores
             </button>
           </div>
         </div>

@@ -1,67 +1,73 @@
-<main class="container mt-4">
-    <header class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Universidades Cadastradas</h2>
-        <a routerLink="/universidades/nova" class="btn btn-primary">Nova Universidade</a>
-    </header>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3">Gerenciar Universidades</h1>
+            <p class="text-muted">Adicione, edite ou remova universidades.</p>
+        </div>
+        <a routerLink="/universidades/nova" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>
+            Nova Universidade
+        </a>
+    </div>
 
-    <div *ngIf="loading" class="text-center my-5" role="status">
+    <div *ngIf="loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Carregando...</span>
         </div>
-        <p class="mt-2">Carregando universidades...</p>
     </div>
 
     <div *ngIf="error" class="alert alert-danger" role="alert">
         {{ error }}
     </div>
 
-    <section *ngIf="!loading && !error">
-        <div *ngIf="universidades.length === 0" class="alert alert-info" role="status">
-            Nenhuma universidade cadastrada. Clique em "Nova Universidade" para adicionar.
+    <div *ngIf="!loading && !error" class="card shadow-sm">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Universidades Cadastradas</h2>
         </div>
-
-        <article *ngIf="universidades.length > 0" class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>CNPJ</th>
-                        <th>Sigla</th>
-                        <th>Fundação</th>
-                        <th>Campus</th>
-                        <th>Representante</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let universidade of universidades">
-                        <td>{{ universidade.nome }}</td>
-                        <td>{{ universidade.cnpj }}</td>
-                        <td>{{ universidade.sigla }}</td>
-                        <td>{{ universidade.fundacao | date:'dd/MM/yyyy' }}</td>
-                        <td>{{ universidade.campus.join(', ') }}</td>
-                        <td>
-                            <span *ngIf="universidade.representante">
-                                {{ universidade.representante.nome }} {{ universidade.representante.sobrenome }}
-                                <small class="text-muted">({{ universidade.representante.cargo }})</small>
-                            </span>
-                            <span *ngIf="!universidade.representante" class="text-muted">
-                                Não associado
-                            </span>
-                        </td>
-                        <td>
-                            <a [routerLink]="['/universidades/editar', universidade.id]"
-                                class="btn btn-sm btn-primary me-1">
-                                <i class="bi bi-pencil"></i> Editar
-                            </a>
-                            <button (click)="excluirUniversidade(universidade)" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash"></i> Excluir
-                            </button>
-
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </article>
-    </section>
-</main>
+        <div class="card-body">
+            <div *ngIf="universidades.length === 0" class="alert alert-info mb-0" role="alert">
+                Nenhuma universidade cadastrada.
+            </div>
+            <div *ngIf="universidades.length > 0" class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nome</th>
+                            <th scope="col">CNPJ</th>
+                            <th scope="col">Sigla</th>
+                            <th scope="col">Fundação</th>
+                            <th scope="col">Campus</th>
+                            <th scope="col">Representante</th>
+                            <th scope="col" class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let universidade of universidades">
+                            <td>{{ universidade.nome }}</td>
+                            <td>{{ universidade.cnpj | mask: '00.000.000/0000-00' }}</td>
+                            <td>{{ universidade.sigla }}</td>
+                            <td>{{ universidade.fundacao | date:'dd/MM/yyyy' }}</td>
+                            <td>{{ universidade.campus.join(', ') }}</td>
+                            <td>
+                                <span *ngIf="universidade.representante">
+                                    {{ universidade.representante.nome }} {{ universidade.representante.sobrenome }}
+                                </span>
+                                <span *ngIf="!universidade.representante" class="text-muted fst-italic">
+                                    Não associado
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <a [routerLink]="['/universidades/editar', universidade.id]" class="btn btn-sm btn-outline-primary me-2">
+                                    Editar
+                                </a>
+                                <button (click)="excluirUniversidade(universidade)" class="btn btn-sm btn-outline-danger">
+                                    Excluir
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

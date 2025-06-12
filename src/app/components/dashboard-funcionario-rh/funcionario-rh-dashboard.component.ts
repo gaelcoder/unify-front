@@ -12,8 +12,7 @@ import { map, catchError } from 'rxjs/operators';
   selector: 'app-funcionario-rh-dashboard',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './funcionario-rh-dashboard.component.html',
-  styleUrls: ['./funcionario-rh-dashboard.component.css']
+  templateUrl: './funcionario-rh-dashboard.component.html'
 })
 export class FuncionarioRHDashboardComponent implements OnInit {
   totalGastosMensais: number = 0;

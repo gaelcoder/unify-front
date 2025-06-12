@@ -29,8 +29,7 @@ export const conferirSenhasValidator: ValidatorFn = (control: AbstractControl): 
   selector: 'app-trocar-senha',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './trocarsenha.component.html',
-  styleUrls: ['./trocarsenha.component.css']
+  templateUrl: './trocarsenha.component.html'
 })
 export class TrocarSenhaComponent implements OnInit {
   senhaForm!: FormGroup<SenhaForm>;

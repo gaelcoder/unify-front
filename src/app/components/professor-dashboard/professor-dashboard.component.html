@@ -1,34 +1,47 @@
-<div class="dashboard-container">
-  <h1>Dashboard do Professor</h1>
-  <p>Bem-vindo ao seu painel.</p>
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="display-5">Dashboard do Professor</h1>
+      <p class="lead">Bem-vindo ao seu painel de controle.</p>
+    </div>
+    <button (click)="verificarTurmas()" class="btn btn-primary">Verificar Turmas</button>
+  </div>
 
-  <button (click)="verificarTurmas()">Verificar Turmas</button>
+  <div *ngIf="turmas && turmas.length > 0" class="card shadow-sm">
+    <div class="card-header">
+      <h2 class="h5 mb-0">Minhas Turmas</h2>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+          <thead>
+            <tr>
+              <th scope="col">Matéria</th>
+              <th scope="col">Turno</th>
+              <th scope="col">Dia da Semana</th>
+              <th scope="col">Campus</th>
+              <th scope="col">Nº de Alunos</th>
+              <th scope="col" class="text-center">Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let turma of turmas">
+              <td>{{ turma.nomeMateria }}</td>
+              <td>{{ turma.turno }}</td>
+              <td>{{ turma.diaSemana }}</td>
+              <td>{{ turma.campus }}</td>
+              <td>{{ turma.numeroDeAlunos }}</td>
+              <td class="text-center">
+                <button (click)="gerarRelatorio(turma.id)" class="btn btn-sm btn-outline-secondary">Gerar Relação</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
-  <div *ngIf="turmas" class="turmas-container">
-    <h2>Minhas Turmas</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Matéria</th>
-          <th>Turno</th>
-          <th>Dia da Semana</th>
-          <th>Campus</th>
-          <th>Nº de Alunos</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let turma of turmas">
-          <td>{{ turma.nomeMateria }}</td>
-          <td>{{ turma.turno }}</td>
-          <td>{{ turma.diaSemana }}</td>
-          <td>{{ turma.campus }}</td>
-          <td>{{ turma.numeroDeAlunos }}</td>
-          <td>
-            <button (click)="gerarRelatorio(turma.id)">Gerar Relação</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div *ngIf="turmas && turmas.length === 0" class="alert alert-info mt-4" role="alert">
+    Nenhuma turma encontrada para você no momento.
   </div>
 </div> 

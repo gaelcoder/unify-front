@@ -9,8 +9,7 @@ import { Funcionario, FuncionarioDTO } from '../../../models/funcionario.model';
   selector: 'app-funcionario-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
-  templateUrl: './funcionario-form.component.html',
-  styleUrls: ['./funcionario-form.component.css']
+  templateUrl: './funcionario-form.component.html'
 })
 
 export class FuncionarioFormComponent implements OnInit {

@@ -1,93 +1,97 @@
-<main class="container mt-4">
-  <section class="card">
-    <header class="card-header bg-success text-white">
-      <h2 class="mb-0">Novo Representante</h2>
-    </header>
-    <section class="card-body">
-      <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ success }}
-        <button type="button" class="btn-close" (click)="success = ''"></button>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h1 class="h3 mb-0">{{ isEditMode ? 'Editar Representante' : 'Novo Representante' }}</h1>
+        </div>
+        <div class="card-body">
+          <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ success }}
+            <button type="button" class="btn-close" (click)="success = ''" aria-label="Close"></button>
+          </div>
+          
+          <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" (click)="error = ''" aria-label="Close"></button>
+          </div>
+
+          <form [formGroup]="representanteForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="nome" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="nome" formControlName="nome" [ngClass]="{ 'is-invalid': f['nome'].touched && f['nome'].errors }">
+                <div *ngIf="f['nome'].touched && f['nome'].errors" class="invalid-feedback">
+                  <div *ngIf="f['nome'].errors?.['required']">Nome é obrigatório.</div>
+                  <div *ngIf="f['nome'].errors?.['minlength']">Deve ter no mínimo 2 caracteres.</div>
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="sobrenome" class="form-label">Sobrenome</label>
+                <input type="text" class="form-control" id="sobrenome" formControlName="sobrenome" [ngClass]="{ 'is-invalid': f['sobrenome'].touched && f['sobrenome'].errors }">
+                <div *ngIf="f['sobrenome'].touched && f['sobrenome'].errors" class="invalid-feedback">
+                  <div *ngIf="f['sobrenome'].errors?.['required']">Sobrenome é obrigatório.</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="cpf" class="form-label">CPF</label>
+                <input type="text" class="form-control" id="cpf" formControlName="cpf" mask="000.000.000-00" [ngClass]="{ 'is-invalid': f['cpf'].touched && f['cpf'].errors }">
+                <div *ngIf="f['cpf'].touched && f['cpf'].errors" class="invalid-feedback">
+                  <div *ngIf="f['cpf'].errors?.['required']">CPF é obrigatório.</div>
+                  <div *ngIf="f['cpf'].errors?.['pattern']">Formato de CPF inválido.</div>
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="dataNascimento" class="form-label">Data de Nascimento</label>
+                <input type="date" class="form-control" id="dataNascimento" formControlName="dataNascimento" [ngClass]="{ 'is-invalid': f['dataNascimento'].touched && f['dataNascimento'].errors }">
+                <div *ngIf="f['dataNascimento'].touched && f['dataNascimento'].errors" class="invalid-feedback">
+                  <div *ngIf="f['dataNascimento'].errors?.['required']">Data de nascimento é obrigatória.</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" formControlName="email" [ngClass]="{ 'is-invalid': f['email'].touched && f['email'].errors }">
+              <div *ngIf="f['email'].touched && f['email'].errors" class="invalid-feedback">
+                <div *ngIf="f['email'].errors?.['required']">Email é obrigatório.</div>
+                <div *ngIf="f['email'].errors?.['email']">Formato de email inválido.</div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="telefone" class="form-label">Telefone</label>
+                <input type="text" class="form-control" id="telefone" formControlName="telefone" mask="(00) 00000-0000" [ngClass]="{ 'is-invalid': f['telefone'].touched && f['telefone'].errors }">
+                <div *ngIf="f['telefone'].touched && f['telefone'].errors" class="invalid-feedback">
+                  <div *ngIf="f['telefone'].errors?.['required']">Telefone é obrigatório.</div>
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="cargo" class="form-label">Cargo</label>
+                <input type="text" class="form-control" id="cargo" formControlName="cargo" [ngClass]="{ 'is-invalid': f['cargo'].touched && f['cargo'].errors }">
+                <div *ngIf="f['cargo'].touched && f['cargo'].errors" class="invalid-feedback">
+                  <div *ngIf="f['cargo'].errors?.['required']">Cargo é obrigatório.</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <a routerLink="/representantes" class="btn btn-secondary">Voltar</a>
+              <button type="submit" class="btn btn-primary" [disabled]="submitting || representanteForm.invalid">
+                <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                {{ submitting ? 'Salvando...' : 'Salvar' }}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-      
-      <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ error }}
-        <button type="button" class="btn-close" (click)="error = ''"></button>
-      </div>
-      
-      <form [formGroup]="representanteForm" (ngSubmit)="onSubmit()">
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="nome" class="form-label">Nome</label>
-            <input type="text" class="form-control" id="nome" formControlName="nome">
-            <div *ngIf="representanteForm.get('nome')?.invalid && representanteForm.get('nome')?.touched" class="text-danger">
-              <small *ngIf="representanteForm.get('nome')?.errors?.['required']">Nome é obrigatório</small>
-              <small *ngIf="representanteForm.get('nome')?.errors?.['minlength']">Nome deve ter pelo menos 2 caracteres</small>
-            </div>
-          </div>
-          
-          <div class="col-md-6 mb-3">
-            <label for="sobrenome" class="form-label">Sobrenome</label>
-            <input type="text" class="form-control" id="sobrenome" formControlName="sobrenome">
-            <div *ngIf="representanteForm.get('sobrenome')?.invalid && representanteForm.get('sobrenome')?.touched" class="text-danger">
-              <small *ngIf="representanteForm.get('sobrenome')?.errors?.['required']">Sobrenome é obrigatório</small>
-            </div>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="cpf" class="form-label">CPF</label>
-            <input type="text" class="form-control" id="cpf" formControlName="cpf" placeholder="000.000.000-00">
-            <div *ngIf="representanteForm.get('cpf')?.invalid && representanteForm.get('cpf')?.touched" class="text-danger">
-              <small *ngIf="representanteForm.get('cpf')?.errors?.['required']">CPF é obrigatório</small>
-              <small *ngIf="representanteForm.get('cpf')?.errors?.['pattern']">CPF deve estar no formato 000.000.000-00</small>
-            </div>
-          </div>
-          
-          <div class="col-md-6 mb-3">
-            <label for="dataNascimento" class="form-label">Data de Nascimento</label>
-            <input type="date" class="form-control" id="dataNascimento" formControlName="dataNascimento">
-            <div *ngIf="representanteForm.get('dataNascimento')?.invalid && representanteForm.get('dataNascimento')?.touched" class="text-danger">
-              <small *ngIf="representanteForm.get('dataNascimento')?.errors?.['required']">Data de nascimento é obrigatória</small>
-            </div>
-          </div>
-        </div>
-        
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input type="email" class="form-control" id="email" formControlName="email">
-          <div *ngIf="representanteForm.get('email')?.invalid && representanteForm.get('email')?.touched" class="text-danger">
-            <small *ngIf="representanteForm.get('email')?.errors?.['required']">Email é obrigatório</small>
-            <small *ngIf="representanteForm.get('email')?.errors?.['email']">Formato de email inválido</small>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="telefone" class="form-label">Telefone</label>
-            <input type="text" class="form-control" id="telefone" formControlName="telefone" placeholder="(00) 00000-0000">
-            <div *ngIf="representanteForm.get('telefone')?.invalid && representanteForm.get('telefone')?.touched" class="text-danger">
-              <small *ngIf="representanteForm.get('telefone')?.errors?.['required']">Telefone é obrigatório</small>
-              <small *ngIf="representanteForm.get('telefone')?.errors?.['pattern']">Telefone deve estar no formato (00) 00000-0000</small>
-            </div>
-          </div>
-          
-          <div class="col-md-6 mb-3">
-            <label for="cargo" class="form-label">Cargo</label>
-            <input type="text" class="form-control" id="cargo" formControlName="cargo">
-            <div *ngIf="representanteForm.get('cargo')?.invalid && representanteForm.get('cargo')?.touched" class="text-danger">
-              <small *ngIf="representanteForm.get('cargo')?.errors?.['required']">Cargo é obrigatório</small>
-            </div>
-          </div>
-        </div>
-        
-        <footer class="d-flex justify-content-between mt-4">
-          <a routerLink="/representantes" class="btn btn-secondary">Cancelar</a>
-          <button type="submit" class="btn btn-success" [disabled]="submitting">
-            {{ submitting ? 'Salvando...' : 'Salvar Representante' }}
-          </button>
-        </footer>
-      </form>
-    </section>
-  </section>
-</main>
+    </div>
+  </div>
+</div>

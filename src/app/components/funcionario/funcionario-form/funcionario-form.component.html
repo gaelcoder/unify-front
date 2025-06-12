@@ -1,4 +1,4 @@
-<main class="container mt-4">
+<main class="container-lg mt-4">
     <header class="mb-3">
       <h2>{{ isEditMode ? 'Editar Funcionário' : 'Cadastrar Novo Funcionário' }}</h2>
     </header>
@@ -19,7 +19,7 @@
                 <legend class="h5">Dados Pessoais</legend>
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="nome" class="form-label">Nome<span class="text-danger">*</span></label>
+                        <label for="nome" class="form-label">Nome<span class="text-danger fs-small ms-1">*</span></label>
                         <input type="text" id="nome" formControlName="nome" class="form-control"
                             [ngClass]="{ 'is-invalid': funcionarioForm.get('nome')?.invalid && funcionarioForm.get('nome')?.touched }">
                         <div *ngIf="funcionarioForm.get('nome')?.invalid && funcionarioForm.get('nome')?.touched"
@@ -28,7 +28,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="sobrenome" class="form-label">Sobrenome<span class="text-danger">*</span></label>
+                        <label for="sobrenome" class="form-label">Sobrenome<span class="text-danger fs-small ms-1">*</span></label>
                         <input type="text" id="sobrenome" formControlName="sobrenome" class="form-control"
                             [ngClass]="{ 'is-invalid': funcionarioForm.get('sobrenome')?.invalid && funcionarioForm.get('sobrenome')?.touched }">
                         <div *ngIf="funcionarioForm.get('sobrenome')?.invalid && funcionarioForm.get('sobrenome')?.touched"
@@ -40,7 +40,7 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="email" class="form-label">Email<span class="text-danger">*</span></label>
+                        <label for="email" class="form-label">Email<span class="text-danger fs-small ms-1">*</span></label>
                         <input type="email" id="email" formControlName="email" class="form-control"
                             [ngClass]="{ 'is-invalid': funcionarioForm.get('email')?.invalid && funcionarioForm.get('email')?.touched }">
                         <div *ngIf="funcionarioForm.get('email')?.errors?.['required'] && funcionarioForm.get('email')?.touched"
@@ -53,7 +53,7 @@
                         </div>
                     </div>
                      <div class="col-md-6">
-                        <label for="cpf" class="form-label">CPF<span class="text-danger">*</span></label>
+                        <label for="cpf" class="form-label">CPF<span class="text-danger fs-small ms-1">*</span></label>
                         <input type="text" id="cpf" formControlName="cpf" class="form-control" placeholder="000.000.000-00"
                             [ngClass]="{ 'is-invalid': funcionarioForm.get('cpf')?.invalid && funcionarioForm.get('cpf')?.touched }">
                         <div *ngIf="funcionarioForm.get('cpf')?.invalid && funcionarioForm.get('cpf')?.touched"
@@ -65,7 +65,7 @@
                 
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label for="dataNascimento" class="form-label">Data de Nascimento<span class="text-danger">*</span></label>
+                        <label for="dataNascimento" class="form-label">Data de Nascimento<span class="text-danger fs-small ms-1">*</span></label>
                         <input type="date" id="dataNascimento" formControlName="dataNascimento" class="form-control"
                             [ngClass]="{ 'is-invalid': funcionarioForm.get('dataNascimento')?.invalid && funcionarioForm.get('dataNascimento')?.touched }">
                         <div *ngIf="funcionarioForm.get('dataNascimento')?.invalid && funcionarioForm.get('dataNascimento')?.touched"
@@ -87,7 +87,7 @@
                 <legend class="h5">Dados Institucionais</legend>
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="setor" class="form-label">Setor<span class="text-danger">*</span></label>
+                        <label for="setor" class="form-label">Setor<span class="text-danger fs-small ms-1">*</span></label>
                         <select id="setor" formControlName="setor" class="form-select"
                             [ngClass]="{ 'is-invalid': funcionarioForm.get('setor')?.invalid && funcionarioForm.get('setor')?.touched }">
                             <option value="" disabled>Selecione o setor...</option>
@@ -99,7 +99,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="salario" class="form-label">Salário (R$)<span class="text-danger">*</span></label>
+                        <label for="salario" class="form-label">Salário (R$)<span class="text-danger fs-small ms-1">*</span></label>
                         <input type="number" id="salario" formControlName="salario" class="form-control"
                                placeholder="2500.00"
                                [ngClass]="{ 'is-invalid': funcionarioForm.get('salario')?.invalid && funcionarioForm.get('salario')?.touched }">

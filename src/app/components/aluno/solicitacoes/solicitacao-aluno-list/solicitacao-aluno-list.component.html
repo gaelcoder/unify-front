@@ -16,7 +16,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let s of solicitacoes">
+        <tr *ngFor="let s of solicitacoes" 
+            [ngClass]="{
+              'table-success': s.status.toString() === 'CONCLUIDA', 
+              'table-danger': s.status.toString() === 'REJEITADA'
+            }">
           <td>#{{ s.id }}</td>
           <td>{{ s.tipo }}</td>
           <td>{{ s.dataSolicitacao | date:'dd/MM/yyyy HH:mm' }}</td>
