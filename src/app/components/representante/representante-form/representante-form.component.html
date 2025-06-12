@@ -2,8 +2,8 @@
   <div class="row justify-content-center">
     <div class="col-lg-8">
       <div class="card shadow-sm">
-        <div class="card-header">
-          <h1 class="h3 mb-0">{{ isEditMode ? 'Editar Representante' : 'Novo Representante' }}</h1>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h1 class="h3 mb-0">{{ editMode ? 'Editar Representante' : 'Novo Representante' }}</h1>
         </div>
         <div class="card-body">
           <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">

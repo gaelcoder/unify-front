@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { RepresentanteService } from '../../../services/representante.service';
 import { Representante } from '../../../models/representante.model';
-import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
+import { NgxMaskPipe } from 'ngx-mask';
 
 @Component({
   selector: 'app-representante-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgxMaskDirective, NgxMaskPipe],
+  imports: [CommonModule, RouterLink, NgxMaskPipe],
   templateUrl: './representante-list.component.html',
-  styleUrl: './representante-list.component.css'
+  styleUrls: ['./representante-list.component.css']
 })
 export class RepresentanteListComponent implements OnInit {
   representantes: Representante[] = [];
