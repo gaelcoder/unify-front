@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Solicitacao } from '../../models/solicitacao.model';
 import { SolicitacaoService } from '../../services/solicitacao.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 
 @Component({
   selector: 'app-solicitacao-detalhes',
@@ -17,7 +17,8 @@ export class SolicitacaoDetalhesComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private solicitacaoService: SolicitacaoService
+    private solicitacaoService: SolicitacaoService,
+    private location: Location
   ) { }
 
   ngOnInit(): void {
@@ -29,11 +30,15 @@ export class SolicitacaoDetalhesComponent implements OnInit {
           this.isLoading = false;
         },
         error: (err: any) => {
-          this.errorMessage = 'Failed to load solicitation details.';
+          this.errorMessage = 'Falha ao carregar os detalhes da solicitação.';
           this.isLoading = false;
           console.error(err);
         }
       });
     }
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 } 
