@@ -46,6 +46,7 @@ export class AuthService {
               targetPath = '/professor-dashboard';
             } else if (userRoles.includes(UserRole.FuncionarioRH)) {
               targetPath = '/painel-rh';
+              this.router.navigate(['/painel-rh']); // Force navigation to painel-rh for RH users
             } else if (userRoles.includes(UserRole.AdminGeral)) {
               targetPath = '/dashboard-admin-geral';
             } else if (userRoles.includes(UserRole.AdminUniversidade)) {
