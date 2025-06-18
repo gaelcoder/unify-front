@@ -40,19 +40,19 @@ export class AuthService {
             targetPath = '/trocar-senha';
           } else {
             const userRoles = userResponse.tipo ? (userResponse.tipo as string).split(',') : [];
-            if (userRoles.includes(UserRole.Aluno)) {
-              targetPath = '/aluno/dashboard';
-            } else if (userRoles.includes(UserRole.Professor)) {
-              targetPath = '/professor-dashboard';
-            } else if (userRoles.includes(UserRole.FuncionarioRH)) {
-              targetPath = '/painel-rh';
-              this.router.navigate(['/painel-rh']); // Force navigation to painel-rh for RH users
-            } else if (userRoles.includes(UserRole.AdminGeral)) {
+            if (userRoles.includes(UserRole.AdminGeral)) {
               targetPath = '/dashboard-admin-geral';
             } else if (userRoles.includes(UserRole.AdminUniversidade)) {
               targetPath = '/admin-universidade/dashboard';
+            } else if (userRoles.includes(UserRole.FuncionarioRH)) {
+              targetPath = '/painel-rh';
+              this.router.navigate(['/painel-rh']); // Force navigation to painel-rh for RH users
+            } else if (userRoles.includes(UserRole.Professor)) {
+              targetPath = '/professor-dashboard';
             } else if (userRoles.includes(UserRole.Funcionario)) {
               targetPath = '/dashboard-secretaria';
+            } else if (userRoles.includes(UserRole.Aluno)) {
+              targetPath = '/aluno/dashboard';
             }
           }
           console.log(`[AuthService login] Determined targetPath: ${targetPath} for user type: ${userResponse.tipo}. Primeiro Acesso: ${userResponse.primeiroAcesso}`);

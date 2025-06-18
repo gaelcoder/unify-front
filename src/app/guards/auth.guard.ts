@@ -28,12 +28,18 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: R
 
     const routeRoles = route.data['roles'] as Array<UserRole | string>;
     if (routeRoles && routeRoles.length > 0) {
-      const userHasRole = routeRoles.includes(currentUser.tipo as UserRole); // currentUser.tipo is already a string enum value
+      // Split the user's roles string into an array
+      const userRoles = (currentUser.tipo as string).split(',');
+      
+      // Check if any of the user's roles match any of the required roles
+      const userHasRole = userRoles.some(userRole => 
+        routeRoles.some(routeRole => userRole.trim() === routeRole)
+      );
 
-      console.log(`[AuthGuard DEBUG] Role check needed. User role: '${currentUser.tipo}'. Expected roles: ['${routeRoles.join("', '")}']. User has role: ${userHasRole}`);
+      console.log(`[AuthGuard DEBUG] Role check needed. User roles: '${userRoles.join("', '")}'. Expected roles: ['${routeRoles.join("', '")}']. User has role: ${userHasRole}`);
 
       if (!userHasRole) {
-        console.error(`%c[AuthGuard DEBUG] ROLE MISMATCH! User role '${currentUser.tipo}' NOT in expected ['${routeRoles.join("', '")}']. Redirecting from ${state.url} to /login.`, 'color: red;');
+        console.error(`%c[AuthGuard DEBUG] ROLE MISMATCH! User roles '${userRoles.join("', '")}' NOT in expected ['${routeRoles.join("', '")}']. Redirecting from ${state.url} to /login.`, 'color: red;');
         return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
       }
       console.log(`%c[AuthGuard DEBUG] ROLE MATCH! Access granted to ${state.url}.`, 'color: green;');

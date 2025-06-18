@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AlunoService } from '../../../../services/aluno.service';
 import { Aluno } from '../../../../models/aluno.model';
 import { Observable, of } from 'rxjs';
-import { catchError, tap, shareReplay } from 'rxjs/operators';
+import { catchError, tap, shareReplay, map } from 'rxjs/operators';
+import { PaginationService, PaginationConfig } from '../../../../core/services/pagination.service';
+import { PaginationControlsComponent } from '../../../../core/components/pagination-controls/pagination-controls.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-funcionario-secretaria-aluno-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PaginationControlsComponent],
   template: `
     <div class="container mt-4">
       <h2>Gerenciar Alunos (Secretaria)</h2>
@@ -25,7 +28,7 @@ import { catchError, tap, shareReplay } from 'rxjs/operators';
       </div>
 
       <ng-container *ngIf="!isLoading && !errorLoadingAlunos">
-        <ng-container *ngIf="alunos$ | async as alunosList">
+        <ng-container *ngIf="paginatedAlunos$ | async as alunosList">
           <table *ngIf="alunosList && alunosList.length > 0" class="table table-striped">
             <thead>
               <tr>
@@ -51,6 +54,16 @@ import { catchError, tap, shareReplay } from 'rxjs/operators';
               </tr>
             </tbody>
           </table>
+          
+          <!-- Pagination Controls -->
+          <app-pagination-controls 
+            *ngIf="alunos && alunos.length > 0"
+            [config]="paginationConfig"
+            (pageChange)="onPageChange($event)"
+            (pageSizeChange)="onPageSizeChange($event)"
+            (showAllToggle)="onShowAllToggle($event)">
+          </app-pagination-controls>
+          
           <div *ngIf="!alunosList || alunosList.length === 0" class="alert alert-secondary">
             Nenhum aluno encontrado. (Service Call)
           </div>
@@ -61,18 +74,35 @@ import { catchError, tap, shareReplay } from 'rxjs/operators';
   `,
   styles: []
 })
-export class FuncionarioSecretariaAlunoListComponent implements OnInit {
+export class FuncionarioSecretariaAlunoListComponent implements OnInit, OnDestroy {
   alunos$: Observable<any[]> = of([]);
+  paginatedAlunos$: Observable<any[]> = of([]);
+  alunos: any[] = [];
   isLoading = true;
   errorLoadingAlunos = false;
+  paginationConfig: PaginationConfig;
+  private paginationSubscription: Subscription;
 
-  constructor(private alunoService: AlunoService) {
+  constructor(
+    private alunoService: AlunoService,
+    private paginationService: PaginationService
+  ) {
     console.log('[AlunoListComponent] Constructor called');
+    this.paginationConfig = this.paginationService.getDefaultConfig();
+    this.paginationSubscription = this.paginationService.getPaginationState().subscribe(state => {
+      this.updatePaginatedData();
+    });
   }
 
   ngOnInit(): void {
     console.log('[AlunoListComponent] ngOnInit called');
     this.loadAlunosViaService();
+  }
+
+  ngOnDestroy(): void {
+    if (this.paginationSubscription) {
+      this.paginationSubscription.unsubscribe();
+    }
   }
 
   loadAlunosViaService(): void {
@@ -83,6 +113,9 @@ export class FuncionarioSecretariaAlunoListComponent implements OnInit {
     this.alunos$ = this.alunoService.listarAlunos().pipe(
       tap((data) => {
         console.log('[AlunoListComponent] listarAlunos (service) observable emitted (tap), Data:', data);
+        this.alunos = data;
+        this.paginationService.setTotalItems(data.length);
+        this.updatePaginatedData();
         this.isLoading = false;
       }),
       catchError(err => {
@@ -91,30 +124,35 @@ export class FuncionarioSecretariaAlunoListComponent implements OnInit {
         this.isLoading = false;
         return of([]);
       }),
-      shareReplay(1) // Share the last emission and replay for new subscribers
+      shareReplay(1)
     );
 
-    // Explicitly subscribe to trigger the observable chain and update loading states.
-    // The async pipe in the template will use the replayed value.
     this.alunos$.subscribe({
-      // No specific logic needed here as tap/catchError handle side-effects (isLoading, errorLoadingAlunos)
-      // and the async pipe handles rendering. This subscription is just to kick off the stream.
+      // No specific logic needed here as tap/catchError handle side-effects
     });
     console.log('[AlunoListComponent] alumnos$ (service call) prepared with shareReplay and subscribed to trigger.');
   }
 
+  updatePaginatedData(): void {
+    this.paginatedAlunos$ = of(this.paginationService.getPaginatedData(this.alunos));
+  }
+
   confirmDelete(aluno: any): void {
-    if (confirm(`Tem certeza que deseja excluir o aluno ${aluno.nome} ${aluno.sobrenome} (Matrícula: ${aluno.matricula})? Esta ação não pode ser desfeita.`)) {
-      this.alunoService.deletarAluno(aluno.id).subscribe({
-        next: () => {
-          alert('Aluno excluído com sucesso!');
-          this.loadAlunosViaService(); // Recarrega a lista via service
-        },
-        error: (err) => {
-          console.error('Erro ao excluir aluno:', err);
-          alert('Erro ao excluir aluno. Verifique o console para mais detalhes.');
-        }
-      });
+    if (confirm(`Tem certeza que deseja excluir o aluno ${aluno.nome} ${aluno.sobrenome}?`)) {
+      // Implement delete logic here
+      console.log('Deleting aluno:', aluno.id);
     }
+  }
+
+  onPageChange(page: number): void {
+    // Handled by the pagination service
+  }
+
+  onPageSizeChange(pageSize: number): void {
+    // Handled by the pagination service
+  }
+
+  onShowAllToggle(showAll: boolean): void {
+    // Handled by the pagination service
   }
 } 

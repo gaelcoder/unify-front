@@ -103,7 +103,7 @@ export const routes: Routes = [
     path: 'professor-dashboard',
     loadComponent: () => import('./components/professor-dashboard/professor-dashboard.component').then(m => m.ProfessorDashboardComponent),
     canActivate: [authGuard],
-    data: { roles: [UserRole.Professor] }
+    data: { roles: [UserRole.Professor, UserRole.AdminGeral] }
   },
 
   // Funcionario Secretaria Dashboard

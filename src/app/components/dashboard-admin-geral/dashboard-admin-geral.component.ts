@@ -3,26 +3,17 @@ import { HttpClient } from '@angular/common/http'; // Temporary for direct API c
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { CommonModule } from '@angular/common'; // Import CommonModule
+import { RouterModule } from '@angular/router'; // Import RouterModule for routerLink
 
 // Interface for the expected stats from /api/admin/stats
 export interface AdminGeralStatsDTO {
   totalUniversidades: number;
 }
 
-// Placeholder AdminGeralService - replace with actual service later
-// @Injectable({ providedIn: 'root' })
-// export class AdminGeralService {
-//   private apiUrl = '/api/admin'; // Base API URL for admin geral
-//   constructor(private http: HttpClient) { }
-//   getStats() {
-//     return this.http.get<AdminGeralStatsDTO>(`${this.apiUrl}/stats`);
-//   }
-// }
-
 @Component({
   selector: 'app-dashboard-admin-geral',
   standalone: true, // Assuming it should be standalone to align with others
-  imports: [CommonModule], // Add CommonModule here for *ngIf etc.
+  imports: [CommonModule, RouterModule], // Add RouterModule here for routerLink
   templateUrl: './dashboard-admin-geral.component.html',
   styleUrls: ['./dashboard-admin-geral.component.css']
 })

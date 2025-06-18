@@ -1,14 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { GraduacaoService } from '../../../../services/graduacao.service';
 import { Graduacao } from '../../../../models/graduacao.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { PaginationService, PaginationConfig } from '../../../../core/services/pagination.service';
+import { PaginationControlsComponent } from '../../../../core/components/pagination-controls/pagination-controls.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-funcionario-secretaria-graduacao-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PaginationControlsComponent],
   template: `
     <div class="container-xl mt-4">
       <div class="d-flex justify-content-between align-items-center mb-3">
@@ -19,7 +22,7 @@ import { HttpErrorResponse } from '@angular/common/http';
       <div *ngIf="isLoading" class="alert alert-info">Carregando graduações...</div>
       <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 
-      <table *ngIf="!isLoading && !error && graduacoes.length > 0" class="table table-striped table-hover">
+      <table *ngIf="!isLoading && !error && paginatedGraduacoes.length > 0" class="table table-striped table-hover">
         <thead>
           <tr>
             <th class="align-middle">ID</th>
@@ -32,7 +35,7 @@ import { HttpErrorResponse } from '@angular/common/http';
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let graduacao of graduacoes">
+          <tr *ngFor="let graduacao of paginatedGraduacoes">
             <td class="align-middle">{{ graduacao.id }}</td>
             <td class="align-middle">{{ graduacao.titulo }}</td>
             <td class="align-middle">{{ graduacao.semestres }}</td>
@@ -51,6 +54,15 @@ import { HttpErrorResponse } from '@angular/common/http';
         </tbody>
       </table>
 
+      <!-- Pagination Controls -->
+      <app-pagination-controls 
+        *ngIf="!isLoading && !error && graduacoes.length > 0"
+        [config]="paginationConfig"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+        (showAllToggle)="onShowAllToggle($event)">
+      </app-pagination-controls>
+
       <div *ngIf="!isLoading && !error && graduacoes.length === 0" class="alert alert-warning">
         Nenhuma graduação encontrada.
       </div>
@@ -60,15 +72,32 @@ import { HttpErrorResponse } from '@angular/common/http';
   `,
   styles: []
 })
-export class FuncionarioSecretariaGraduacaoListComponent implements OnInit {
+export class FuncionarioSecretariaGraduacaoListComponent implements OnInit, OnDestroy {
   graduacoes: Graduacao[] = [];
+  paginatedGraduacoes: Graduacao[] = [];
   isLoading: boolean = false;
   error: string | null = null;
+  paginationConfig: PaginationConfig;
+  private paginationSubscription: Subscription;
 
-  constructor(private graduacaoService: GraduacaoService) {}
+  constructor(
+    private graduacaoService: GraduacaoService,
+    private paginationService: PaginationService
+  ) {
+    this.paginationConfig = this.paginationService.getDefaultConfig();
+    this.paginationSubscription = this.paginationService.getPaginationState().subscribe(state => {
+      this.updatePaginatedData();
+    });
+  }
 
   ngOnInit(): void {
     this.loadGraduacoes();
+  }
+
+  ngOnDestroy(): void {
+    if (this.paginationSubscription) {
+      this.paginationSubscription.unsubscribe();
+    }
   }
 
   loadGraduacoes(): void {
@@ -115,6 +144,8 @@ export class FuncionarioSecretariaGraduacaoListComponent implements OnInit {
         });
 
         this.graduacoes = normalizedData;
+        this.paginationService.setTotalItems(normalizedData.length);
+        this.updatePaginatedData();
 
         if (this.graduacoes && this.graduacoes.length > 0) {
         }
@@ -128,22 +159,34 @@ export class FuncionarioSecretariaGraduacaoListComponent implements OnInit {
     });
   }
 
+  updatePaginatedData(): void {
+    this.paginatedGraduacoes = this.paginationService.getPaginatedData(this.graduacoes);
+  }
+
   deletarGraduacao(id: number): void {
-    if (confirm('Tem certeza que deseja deletar esta graduação?')) {
-      this.isLoading = true;
+    if (confirm('Tem certeza que deseja excluir esta graduação?')) {
       this.graduacaoService.deletar(id).subscribe({
         next: () => {
-          this.graduacoes = this.graduacoes.filter(g => g.id !== id);
-          this.isLoading = false;
-          alert('Graduação deletada com sucesso!');
+          alert('Graduação excluída com sucesso!');
+          this.loadGraduacoes();
         },
         error: (err: HttpErrorResponse) => {
-          console.error(`Erro ao deletar graduação ${id}:`, err);
-          this.error = `Erro ao deletar graduação: ${err.statusText || 'Erro desconhecido'}. Detalhes: ${err.error?.message || err.message}`;
-          this.isLoading = false;
-          alert(`Erro ao deletar graduação. ${this.error}`);
+          this.error = `Erro ao excluir graduação: ${err.statusText || 'Erro desconhecido'}`;
+          alert(this.error);
         }
       });
     }
+  }
+
+  onPageChange(page: number): void {
+    // Handled by the pagination service
+  }
+
+  onPageSizeChange(pageSize: number): void {
+    // Handled by the pagination service
+  }
+
+  onShowAllToggle(showAll: boolean): void {
+    // Handled by the pagination service
   }
 } 

@@ -7,7 +7,7 @@ import { CommonModule, Location } from '@angular/common';
 @Component({
   selector: 'app-solicitacao-detalhes',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './solicitacao-detalhes.component.html'
 })
 export class SolicitacaoDetalhesComponent implements OnInit {
