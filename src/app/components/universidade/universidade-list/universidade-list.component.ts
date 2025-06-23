@@ -58,7 +58,7 @@ import { Subscription } from 'rxjs';
                     <td>{{ universidade.nome }}</td>
                     <td>{{ universidade.cnpj | mask: '00.000.000/0000-00' }}</td>
                     <td>{{ universidade.sigla }}</td>
-                    <td>{{ universidade.dataFundacao | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ universidade.fundacao | date:'dd/MM/yyyy' }}</td>
                     <td>{{ universidade.campus }}</td>
                     <td>
                       <span *ngIf="universidade.representante; else noRepresentante">
