@@ -1,59 +1,63 @@
-# UniFy
+# UniFy Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.12.
+Este repositório contém o **frontend do projeto UniFy**, desenvolvido em Angular (versão 19) como parte de um projeto acadêmico. O objetivo é oferecer uma interface web para interação com o backend [Unify](https://github.com/gaelcoder/unify-new), viabilizando o consumo e gerenciamento de dados via uma API REST.
 
-## Development server
+## Sobre o Projeto
 
-To start a local development server, run:
+- **Frontend:** Angular 19 e Angular Material, para uma experiência moderna e responsiva.
+- **Backend:** [Unify](https://github.com/gaelcoder/unify-new), em Node.js.
+- **Integração:** Comunicação entre frontend e backend realizada por meio de HTTP REST APIs.
 
-```bash
-ng serve
-```
+Este projeto foi desenvolvido para fins de aprendizado, com foco em práticas modernas de desenvolvimento web e integração com APIs REST.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## Funcionalidades
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Autenticação de usuários
+- Listagem, visualização e edição de registros
+- Interface responsiva utilizando Angular Material
+- Comunicação em tempo real com o backend Unify
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Estrutura do Projeto
 
-```bash
-ng generate --help
-```
+/ ├── src/ │ ├── app/ # Código Angular principal │ ├── assets/ # Recursos estáticos │ └── environments/ # Configurações de ambiente ├── README.md ├── package.json └── angular.json
 
-## Building
+---
 
-To build the project run:
+## Como rodar localmente
 
-```bash
-ng build
-```
+1. **Pré-requisitos**
+  - Node.js (versão 18 ou superior)
+  - npm (gerenciador de pacotes)
+  - Angular CLI
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+2. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
 
-## Running unit tests
+3. **Configure o endpoint da API:**
+  - Edite `src/environments/environment.ts` para garantir que o campo da URL da API aponte para a instância do backend [Unify](https://github.com/gaelcoder/unify-new).
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+4. **Inicie o servidor local:**
+   ```bash
+   ng serve
+   ```
+  - Acesse em seu navegador: [http://localhost:4200](http://localhost:4200)
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
+## Integração com o Unify (Backend)
 
-For end-to-end (e2e) testing, run:
+A integração com o backend [Unify](https://github.com/gaelcoder/unify-new) ocorre por meio de chamadas HTTP centralizadas nos serviços Angular. Certifique-se de que o backend esteja rodando e com os endpoints configurados corretamente para o ambiente desejado.
 
-```bash
-ng e2e
-```
+---
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Observações
 
-## Additional Resources
+Este projeto foi desenvolvido para fins acadêmicos.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
