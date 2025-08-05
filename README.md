@@ -5,7 +5,7 @@ Este repositório contém o **frontend do projeto UniFy**, desenvolvido em Angul
 ## Sobre o Projeto
 
 - **Frontend:** Angular 19 e Angular Material, para uma experiência moderna e responsiva.
-- **Backend:** [Unify](https://github.com/gaelcoder/unify-new), em Node.js.
+- **Backend:** [Unify](https://github.com/gaelcoder/unify-new), em Java e Springboot.
 - **Integração:** Comunicação entre frontend e backend realizada por meio de HTTP REST APIs.
 
 Este projeto foi desenvolvido para fins de aprendizado, com foco em práticas modernas de desenvolvimento web e integração com APIs REST.
@@ -30,7 +30,7 @@ Este projeto foi desenvolvido para fins de aprendizado, com foco em práticas mo
 ## Como rodar localmente
 
 1. **Pré-requisitos**
-  - Node.js (versão 18 ou superior)
+  - Java
   - npm (gerenciador de pacotes)
   - Angular CLI
 
